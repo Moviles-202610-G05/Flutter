@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: const UserScreen(), // 👈 aquí defines la primera pantalla
+      home: const LoginScreen(),
     );
   }
 }

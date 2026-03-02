@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:foodgram/Vistas/register_restaurant1_screen.dart';
+import 'package:foodgram/Vistas/register_student_screen.dart';
 
 class PreregisterScreen extends StatefulWidget {
   const PreregisterScreen({Key? key}) : super(key: key);
@@ -11,6 +13,13 @@ class _PreRegisterScreenState extends State<PreregisterScreen> {
   String? _selectedAccountType;
 
   @override
+  void initState() {
+    super.initState();
+    
+    _selectedAccountType = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -18,14 +27,14 @@ class _PreRegisterScreenState extends State<PreregisterScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFFFF6347)),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFFFF6933)),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Join Us',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 20,
+            fontSize: 28,
             fontWeight: FontWeight.bold
           ),
         ),
@@ -53,7 +62,7 @@ class _PreRegisterScreenState extends State<PreregisterScreen> {
                     ),
                     TextSpan(
                       text: 'Community',
-                      style: TextStyle(color: Color(0xFFFF6347)),
+                      style: TextStyle(color: Color(0xFFFF6933)),
                     ),
                   ],
                 ),
@@ -85,7 +94,7 @@ class _PreRegisterScreenState extends State<PreregisterScreen> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _selectedAccountType == 'student'
-                          ? const Color(0xFFFF6347)
+                          ? const Color(0xFFFF6933)
                           : Colors.grey[300]!,
                       width: 2,
                     ),
@@ -152,7 +161,7 @@ class _PreRegisterScreenState extends State<PreregisterScreen> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _selectedAccountType == 'restaurant'
-                          ? const Color(0xFFFF6347)
+                          ? const Color(0xFFFF6933)
                           : Colors.grey[300]!,
                       width: 2,
                     ),
@@ -208,14 +217,28 @@ class _PreRegisterScreenState extends State<PreregisterScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _selectedAccountType != null
-                      ? () {
-                          // Navigate to sign up form with selected type
-                        }
-                      : null,
+                  onPressed: () { 
+                    if (_selectedAccountType != null) {
+                      if (_selectedAccountType == "student"){
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const StudentSignUpScreen()),
+                        );}
+                      else 
+                        if (_selectedAccountType == "restaurant"){
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const RestaurantRegisterScreen()),
+                        );}
+                      }
+                      },
+
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF6347),
+                    backgroundColor: _selectedAccountType != null
+                      ? const Color(0xFFFF6933) // tomate
+                      : Colors.grey[300],       // gris cuando es null
                     disabledBackgroundColor: Colors.grey[300],
+        
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
@@ -258,7 +281,7 @@ class _PreRegisterScreenState extends State<PreregisterScreen> {
                       child: const Text(
                         'Log in',
                         style: TextStyle(
-                          color: Color(0xFFFF6347),
+                          color: Color(0xFFFF6933),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),

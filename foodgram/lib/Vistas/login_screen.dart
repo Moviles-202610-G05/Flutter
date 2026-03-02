@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodgram/Vistas/feed_screen.dart';
 import 'package:foodgram/Vistas/preregister_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -149,10 +150,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle login
+                     Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const FeedScreen()),
+                        );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF6347),
+                    backgroundColor: const Color(0xFFFF6933),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
