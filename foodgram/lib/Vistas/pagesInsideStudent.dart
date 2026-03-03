@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Vistas/feed_screen.dart';
-import 'package:foodgram/Vistas/restaurants_screen.dart';
+import 'package:foodgram/Vistas/user_screen.dart';
 
 class Pages extends StatefulWidget {
   const Pages({Key? key}) : super(key: key);
@@ -60,7 +60,9 @@ Widget _getBody(int index) {
     case 0:
       return FeedScreen();
     case 1:
-      return RestaurantFeed();
+      return UserScreen();
+    case 2:
+      return UserScreen();
     default:
       return Container();
   }
