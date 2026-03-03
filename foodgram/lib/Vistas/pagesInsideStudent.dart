@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:foodgram/Vistas/feed_screen.dart';
 import 'package:foodgram/Vistas/restaurant_detalle_screen.dart';
 import 'package:foodgram/Vistas/restaurants_screen.dart';
+import 'package:foodgram/Vistas/user_screen.dart';
 
 class Pages extends StatefulWidget {
   const Pages({Key? key}) : super(key: key);
@@ -90,7 +91,8 @@ Widget _getBody(int index, int index2) {
               distance: '1.2 km', lat: 100, long: 100,);
         default:
           return FeedScreen();}
-
+    case 2:
+          return UserScreen();
       default:
         return Container();
     }
