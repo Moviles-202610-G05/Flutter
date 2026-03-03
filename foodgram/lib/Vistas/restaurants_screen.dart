@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodgram/Model/Restaurant.dart';
 import 'package:foodgram/Vistas/pagesInsideStudent.dart' show Pages, PagesState;
 import 'package:foodgram/Vistas/restaurant_detalle_screen.dart';
 
@@ -30,54 +31,30 @@ class _RestaurantFeed extends State<RestaurantFeed> {
           'https://images.unsplash.com/photo-1544025162-d76694265947?w=1200',
     },
   ];
+  late List<Map<String, dynamic>> restaurants;
 
-  final List<Map<String, dynamic>> restaurants = const [
-    {
-      'name': 'La Trattoria Milano',
-      'rating': 4.8,
-      'reviews': '2.4k+',
-      'price': r'$$$',
-      'distance': '1.2 km',
-      'time': '25–35 min',
-      'badge': 'TOP RATED',
-      'badge2': 'FREE DELIVERY',
-      'description':
-          'Authentic wood-fired pizzas, handmade tagliatelle, and traditional tiramisu in intimate vibes.',
-      'image':
-          'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200',
-    },
-    {
-      'name': 'The Prime Grill',
-      'rating': 4.6,
-      'reviews': '1.8k',
-      'price': r'$$$$',
-      'distance': '2.8 km',
-      'time': '40–50 min',
-      'badge': '',
-      'badge2': '',
-      'description':
-          'Premium dry-aged steaks and an extensive wine cellar. Experience elevated American classics.',
-      'image':
-          'https://images.unsplash.com/photo-1544025162-d76694265947?w=1200',
-    },
-    {
-      'name': 'Sakura Zen Sushi',
-      'rating': 4.9,
-      'reviews': '950',
-      'price': r'$$$',
-      'distance': '3.1 km',
-      'time': '30–45 min',
-      'badge': 'NEW FAVORITE',
-      'badge2': '',
-      'description':
-          'Masterfully crafted omakase experience with fish flown in daily from Tsukiji Market.',
-      'image':
-          'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200',
-    },
-  ];
+  Future<List<Restaurant>>  getRestaurants() async {
+    var restaurantes1 = Restaurant.todosRestaurantes();
+    restaurants = [];
+    for (Restaurant restaurante in await restaurantes1) {
+      restaurants.add(restaurante.toMap());
+    }
+    return restaurantes1;
+  }
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<List<Restaurant>>(
+    future: getRestaurants(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      if (snapshot.hasError) {
+        return const Center(child: Text("Error al cargar restaurantes"));
+      }
+
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: NotificationListener<OverscrollIndicatorNotification>(
@@ -221,6 +198,7 @@ class _RestaurantFeed extends State<RestaurantFeed> {
       )]),
       ),
     );
+  });
   }
 
   
