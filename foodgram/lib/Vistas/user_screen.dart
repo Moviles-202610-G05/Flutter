@@ -3,6 +3,9 @@ import 'nutrition_goals_screen.dart';
 import 'package:foodgram/Vistas/info_user_screen.dart';
 import 'package:foodgram/Vistas/post_privacity_screen.dart';
 import 'package:foodgram/Vistas/Login_screen.dart';
+import 'package:foodgram/Vistas/orders_user_screen.dart';
+import 'package:foodgram/Vistas/reviews_user_screen.dart';
+import 'package:foodgram/Vistas/saved_user_screen.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -37,15 +40,29 @@ class _UserScreenState extends State<UserScreen> {
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            Icon(Icons.restaurant_menu, color: Colors.orange[800]),
-            const SizedBox(width: 8),
-            const Text('FoodGram',
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-          ],
+        elevation: 0.5,
+        automaticallyImplyLeading: false,
+        leadingWidth: 173,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: Row(
+            children: const [
+              Icon(Icons.restaurant_menu, color: Color(0xFFFF6347), size: 28),
+              SizedBox(width: 4),
+              Text(
+                'FoodGram',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFF6347),
+                ),
+              ),
+            ],
+          ),
         ),
+        title: null,
+        titleSpacing: 0,
       ),
       body: NotificationListener<OverscrollIndicatorNotification>(
         onNotification: (overScroll) {
@@ -109,11 +126,35 @@ class _UserScreenState extends State<UserScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildStatCard("42", "ORDERS"),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const OrdersUserScreen()),
+                        ),
+                        child: _buildStatCard("42", "ORDERS"),
+                      ),
+                    ),
                     _buildDivider(),
-                    _buildStatCard("15", "REVIEWS"),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ReviewsUserScreen()),
+                        ),
+                        child: _buildStatCard("15", "REVIEWS"),
+                      ),
+                    ),
                     _buildDivider(),
-                    _buildStatCard("88", "SAVED"),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SavedUserScreen()),
+                        ),
+                        child: _buildStatCard("88", "SAVED"),
+                      ),
+                    ),
                   ],
                 ),
               ),
