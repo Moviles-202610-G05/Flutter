@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/Login_screen.dart' show LoginScreen;
+import 'package:foodgram/Vistas/tracker_user_screen.dart' show TrackerScreen;
 import 'package:foodgram/firebase_options.dart';
 
 Future<void> main() async {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: const LoginScreen(),
+      home: const TrackerScreen(),
     );
   }
 
