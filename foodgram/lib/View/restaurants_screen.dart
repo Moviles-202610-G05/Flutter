@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/Restaurant.dart';
-import 'package:foodgram/Vistas/pagesInsideStudent.dart' show Pages, PagesState;
-import 'package:foodgram/Vistas/restaurant_detalle_screen.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart' show Pages, PagesState;
+import 'package:foodgram/View/restaurant_detalle_screen.dart';
 
 class RestaurantFeed extends StatefulWidget {
   const RestaurantFeed({super.key});

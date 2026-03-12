@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/widgets/widgets.dart';
+import 'package:foodgram/View/widgets/widgets.dart';
 
 class StudentSignUpScreen extends StatefulWidget {
   const StudentSignUpScreen({Key? key}) : super(key: key);

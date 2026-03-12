@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/pagesInsideStudent.dart';
-import 'package:foodgram/Vistas/write_review_screen.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart';
+import 'package:foodgram/View/write_review_screen.dart';
 
 
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/pagesInsideStudent.dart';
-import 'package:foodgram/Vistas/preregister_screen.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart';
+import 'package:foodgram/View/preregister_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 

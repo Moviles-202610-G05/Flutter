@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/feed_screen.dart';
-import 'package:foodgram/Vistas/restaurant_detalle_screen.dart';
-import 'package:foodgram/Vistas/restaurants_screen.dart';
+import 'package:foodgram/View/feed_screen.dart';
+import 'package:foodgram/View/restaurant_detalle_screen.dart';
+import 'package:foodgram/View/restaurants_screen.dart';
 
 class Pages extends StatefulWidget {
   const Pages({Key? key}) : super(key: key);

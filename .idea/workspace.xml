@@ -8,7 +8,7 @@
       <change beforePath="$PROJECT_DIR$/foodgram/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/android/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/Vistas/restaurants_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Vistas/restaurants_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/restaurants_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/restaurants_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugins.cmake" afterDir="false" />

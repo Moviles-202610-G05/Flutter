@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/Login_screen.dart' show LoginScreen;
+import 'package:foodgram/View/Login_screen.dart' show LoginScreen;
 import 'package:foodgram/firebase_options.dart';
 
 Future<void> main() async {
