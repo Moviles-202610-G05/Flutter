@@ -5,13 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5df29327-2628-4acd-9121-d1f05cf5c538" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/android/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/app/google-services.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/BaseDeDatos/restaurantes.js" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/BaseDeDatos/restaurantes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/lib/Model/Restaurant.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Model/Restaurant.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/lib/Vistas/restaurants_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Vistas/restaurants_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugins.cmake" afterDir="false" />

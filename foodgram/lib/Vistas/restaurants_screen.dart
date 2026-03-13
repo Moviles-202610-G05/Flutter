@@ -352,7 +352,7 @@ class RestaurantCard extends StatelessWidget {
                   child: RatingPill(
                     rating: data['rating'] as double,
                     primary: primary,
-                    reviews: data['reviews'] as String,
+                    reviews: data['numberReviews'] as String,
                   ),
                 ),
                 Positioned(

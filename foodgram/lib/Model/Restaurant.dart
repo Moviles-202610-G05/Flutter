@@ -5,7 +5,7 @@ import 'menu.dart';
 
 class Restaurant {
   final String restaurantName;
-  final String Image;
+  final String image;
   final double rating;
   final String price;
   final String cuisine;
@@ -15,11 +15,15 @@ class Restaurant {
   final String distance;
   final double long;
   final double lat;
+  final String badge;
+  final String badge2;
+  final int numberReviews;
+  final String description;
 
 
   Restaurant({
     required this.restaurantName,
-    required this.Image,
+    required this.image,
     required this.rating,
     required this.price,
     required this.cuisine,
@@ -29,6 +33,10 @@ class Restaurant {
     required this.distance,
     required this.long,
     required this.lat, 
+    required this.badge, 
+    required this.badge2,
+    required this.numberReviews, 
+    required this.description
 
   });
 
@@ -36,7 +44,7 @@ class Restaurant {
     print("-----REVICION-----11");
     return Restaurant(
       restaurantName: map['restaurantName'] ?? '',
-      Image: map['restaurantImage'] ?? '',
+      image: map['restaurantImage'] ?? '',
       rating: (map['rating'] ?? 0).toDouble(),
       price: map['price'] ?? '',
       cuisine: map['cuisine'] ?? '',
@@ -50,6 +58,11 @@ class Restaurant {
       distance: map['distance'] ?? '',
       long: (map['long'] ?? 0).toDouble(),
       lat: (map['lat'] ?? 0).toDouble(),
+      numberReviews: map['reviews'].length,
+      badge: map['badge'] ?? '', 
+      badge2: map['badge2'] ?? '',
+      description: map['description'] ?? '',
+    
     );
   }
 
@@ -57,8 +70,8 @@ class Restaurant {
 
   Map<String, dynamic> toMap() {
     return {
-      'restaurantName': restaurantName,
-      'image': Image,
+      'name': restaurantName,
+      'image': image,
       'rating': rating,
       'price': price,
       'cuisine': cuisine,
@@ -68,6 +81,11 @@ class Restaurant {
       'distance': distance,
       'long': long,
       'lat': lat,
+      'badge': badge,
+      'badge2': badge2,
+      'numberReviews': numberReviews.toString(),
+      'description': description
+
     };
   }
 

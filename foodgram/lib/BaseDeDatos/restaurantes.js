@@ -21,6 +21,7 @@ async function seedRestaurants() {
     "lat": 4.60971,
     'badge': 'TOP RATED',
     'badge2': 'FREE DELIVERY',
+    "description": 'Authentic wood-fired pizzas, handmade tagliatelle, and traditional tiramisu in an intimat…',
     "reviews": [
       {
         "name": "Carlos",
@@ -58,6 +59,7 @@ async function seedRestaurants() {
     "lat": 4.61000,
     'badge': 'TOP RATED',
     'badge2': '',
+    "description": 'Authentic wood-fired pizzas, handmade tagliatelle, and traditional tiramisu in an intimat…',
     "reviews": [
       {
         "name": "Ana",
@@ -95,6 +97,7 @@ async function seedRestaurants() {
     "lat": 4.612,
     'badge': 'GOOD',
     'badge2': '',
+    "description": 'Authentic wood-fired pizzas, handmade tagliatelle, and traditional tiramisu in an intimat…',
     "reviews": [
       {
         "name": "Miguel",
