@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5df29327-2628-4acd-9121-d1f05cf5c538" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/foodgram/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/android/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/Vistas/restaurants_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Vistas/restaurants_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugins.cmake" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 7
+}]]></component>
+  <component name="ProjectId" id="3AQ3nWiF91tfXqqcrisgiZy5FXK" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "Base-de-datos"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5df29327-2628-4acd-9121-d1f05cf5c538" name="Changes" comment="" />
+      <created>1772511137050</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1772511137050</updated>
+    </task>
+    <servers />
+  </component>
+</project>

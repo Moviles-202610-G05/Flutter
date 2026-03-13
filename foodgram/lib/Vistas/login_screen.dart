@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Vistas/pagesInsideStudent.dart';
 import 'package:foodgram/Vistas/preregister_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,6 +12,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -20,6 +23,35 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
     super.dispose();
   }
+  Future<void> login() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login exitoso")),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Pages()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message;
+      if (e.code == 'user-not-found') {
+        message = "No existe un usuario con ese correo.";
+      } else if (e.code == 'wrong-password') {
+        message = "Contraseña incorrecta.";
+      } else {
+        message = "Error: ${e.message}";
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -149,12 +181,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                     Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Pages()),
-                        );
-                  },
+                  onPressed: login,
+                
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFF6933),
                     shape: RoundedRectangleBorder(
