@@ -200,7 +200,7 @@ class _PostPrivacityScreenState extends State<PostPrivacityScreen> {
       ],
     );
   }
-
+// funciona
   Widget _buildRadioItem({
     required IconData icon,
     required String label,
