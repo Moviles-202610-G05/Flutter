@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'nutrition_goals_screen.dart';
+import 'package:foodgram/Vistas/info_user_screen.dart';
+import 'package:foodgram/Vistas/post_privacity_screen.dart';
+import 'package:foodgram/Vistas/Login_screen.dart';
+import 'package:foodgram/Vistas/orders_user_screen.dart';
+import 'package:foodgram/Vistas/reviews_user_screen.dart';
+import 'package:foodgram/Vistas/saved_user_screen.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -9,17 +15,24 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
-  // Metas del usuario iniciales 
+
+  // Metas del usuario
   double _caloriesGoal = 2000;
   double _proteinGoal  = 150;
   double _carbsGoal    = 200;
   double _fatGoal      = 67;
 
-  // Lo que el usuario ha consumido en el presente 
+  // Consumido hoy
   double _caloriesConsumed = 1200;
   double _proteinConsumed  = 80;
   double _carbsConsumed    = 140;
-  double _fatConsumed      = 35;
+  double _fatConsumed      = 35;    
+
+  // Datos de perfil
+  String _name     = 'Alex Johnson';
+  String _username = '@alex_j';
+  String _email    = 'alex.j@email.com';
+  String _location = 'London, UK';
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +40,29 @@ class _UserScreenState extends State<UserScreen> {
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            Icon(Icons.restaurant_menu, color: Colors.orange[800]),
-            const SizedBox(width: 8),
-            const Text('FoodGram',
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-          ],
+        elevation: 0.5,
+        automaticallyImplyLeading: false,
+        leadingWidth: 173,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: Row(
+            children: const [
+              Icon(Icons.restaurant_menu, color: Color(0xFFFF6347), size: 28),
+              SizedBox(width: 4),
+              Text(
+                'FoodGram',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFF6347),
+                ),
+              ),
+            ],
+          ),
         ),
+        title: null,
+        titleSpacing: 0,
       ),
       body: NotificationListener<OverscrollIndicatorNotification>(
         onNotification: (overScroll) {
@@ -46,45 +73,95 @@ class _UserScreenState extends State<UserScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 28),
 
-              //  Perfil
-              const CircleAvatar(
-                radius: 60,
-                backgroundColor: Color(0xFFFF6347),
-                child: CircleAvatar(
-                  radius: 56,
-                  backgroundColor: Color.fromARGB(255, 255, 255, 255),
-                  child: Icon(Icons.person, size: 60, color: Colors.white),
+              // --- FOTO DE PERFIL ---
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFFFF6347), width: 3),
+                ),
+                child: const CircleAvatar(
+                  radius: 57,
+                  backgroundColor: Color(0xFFF0F0F0),
+                  child: Icon(Icons.person, size: 64, color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text('Alex Johnson',
-                  style: TextStyle(
+
+              const SizedBox(height: 14),
+
+              // Nombre y ubicación
+              Text(_name,
+                  style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF1A237E))),
-              const Row(
+              const SizedBox(height: 4),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
-                  Text(' London, UK', style: TextStyle(color: Colors.grey)),
+                  const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+                  Text(' $_location', style: const TextStyle(color: Colors.grey)),
                 ],
               ),
-              const SizedBox(height: 24),
 
-              // Estadisticas de restaurantes
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildStatCard("42", "ORDERS"),
-                  _buildStatCard("15", "REVIEWS"),
-                  _buildStatCard("88", "SAVED"),
-                ],
+              const SizedBox(height: 28),
+
+              // --- ESTADÍSTICAS ---
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 15,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const OrdersUserScreen()),
+                        ),
+                        child: _buildStatCard("42", "ORDERS"),
+                      ),
+                    ),
+                    _buildDivider(),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ReviewsUserScreen()),
+                        ),
+                        child: _buildStatCard("15", "REVIEWS"),
+                      ),
+                    ),
+                    _buildDivider(),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SavedUserScreen()),
+                        ),
+                        child: _buildStatCard("88", "SAVED"),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+
               const SizedBox(height: 32),
 
-              // Nutrition goals
+              // --- NUTRITION GOALS ---
               _buildSectionHeader(
                 "Nutrition Goals",
                 "Details",
@@ -114,25 +191,57 @@ class _UserScreenState extends State<UserScreen> {
               _buildNutritionCard(),
               const SizedBox(height: 32),
 
-              // Account settings
+              // --- ACCOUNT SETTINGS ---
               _buildSectionHeader("Account Settings", ""),
               const SizedBox(height: 12),
-              _buildSettingsItem(Icons.person_outline, "Personal Information", null,
-                  const Color(0xFFFF6347).withOpacity(0.1)),
-              _buildSettingsItem(Icons.lock_outline, "Post & Privacy Settings",
-                  "Configure social publications",
-                  const Color(0xFFFF6347).withOpacity(0.1)),
+              _buildSettingsItem(
+                Icons.person_outline,
+                "Personal Information",
+                null,
+                const Color(0xFFFF6347).withOpacity(0.1),
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => InfoUserScreen(
+                        name:     _name,
+                        username: _username,
+                        email:    _email,
+                        location: _location,
+                      ),
+                    ),
+                  );
+                  if (result != null) {
+                    setState(() {
+                      _name     = result['name'];
+                      _username = result['username'];
+                      _email    = result['email'];
+                      _location = result['location'];
+                    });
+                  }
+                },
+              ),
+              _buildSettingsItem(
+                Icons.lock_outline,
+                "Post & Privacy Settings",
+                "Configure social publications",
+                const Color(0xFFFF6347).withOpacity(0.1),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PostPrivacityScreen()),
+                ),
+              ),
               const SizedBox(height: 24),
 
-              // Logout
+              // --- LOGOUT ---
               OutlinedButton(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  side: BorderSide(color: Colors.grey.shade300, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25)),
-                ),
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (route) => false,
+                  );
+                },
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -150,44 +259,37 @@ class _UserScreenState extends State<UserScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  // WIDGETS
+  // ── WIDGETS ──────────────────────────────────────────────────────────────────
 
   Widget _buildStatCard(String value, String label) {
     return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 15,
-                offset: const Offset(0, 4))
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(value,
-                style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFF6347))),
-            const SizedBox(height: 4),
-            Text(label,
-                style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.blueGrey,
-                    fontWeight: FontWeight.w600)),
-          ],
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFF6347))),
+          const SizedBox(height: 4),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 11,
+                  color: Colors.blueGrey,
+                  fontWeight: FontWeight.w600)),
+        ],
       ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Container(
+      width: 1,
+      height: 36,
+      color: Colors.grey.shade200,
     );
   }
 
@@ -197,8 +299,7 @@ class _UserScreenState extends State<UserScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title,
-            style:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         GestureDetector(
           onTap: onAction,
           child: Text(action,
@@ -326,41 +427,25 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   Widget _buildSettingsItem(
-      IconData icon, String title, String? subtitle, Color bgColor) {
+      IconData icon, String title, String? subtitle, Color bgColor,
+      {VoidCallback? onTap}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(15)),
       child: ListTile(
+        onTap: onTap,
         leading: CircleAvatar(
             backgroundColor: bgColor,
             child: Icon(icon, color: const Color(0xFFFF6347))),
-        title:
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(title,
+            style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: subtitle != null
             ? Text(subtitle,
                 style: const TextStyle(fontSize: 12, color: Colors.grey))
             : null,
         trailing: const Icon(Icons.chevron_right, color: Colors.grey),
       ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: const Color(0xFFFF6347),
-      unselectedItemColor: Colors.grey,
-      currentIndex: 2,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.feed), label: "FEED"),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "SEARCH"),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "PROFILE"),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart), label: "TRACKER"),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.map_outlined), label: "MAP"),
-      ],
     );
   }
 }
