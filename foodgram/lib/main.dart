@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:foodgram/View/Prueba.dart';
+import 'package:foodgram/View/restaurants_screen.dart';
 import 'package:foodgram/View/tracker_user_screen.dart' show TrackerScreen;
 import 'package:foodgram/firebase_options.dart';
 
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: const TrackerScreen(),
+      home: RestaurantFeed(),
     );
   }
 

@@ -1,17 +1,18 @@
-import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Presenter/Restaurant_Presenter.dart';
-import 'package:foodgram/View/pagesInsideStudent.dart' show Pages, PagesState;
-import 'package:foodgram/View/restaurant_detalle_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/widgets/restaurants.dart';
 
-class RestaurantFeed extends StatefulWidget {
+class RestaurantPage extends StatefulWidget {
   @override
-  _RestaurantFeed createState() => _RestaurantFeed();
+  _RestaurantPageState createState() => _RestaurantPageState();
 }
 
-class _RestaurantFeed extends State<RestaurantFeed> 
+
+
+class _RestaurantPageState extends State<RestaurantPage>
   implements RestaurantView {
   late RestaurantPresenter presenter;
   List<Restaurant> restaurantes = [];
