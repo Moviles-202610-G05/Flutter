@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:foodgram/Model/RestaurantEntity.dart';
+import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/View/regiter_restaurant2_screen.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,6 +26,51 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
   final _addressController = TextEditingController();
   final _usernameController = TextEditingController();
   final _paswordController = TextEditingController();
+  final _spotsController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  String? _selectedBiginning;
+  String? _selectedEnd;
+  final List<String> _time = [
+    "00:00","00:30",
+    "01:00","01:30",
+    "02:00","02:30",
+    "03:00","03:30",
+    "04:00","04:30",
+    "05:00","05:30",
+    "06:00","06:30",
+    "07:00","07:30",
+    "08:00","08:30",
+    "09:00","09:30",
+    "10:00","10:30",
+    "11:00","11:30",
+    "12:00","12:30",
+    "13:00","13:30",
+    "14:00","14:30",
+    "15:00","15:30",
+    "16:00","16:30",
+    "17:00","17:30",
+    "18:00","18:30",
+    "19:00","19:30",
+    "20:00","20:30",
+    "21:00","21:30",
+    "22:00","22:30",
+    "23:00","23:30"
+  ];
+
+  String? _selectedPrice;
+final List<String> _prices = [
+    'less 10k',
+    'between 10k and 25k',
+    'between 25k and 50k',
+    'more 40k'
+  ];
+final  Map<String, String> _prices2 = {
+  'less 10k': "\$",
+    'between 10k and 25k': "\$\$",
+    'between 25k and 50k': "\$\$\$",
+    'more 40k': "\$\$\$\$"
+};
+
   
   String? _selectedCuisine;
   final List<String> _cuisineTypes = [
@@ -46,6 +93,8 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
     _addressController.dispose();
     _usernameController.dispose();
     _paswordController.dispose();
+    _spotsController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -177,6 +226,8 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
                           }
 
                         }, ),
+
+                 
                  
                   const SizedBox(height: 32),
 
@@ -256,7 +307,107 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
                       });
                     },
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                               CustomWidgets.buildTextField (controller: _spotsController, keyboardType: TextInputType.number,label: "Spots in the restaurant", icon: Icons.lock,  ocultar: true ,validator: (value) {
+                           if (value == null || value.isEmpty) {
+                            return 'Please enter a number of spots';
+                            }
+
+                          },)
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                             CustomWidgets.buildDropdownField(label: "Carrier", value: _selectedPrice, items: _prices, icon: Icons.attach_money, onChanged: (value) {
+                             setState(() {
+                                  _selectedPrice = value;
+                                });
+                              },)
+            
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                           CustomWidgets.buildDropdownField(label: "Carrier", value: _selectedBiginning, items: _time, icon: Icons.access_time, onChanged: (value) {
+                             setState(() {
+                                  _selectedBiginning = value;
+                                });
+                              },)
+            
+    
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                             CustomWidgets.buildDropdownField(label: "Carrier", value: _selectedEnd, items: _time, icon: Icons.access_time, onChanged: (value) {
+                             setState(() {
+                                  _selectedEnd = value;
+                                });
+                              },)
+            
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  const Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _descriptionController,
+                        maxLines: 4,
+                        decoration: InputDecoration(
+                          hintText:
+                              'Describe the ingredients, taste, and preparation method...',
+                          filled: true,
+                          fillColor: Colors.grey[100],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                  const SizedBox(height: 24),
+                  
 
                   // --- RESTAURANT PHOTO SECTION ---
                   const Text(
@@ -384,11 +535,34 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
+                         
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          var _pricer = _prices2[_selectedPrice] ?? "\$" ;
+                          var _Biginig = _selectedBiginning ?? "00:00";
+                          var _End = _selectedEnd ?? "00:00";
+                          var _time = _Biginig + " - " + _End;
+                          var restaurante = Restaurant(name: _restaurantNameController.text, 
+                          image: '', 
+                          rating: 5, 
+                          price: _pricer, 
+                          cuisine: _selectedCuisine ?? "", 
+                          time: _time, 
+                          distance: '2 km', 
+                          long: 0, 
+                          lat: 0, 
+                          badge: '', 
+                          badge2: '', 
+                          numberReviews: 0, 
+                          description: _descriptionController.text, 
+                          direction: _addressController.text, 
+                          spots: int.tryParse(_spotsController.text) ?? 0, 
+                          spotsA: int.tryParse(_spotsController.text) ?? 0, 
+                          imagenFiel: _imagenSeleccionada);
+                          var user = Usuario(universityId: '', name: _ownerNameController.text, email: _emailController.text, carrier: _restaurantNameController.text, password: _paswordController.text, preferences: [], username: _usernameController.text);
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const RestaurantRegisterScreen2()),
+                            MaterialPageRoute(builder: (context) => RestaurantRegisterScreen2(restaurante: restaurante, user: user,)),
                           );
                         }
                       },

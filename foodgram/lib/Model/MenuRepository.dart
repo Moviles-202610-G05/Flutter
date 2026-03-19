@@ -9,6 +9,13 @@ class MenuRepository {
     return snapshot.docs.map((doc) => Menu.fromMap(doc.data())).toList();
   }
 
+  Future<void> crearPlatos(List<Menu> platos) async {
+  final collection = FirebaseFirestore.instance.collection('menu');
+
+  for (final plato in platos) {
+    await collection.add(plato.toMap());
+  }
+}
 
 
 }

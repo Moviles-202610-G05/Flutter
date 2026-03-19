@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
+import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart' show Pages, PagesState;
 import 'package:foodgram/View/restaurant_detalle_screen.dart';
@@ -38,7 +39,7 @@ class _RestaurantFeed extends State<RestaurantFeed>
   @override
   void initState() {
     super.initState();
-    presenter = RestaurantPresenter(RestaurantRepository(), this);
+    presenter = RestaurantPresenter(RestaurantRepository(), UserRepository() ,this);
     presenter.cargarRestaurantes();
   }
 

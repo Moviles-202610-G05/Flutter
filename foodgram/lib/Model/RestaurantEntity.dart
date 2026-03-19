@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodgram/Model/ReviewsEntity.dart';
 
@@ -19,6 +21,7 @@ class Restaurant{
   final String direction;
   final int spots;
   final int spotsA;
+  File? imagenFiel;
 
 
   Restaurant({
@@ -38,6 +41,7 @@ class Restaurant{
     required this.direction,
     required this.spots,
     required this.spotsA,
+    this.imagenFiel,
 
   });
   

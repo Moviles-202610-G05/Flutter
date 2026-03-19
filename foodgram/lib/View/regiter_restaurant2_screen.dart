@@ -1,23 +1,48 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:foodgram/Model/MenuEntity.dart';
+import 'package:foodgram/Model/MenuRepository.dart';
+import 'package:foodgram/Model/RestaurantEntity.dart';
+import 'package:foodgram/Model/RestaurantRepository.dart';
+import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Presenter/MenuPresenter.dart';
+import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RestaurantRegisterScreen2 extends StatefulWidget {
-  const RestaurantRegisterScreen2({super.key});
+  final Restaurant restaurante;
+  final Usuario user; 
+  const RestaurantRegisterScreen2({  required this.restaurante ,super.key, required this.user});
 
   @override
   State<RestaurantRegisterScreen2> createState() => _RestaurantRegisterScreen2State();
 }
 
-class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> {
+class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> implements RestaurantView, MenuView{
   final _formKey = GlobalKey<FormState>();
   File? _imagenSeleccionada;
-  
   final _dishNameController = TextEditingController();
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
+  late MenuPresenter presenterMenu;
+  late RestaurantPresenter presenterRestaurant;
+  
+  @override
+  void mostrarError(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje)),
+    );
+  }
+
+  @override
+  void mostrarExito(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje)),
+    );
+  }
   
   String? _selectedCategory = 'Main Course';
   bool _isInStock = true;
@@ -31,13 +56,15 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> {
     'Salad',
   ];
 
-  List<Map<String, String>> menuItems = [
-    {
-      'name': 'Pepperoni Feast',
-      'price': '14.99',
-      'category': 'Main Course',
-    }
+  List<Menu> menuItems = [
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    presenterMenu = MenuPresenter( MenuRepository() ,this );
+    presenterRestaurant = RestaurantPresenter(RestaurantRepository(), UserRepository(), this);
+  }
 
   @override
   void dispose() {
@@ -50,11 +77,16 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> {
   void _addDishToMenu() {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        menuItems.add({
-          'name': _dishNameController.text,
-          'price': _priceController.text,
-          'category': _selectedCategory ?? 'Main Course',
-        });
+        menuItems.add(Menu(
+          name: _dishNameController.text,
+          price: _priceController.text,
+          description: '', 
+          image: '', 
+          restaurant: widget.restaurante.name, 
+          imagenFiel: _imagenSeleccionada, 
+          category: _selectedCategory ?? 'Main Course',
+          
+      ));
       });
       _dishNameController.clear();
       _priceController.clear();
@@ -369,7 +401,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: _addDishToMenu,
+                          onPressed: _addDishToMenu ,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFF6933),
                             shape: RoundedRectangleBorder(
@@ -419,14 +451,14 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      item['name'] ?? '',
+                                      item.name,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
                                       ),
                                     ),
                                     Text(
-                                      '\$${item['price']} • ${item['category']}',
+                                      '\$${item.price} • ${item.category}',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey[600],
@@ -465,11 +497,9 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> {
           height: 56,
           child: ElevatedButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Registration completed!'),
-                ),
-              );
+              presenterMenu.crearPlatos(menuItems);
+              presenterRestaurant.agregarRestaurante(widget.restaurante, widget.user);
+              
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFFF6933),
@@ -508,5 +538,15 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> {
 
   }
 }
+
+  @override
+  void mostrarPlatos(List<Menu> platos) {
+    // TODO: implement mostrarPlatos
+  }
+
+  @override
+  void mostrarRestaurantes(List<Restaurant> restaurantes) {
+    // TODO: implement mostrarRestaurantes
+  }
   
 }

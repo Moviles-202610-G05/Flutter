@@ -5,7 +5,7 @@ import 'package:foodgram/Model/UserEntity.dart';
 
 class UserRepository {
 
-  Future<void> crearUser(Ususario usuario) async {
+  Future<void> crearUser(Usuario usuario) async {
     await FirebaseFirestore.instance.collection('user').add(usuario.toMap());
   }
 
@@ -19,6 +19,7 @@ class UserRepository {
   return snapshot.docs.isEmpty; // true si no existe
   
 }
+
 
 
 }

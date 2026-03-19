@@ -1,4 +1,4 @@
-class Ususario {
+class Usuario {
   final String universityId;
   final String name;
   final String email;
@@ -8,7 +8,7 @@ class Ususario {
   final List<String> preferences;
   final  String username;
 
-  Ususario({
+  Usuario({
     required this.universityId,
     required this.name,
     required this.email,
@@ -34,8 +34,8 @@ class Ususario {
   }
 
   // Crea un objeto User desde un Map (ej. al leer de Firebase)
-  factory Ususario.fromMap(Map<String, dynamic> map) {
-    return Ususario(
+  factory Usuario.fromMap(Map<String, dynamic> map) {
+    return Usuario(
       universityId: map['universityId'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',

@@ -6,7 +6,7 @@ import 'package:foodgram/Model/UserRepository.dart';
 
 /// La vista define qué debe mostrar la UI
 abstract class UserView {
-  void mostrarUsuarios(List<Ususario> usuarios);
+  void mostrarUsuarios(List<Usuario> usuarios);
   void mostrarError(String mensaje);
   void mostrarExito(String mensaje);
 }
@@ -20,7 +20,7 @@ class UserPresenter {
 
 
   /// Crear un nuevo usuario con unicidad de correo y username
-  Future<void> crearEstudiante(Ususario usuario) async {
+  Future<void> crearEstudiante(Usuario usuario) async {
     try {
       // 1. Validar unicidad de username
       bool disponible = await repository.isUsernameAvailable(usuario.username);

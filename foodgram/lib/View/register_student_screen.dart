@@ -75,7 +75,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
 
   }
   @override
-  void mostrarUsuarios(List<Ususario> usuarios) {
+  void mostrarUsuarios(List<Usuario> usuarios) {
     // implementación
   }
 
@@ -319,7 +319,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
                         );
 
                         
-                          presenter.crearEstudiante(Ususario(
+                          presenter.crearEstudiante(Usuario(
                           universityId: _universityCodeController.text,
                           name: _fullNameController.text,
                           email: _emailController.text,
