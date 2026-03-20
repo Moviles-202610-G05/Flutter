@@ -6,7 +6,7 @@ class Menu {
   final String name;
   final String price;
   final String description;
-  final String image;
+  String image;
   final String restaurant;
   File? imagenFiel;
   final String category;
@@ -42,5 +42,9 @@ class Menu {
       restaurant: map['restaurant']?? '',
       category: map['category']?? '',
     );
+  }
+
+  Future<void> setImagen(Future<String> subirImagen) async {
+    this.image = await subirImagen;
   }
 }

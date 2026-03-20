@@ -3,6 +3,7 @@ import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Model/UtilitysFierbase.dart';
 
 abstract class RestaurantView {
   void mostrarRestaurantes(List<Restaurant> restaurantes);
@@ -25,7 +26,7 @@ class RestaurantPresenter {
       view.mostrarError("Error al cargar restaurantes: $e");
     }
   }
-
+  UtilitisFirebase utilitisFirebase = UtilitisFirebase();
   Future<void> agregarRestaurante(Restaurant restaurante, Usuario usuario) async {
     try {
       
@@ -40,7 +41,7 @@ class RestaurantPresenter {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: usuario.email, password: usuario.password, );
 
       
-
+      utilitisFirebase.subirImagen(restaurante.imagenFiel!);
       await repositoryUsuario.crearUser(usuario); 
       await repository.crearRestaurante(restaurante);
 

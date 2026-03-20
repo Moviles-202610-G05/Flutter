@@ -4,6 +4,7 @@ import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/MenuRepository.dart';
 import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Model/UtilitysFierbase.dart';
 
 abstract class MenuView {
   void mostrarPlatos(List<Menu> platos);
@@ -16,6 +17,8 @@ class MenuPresenter {
   final MenuView view;
 
   MenuPresenter(this.repository, this.view);
+
+  
 
   Future<void> crearPlatos(List<Menu> platos) async {
     try {
