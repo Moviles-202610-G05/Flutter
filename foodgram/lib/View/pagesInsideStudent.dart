@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/View/feed_screen.dart';
+import 'package:foodgram/View/mapa.dart';
 import 'package:foodgram/View/restaurant_detalle_screen.dart';
 import 'package:foodgram/View/restaurants_screen.dart';
 import 'package:foodgram/View/tracker_user_screen.dart';
@@ -81,6 +82,8 @@ Widget _getBody(int index, int index2, rest) {
         return UserScreen();
       case 3: 
         return TrackerScreen();
+      case 4: 
+        return RestaurantMapPage();
       default:
         return Container();
     }
