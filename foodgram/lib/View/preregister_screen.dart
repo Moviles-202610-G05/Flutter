@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/register_restaurant1_screen.dart';
-import 'package:foodgram/Vistas/register_student_screen.dart';
+import 'package:foodgram/View/register_restaurant1_screen.dart';
+import 'package:foodgram/View/register_student_screen.dart';
 
 class PreregisterScreen extends StatefulWidget {
   const PreregisterScreen({Key? key}) : super(key: key);

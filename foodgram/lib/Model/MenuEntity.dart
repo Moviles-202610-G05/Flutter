@@ -3,12 +3,14 @@ class Menu {
   final String price;
   final String description;
   final String image;
+  final String restaurant;
 
   Menu({
     required this.name,
     required this.price,
     required this.description,
     required this.image,
+    required this.restaurant,
   });
 
   // Convertir objeto a Map (para guardar en Firestore)
@@ -18,6 +20,7 @@ class Menu {
       'price': price,
       'description': description,
       'image': image,
+      'restaurant': restaurant,
     };
   }
 
@@ -28,6 +31,7 @@ class Menu {
       price: map['price'] ?? '',
       description: map['description'] ?? '',
       image: map['image'] ?? '',
+      restaurant: map['restaurant']?? '',
     );
   }
 }

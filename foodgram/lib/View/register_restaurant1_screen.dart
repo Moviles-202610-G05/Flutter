@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/regiter_restaurant2_screen.dart';
-import 'package:foodgram/Vistas/widgets/widgets.dart';
+import 'package:foodgram/View/regiter_restaurant2_screen.dart';
+import 'package:foodgram/View/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RestaurantRegisterScreen extends StatefulWidget {
@@ -23,6 +23,7 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
   final _usernameController = TextEditingController();
+  final _paswordController = TextEditingController();
   
   String? _selectedCuisine;
   final List<String> _cuisineTypes = [
@@ -44,6 +45,7 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
     _phoneController.dispose();
     _addressController.dispose();
     _usernameController.dispose();
+    _paswordController.dispose();
     super.dispose();
   }
 
@@ -153,7 +155,31 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
                       return null;
                     },
                   ),
+                  const SizedBox(height: 16),
+                  CustomWidgets.buildTextField(
+                    controller: _usernameController,
+                    label: 'Username',
+                    icon: Icons.alternate_email,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter username';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  CustomWidgets.buildTextField (controller: _paswordController, label: "Password", icon: Icons.lock,  ocultar: true ,validator: (value) {
+                           if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                            }
+                          else if (value.trim().length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+
+                        }, ),
+                 
                   const SizedBox(height: 32),
+
 
                   // --- RESTAURANT DETAILS SECTION ---
                   const Text(
@@ -217,19 +243,7 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
-                  CustomWidgets.buildTextField(
-                    controller: _usernameController,
-                    label: 'Username',
-                    icon: Icons.account_circle_outlined,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter username';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                   const SizedBox(height: 16),
                   // --- CUISINE TYPE DROPDOWN ---
                   CustomWidgets.buildDropdownField(
                     label: 'Cuisine Type',

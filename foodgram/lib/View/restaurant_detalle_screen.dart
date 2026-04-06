@@ -1,33 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/pagesInsideStudent.dart';
-import 'package:foodgram/Vistas/write_review_screen.dart';
+import 'package:foodgram/Model/MenuEntity.dart';
+import 'package:foodgram/Model/MenuRepository.dart';
+import 'package:foodgram/Model/RestaurantEntity.dart';
+import 'package:foodgram/Model/RestaurantRepository.dart';
+import 'package:foodgram/Model/ReviewsEntity.dart';
+import 'package:foodgram/Model/ReviwsRepository.dart';
+import 'package:foodgram/Presenter/RestaurantPresenter.dart';
+import 'package:foodgram/Presenter/RestauranteDetalle.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart';
+import 'package:foodgram/View/write_review_screen.dart';
 
 
 
 class RestaurantDetailScreen extends StatefulWidget {
-  final String restaurantName;
-  final String restaurantImage;
-  final double rating;
-  final String reviews;
-  final String price;
-  final String cuisine;
-  final String time;
-  final String distance;
-  final dynamic long;
-  final dynamic lat;
+  final String rest;
+
 
   const RestaurantDetailScreen({
     Key? key,
-    required this.restaurantName,
-    required this.restaurantImage,
-    required this.rating,
-    required this.reviews,
-    required this.price,
-    required this.cuisine,
-    required this.time,
-    required this.lat,
-    required this.long, 
-    required this.distance,
+    required this.rest,
   }) : super(key: key);
 
   @override
@@ -35,55 +26,46 @@ class RestaurantDetailScreen extends StatefulWidget {
 }
 
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
-  with SingleTickerProviderStateMixin {
+  with SingleTickerProviderStateMixin implements RestaurantDetaleView {
   static const Color primary = Color(0xFFFF6933);
   late TabController _tabController;
-  int availableSpots = 32;
-  int totalSpots = 50;
-
-  final List<Map<String, dynamic>> reviews = [
-    {
-      'name': 'Jane Doe',
-      'rating': 5,
-      'date': 'Dec 15',
-      'comment':
-          '"Amazing appetizers! The Truffle Risotto is a treat. The staff was incredibly attentive and the wine selection is top-notch."',
-      'avatar': 'JD',
-      'avatarColor': Color(0xFFFF6933),
-    },
-    {
-      'name': 'Mark Knight',
-      'rating': 4,
-      'date': 'Dec 8',
-      'comment':
-          '"The scallops were cooked to perfection. A bit pricey but definitely worth it for a special occasion."',
-      'avatar': 'MK',
-      'avatarColor': Color(0xFF4CAF50),
-    },
-  ];
-
-  final List<Map<String, dynamic>> dishes = [
-    {
-      'name': 'Truffle Risotto',
-      'price': 24,
-      'description': 'Creamy Arborio rice cooked in black truffle essence',
-      'image':
-          'https://i.pinimg.com/736x/c2/b9/a9/c2b9a95f223fedf868415e56d69f7f09.jpg',
-    },
-    {
-      'name': 'Pan-Seared Scallops',
-      'price': 32,
-      'description': 'Six jumbo scallops with citrus butter and micro greens',
-      'image':
-          'https://i.pinimg.com/736x/c2/b9/a9/c2b9a95f223fedf868415e56d69f7f09.jpg',
-    },
-  ];
+  late RestaurantDetalePresenter presenter;
+  List<Reviews> reviews = [];
+  List<Menu> dishes = [];
+  Restaurant restaurants = Restaurant(name: "", image: "", rating: 0, price: "", cuisine: "", time: "", distance: "", long: 0, lat: 0, badge: "", badge2: "", numberReviews: 0, description: "", direction: "", spots: 0, spotsA: 0);
+  
+  bool lodedReviews = false;
+  
+  bool lodedMenu = false;
+  
+  bool lodedRestaurants = false;
 
   @override
-  void initState() {
+  void mostrarError(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje)),
+    );
+  }
+
+  @override
+  void mostrarExito(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje)),
+    );
+  }
+
+
+ initState()  {
     super.initState();
+    presenter =  RestaurantDetalePresenter(RestaurantRepository(), MenuRepository(), ReviwsRepository(), this);
+    presenter.mostrarDetalle(widget.rest);
     _tabController = TabController(length: 3, vsync: this);
   }
+
+
+
+
+
 
   @override
   void dispose() {
@@ -93,7 +75,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if (lodedReviews && lodedMenu && lodedRestaurants ){
+      return Scaffold(
       backgroundColor: Colors.white,
       body: NotificationListener<OverscrollIndicatorNotification>(
         onNotification: (overScroll) {
@@ -120,6 +103,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         ),
       ),
     );
+    }
+    else {
+      return const Center(child: CircularProgressIndicator());
+    }
   }
 
   Widget _buildAppBar() {
@@ -155,7 +142,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
           fit: StackFit.expand,
           children: [
             Image.network(
-              widget.restaurantImage,
+              restaurants.image,
               fit: BoxFit.cover,
             ),
             Positioned(
@@ -165,7 +152,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.restaurantName,
+                    restaurants.name,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -215,7 +202,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '• ${widget.price}',
+                      '• ${restaurants.price}',
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -224,7 +211,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '• ${widget.cuisine}',
+                      '• ${restaurants.cuisine}',
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -238,7 +225,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
               const Icon(Icons.star, color: primary, size: 16),
               const SizedBox(width: 4),
               Text(
-                '${widget.rating}',
+                '${restaurants.rating}',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -252,7 +239,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
               Icon(Icons.schedule, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 4),
               Text(
-                '${widget.time} • ${widget.distance}',
+                '${restaurants.time} • ${restaurants.distance}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[600],
@@ -311,7 +298,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '$availableSpots',
+                      '${restaurants.spotsA}',
                       style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
@@ -335,7 +322,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Total: $totalSpots spots',
+                  'Total: ${restaurants.spots} spots',
                   style: TextStyle(
                     fontSize: 11,
                     color: Colors.grey[600],
@@ -350,7 +337,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: LinearProgressIndicator(
-            value: availableSpots / totalSpots,
+            value: restaurants.spotsA / restaurants.spots,
             backgroundColor: Colors.grey[200],
             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
             minHeight: 8,
@@ -411,7 +398,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
   Widget _buildSignatureDishes() {
     return ListView(
       padding: const EdgeInsets.all(16),
-      physics: const NeverScrollableScrollPhysics(),
       children: [Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -434,8 +420,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     final String apiKey = "AIzaSyAE3EJISlN6vJF1vWEIVAB0ke62y80R0x4"; // Reemplaza con tu clave de Google Maps
     final String url =
       "https://maps.googleapis.com/maps/api/staticmap?"
-      "center=${widget.lat},${widget.long}&zoom=14&size=600x400"
-      "&markers=color:red%7C${widget.lat},${widget.long}"
+      "center=${restaurants.long},${restaurants.lat}&zoom=14&size=600x400"
+      "&markers=color:red%7C${restaurants.long},${restaurants.lat}"
       "&key=$apiKey";
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -616,10 +602,39 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
       ),
     );
   }
-}
+  
+  @override
+  void mostrarMenu(List<Menu> menu) {
+    dishes = menu;
+    setState(() {
+      lodedMenu = true;
+    });
+
+  }
+  
+  @override
+  void mostrarReviews(List<Reviews> reviews ) {
+    this.reviews = reviews;
+    
+    setState(() {
+      lodedReviews = true;
+    });
+    
+  }
+  
+  @override
+  void mostrarRestaurantes(Restaurant restaurants) {
+    this.restaurants = restaurants; 
+    setState(() {
+      lodedRestaurants = true;
+    });
+   
+  }
+  }
+
 
 class _DishCard extends StatelessWidget {
-  final Map<String, dynamic> dish;
+  final Menu dish;
   final Color primary;
 
   const _DishCard({required this.dish, required this.primary});
@@ -634,7 +649,7 @@ class _DishCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              dish['image'],
+              dish.image, 
               width: 80,
               height: 80,
               fit: BoxFit.cover,
@@ -649,7 +664,7 @@ class _DishCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        dish['name'],
+                        dish.name,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -657,7 +672,7 @@ class _DishCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '\$${dish['price']}',
+                      '\$${dish.price}',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -668,7 +683,7 @@ class _DishCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  dish['description'],
+                  dish.description,
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],
@@ -685,9 +700,6 @@ class _DishCard extends StatelessWidget {
                     _IconButton(Icons.share_outlined, () {}),
                     const SizedBox(width: 12),
                     _IconButton(Icons.favorite_border, () {}),
-                    const Spacer(),
-                    _IconButton(Icons.add_circle_outline, () {},
-                        color: primary),
                   ],
                 ),
               ],
@@ -720,7 +732,7 @@ class _IconButton extends StatelessWidget {
 }
 
 class _ReviewCard extends StatelessWidget {
-  final Map<String, dynamic> review;
+  final Reviews review;
 
   const _ReviewCard({required this.review});
 
@@ -735,9 +747,9 @@ class _ReviewCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: review['avatarColor'],
+                backgroundColor: review.avatarColor,
                 child: Text(
-                  review['avatar'],
+                  review.avatar,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -751,14 +763,14 @@ class _ReviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      review['name'],
+                      review.name,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     Text(
-                      review['date'],
+                      review.date,
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.grey[600],
@@ -771,7 +783,7 @@ class _ReviewCard extends StatelessWidget {
                 children: List.generate(
                   5,
                   (index) => Icon(
-                    index < review['rating']
+                    index < review.rating
                         ? Icons.star
                         : Icons.star_border,
                     size: 14,
@@ -783,7 +795,7 @@ class _ReviewCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            review['comment'],
+            review.comment,
             style: TextStyle(
               fontSize: 13,
               color: Colors.grey[700],

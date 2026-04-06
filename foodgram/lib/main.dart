@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/tracker_user_screen.dart' show TrackerScreen;
+import 'package:foodgram/View/Notificaciones.dart';
+import 'package:foodgram/View/login_screen.dart';
+import 'package:foodgram/View/restaurants_screen.dart';
+import 'package:foodgram/View/tracker_user_screen.dart' show TrackerScreen;
 import 'package:foodgram/firebase_options.dart';
 
 Future<void> main() async {
@@ -8,7 +11,12 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await NotificationService.init();
+ 
   runApp(const MyApp());
+  await NotificationService.showSmartNotification();
+
+  
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: const TrackerScreen(),
+      home: LoginScreen(),
     );
   }
 

@@ -1,6 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/widgets/widgets.dart';
+import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Presenter/UsarioPresenter.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart';
+import 'package:foodgram/View/widgets/widgets.dart';
 
 class StudentSignUpScreen extends StatefulWidget {
   const StudentSignUpScreen({Key? key}) : super(key: key);
@@ -9,15 +13,28 @@ class StudentSignUpScreen extends StatefulWidget {
   State<StudentSignUpScreen> createState() => _StudentSignUpScreenState();
 }
 
-class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
+class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements UserView{
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _universityCodeController = TextEditingController();
   final _usernameController= TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _paswordController = TextEditingController();
+
+  
+  late UserPresenter presenter;
+
+  
   
   String? _selectedCarrier;
-  Set<String> _selectedPreferences = {};
+  List<String> _selectedPreferences = [];
+  
+  @override
+  void initState() {
+    super.initState();
+    presenter = UserPresenter(UserRepository(), this); // inicialización aquí
+  }
+
 
   final List<String> _foodPreferences = [
     'Vegan',
@@ -37,8 +54,32 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
     _fullNameController.dispose();
     _emailController.dispose();
     _universityCodeController.dispose();
+    _paswordController.dispose();
     super.dispose();
+
   }
+
+  @override
+  void mostrarError(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
+  }
+
+  @override
+  void mostrarExito(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Pages()),
+    );
+
+
+  }
+  @override
+  void mostrarUsuarios(List<Ususario> usuarios) {
+    // implementación
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +143,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   CustomWidgets.buildTextField (controller: _fullNameController, label: "Full Name", icon: Icons.account_circle_outlined, validator: (value) {
                           if (value?.isEmpty ?? true) {
                             return 'Please enter Name';
@@ -110,7 +151,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
                           return null;
                         }, ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   // University Email Field
                   CustomWidgets.buildTextField (controller: _emailController, label: "University Email", icon: Icons.mail_outline, validator: (value) {
                           if (value?.isEmpty ?? true) {
@@ -121,13 +162,24 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
                           }
 
                         }, ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   CustomWidgets.buildTextField (controller: _usernameController, label: "Username", icon: Icons.alternate_email, validator: (value) {
                           if (value?.isEmpty ?? true) {
                             return 'Please enter a username';
                           }
                         }, ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
+                  CustomWidgets.buildTextField (controller: _paswordController, label: "Password", icon: Icons.lock,  ocultar: true ,validator: (value) {
+                           if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                            }
+                          else if (value.trim().length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+
+                        }, ),
+                  const SizedBox(height: 16),
+
                   // University Code and Carrier Row
                   Row(
                     children: [
@@ -138,7 +190,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
                           children: [
                             CustomWidgets.buildTextField(controller: _universityCodeController, label: "Univercity ID", icon: Icons.badge, validator: (value) {
                             if (value?.isEmpty ?? true) {
-                              return 'Please enter username';
+                              return 'Please enter codde';
                             }
             
                           },)
@@ -262,12 +314,22 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> {
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Creating user...")),
+                        );
+
                         
-                        if (_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Creating account...')),
-                          );
-                        }
+                          presenter.crearEstudiante(Ususario(
+                          universityId: _universityCodeController.text,
+                          name: _fullNameController.text,
+                          email: _emailController.text,
+                          carrier: _selectedCarrier ?? "",
+                          password: _paswordController.text,
+                          preferences: _selectedPreferences,
+                          username: _usernameController.text,
+                        ));
+                        
+
 
                       },
                       style: ElevatedButton.styleFrom(

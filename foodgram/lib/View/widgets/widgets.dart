@@ -1,33 +1,40 @@
   import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomWidgets {
 
-  static Widget buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      validator: validator,
-      style: TextStyle(color:  Color.fromARGB(199, 22, 18, 18)),
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.grey, size: 20),
-        filled: true,
-        fillColor: Colors.grey[100],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+ static Widget buildTextField({
+  required TextEditingController controller,
+  required String label,
+  required IconData icon,
+  TextInputType? keyboardType,
+  String? Function(String?)? validator,
+  bool ocultar = false, // por defecto false
+}) {
+  return TextFormField(
+    controller: controller,
+    keyboardType: keyboardType,
+    validator: validator,
+    obscureText: ocultar, // aquí decides si se oculta o no
+    inputFormatters: [
+      LengthLimitingTextInputFormatter(50),
+    ],
+    style: const TextStyle(color: Color.fromARGB(199, 22, 18, 18)),
+    decoration: InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: Colors.grey, size: 20),
+      filled: true,
+      fillColor: Colors.grey[100],
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(28),
+        borderSide: BorderSide.none,
       ),
-    );
-  }
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      labelStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+    ),
+  );
+}
+
 
   static Widget buildDropdownField({
     required String label,

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/feed_screen.dart';
-import 'package:foodgram/Vistas/restaurant_detalle_screen.dart';
-import 'package:foodgram/Vistas/restaurants_screen.dart';
+import 'package:foodgram/Model/RestaurantEntity.dart';
+import 'package:foodgram/View/feed_screen.dart';
+import 'package:foodgram/View/restaurant_detalle_screen.dart';
+import 'package:foodgram/View/restaurants_screen.dart';
+import 'package:foodgram/View/tracker_user_screen.dart';
+import 'package:foodgram/View/user_screen.dart';
 
 class Pages extends StatefulWidget {
   const Pages({Key? key}) : super(key: key);
@@ -15,10 +18,11 @@ class Pages extends StatefulWidget {
 class PagesState extends State<Pages> {
   int _currentIndex = 0; // estado inicial
   int currentIndex2 = 0; 
+  String rest = "";
 @override
 Widget build(BuildContext context) {
   return Scaffold(
-    body: _getBody(_currentIndex, currentIndex2), // tu contenido cambia según el índice
+    body: _getBody(_currentIndex, currentIndex2, rest), // tu contenido cambia según el índice
     bottomNavigationBar: BottomNavigationBar(
       currentIndex: _currentIndex,
       onTap: (index) {
@@ -55,42 +59,28 @@ Widget build(BuildContext context) {
     ),
   );
 }
-void setCurrentIndex2 (int index){
+void setCurrentIndex2 (int index, String rest){
   currentIndex2 = index;
+  this.rest = rest;
 }
 
 }
 
-Widget _getBody(int index, int index2) {
+Widget _getBody(int index, int index2, rest) {
   
     switch (index) {
       case 1:
         switch (index2) {
           case 1:
-            return RestaurantDetailScreen(restaurantName: 'La Trattoria Milano',
-              restaurantImage: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200',
-              rating: 4.8,
-              reviews: '2.4k+',
-              price: '\$\$\$',
-              cuisine: 'French Cuisine',
-              time: '25-35 min',
-              distance: '1.2 km', lat: 100, long: 100,);
+            return RestaurantDetailScreen(rest: rest);
         default:
           return RestaurantFeed();}
       case 0:
-      switch (index2) {
-          case 1:
-            return RestaurantDetailScreen(restaurantName: 'La Trattoria Milano',
-              restaurantImage: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200',
-              rating: 4.8,
-              reviews: '2.4k+',
-              price: '\$\$\$',
-              cuisine: 'French Cuisine',
-              time: '25-35 min',
-              distance: '1.2 km', lat: 100, long: 100,);
-        default:
-          return FeedScreen();}
-
+        return FeedScreen();
+      case 2:
+        return UserScreen();
+      case 3: 
+        return TrackerScreen();
       default:
         return Container();
     }

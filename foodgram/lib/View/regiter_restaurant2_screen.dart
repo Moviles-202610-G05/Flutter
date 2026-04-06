@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:foodgram/Vistas/widgets/widgets.dart';
+import 'package:foodgram/View/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RestaurantRegisterScreen2 extends StatefulWidget {
