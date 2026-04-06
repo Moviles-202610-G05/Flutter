@@ -5,8 +5,8 @@ import 'package:foodgram/Model/Tracker.dart';
 
 class NutritionModel {
   static const String _apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
-  static const String _apiKey = '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';
-  static const String _model  = 'google/gemma-3-12b-it:free';
+  static const String _apiKey = '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';
+  static const String _model  = 'nvidia/nemotron-nano-12b-v2-vl:free';
 
   static const String _prompt = '''
 You are a nutrition analysis AI.
@@ -101,4 +101,4 @@ Return ONLY valid JSON in this exact format:
         .replaceAll(RegExp(r'```\s*'),     '')
         .trim();
   }
-}
+}  
