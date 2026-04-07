@@ -1,107 +1,59 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:foodgram/Model/Tracker.dart';
-import 'package:foodgram/Presenter/tracker_user.dart';
+import 'package:foodgram/Model/MealEntity.dart';
+import 'package:foodgram/Presenter/TrackerPresenter.dart';
 
-// ─────────────────────────────────────────────
-// DATA  — datos del usuario (meta diaria)
-// Más adelante esto vendrá de Firebase
-// ─────────────────────────────────────────────
-class UserNutrition {
-  final String name;
-  final int goalKcal;
-
-  const UserNutrition({required this.name, required this.goalKcal});
-}
-
-const _user = UserNutrition(name: 'María', goalKcal: 2000);
-
-// ─────────────────────────────────────────────
-// MAIN PAGE
-// ─────────────────────────────────────────────
 class TrackerScreen extends StatefulWidget {
-  const TrackerScreen({super.key});
 
   @override
   State<TrackerScreen> createState() => _TrackerScreenState();
 }
 
-class _TrackerScreenState extends State<TrackerScreen>
-    with SingleTickerProviderStateMixin {
-
-  // ── Estado ───────────────────────────────────
-  final _picker       = ImagePicker();
-  bool _scanning      = false;   // botón deshabilitado + spinner
-  bool _analyzing     = false;   // analizando con la IA
-
-  NutritionResult? _result;
-
-  int    _displayKcal    = 0;
+class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProviderStateMixin {
+  final _picker = ImagePicker();
+  bool _scanning = false;
+  bool _analyzing = false;
+  int _displayKcal = 0;
   double _displayProtein = 0;
-  double _displayCarbs   = 0;
-  double _displayFat     = 0;
+  double _displayCarbs = 0;
+  double _displayFat = 0;
 
   late final AnimationController _ringCtrl;
-  late final Animation<double>   _ringAnim;
-  late final TrackerPresenter    _presenter;
+  late final Animation<double> _ringAnim;
+  late final TrackerPresenter _presenter;
 
   static const _orange = Color(0xFFFF6B35);
+  static const _foodGramRed = Color(0xFFFF6347);
 
-  // ── Init ─────────────────────────────────────
   @override
   void initState() {
     super.initState();
-
-    // Animación de la rueda
-    _ringCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1400),
-    );
+    _ringCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400));
     _ringAnim = CurvedAnimation(parent: _ringCtrl, curve: Curves.easeOutCubic);
     _ringCtrl.forward();
 
-    // Presenter — aquí se definen los 3 callbacks
     _presenter = TrackerPresenter(
-      // 1. Empieza a analizar → muestra spinner sobre la rueda
-      onLoadingStart: () {
-        setState(() => _analyzing = true);
-      },
-
-      // 2. Llegó el resultado → actualiza la rueda con los nuevos datos
-      onSuccess: (NutritionResult result) {
+      onLoadingStart: () => setState(() => _analyzing = true),
+      onSuccess: (result) {
         setState(() {
-          _analyzing     = false;
-          _result        = result;
-          _displayKcal    = result.totalCalories;
+          _analyzing = false;
+          _displayKcal = result.totalCalories;
           _displayProtein = result.totalProteinG;
-          _displayCarbs   = result.totalCarbsG;
-          _displayFat     = result.totalFatG;
+          _displayCarbs = result.totalCarbsG;
+          _displayFat = result.totalFatG;
         });
-        // Re-anima la rueda con los nuevos valores
-        _ringCtrl
-          ..reset()
-          ..forward();
-
-        // Cierra el bottom sheet si sigue abierto
-        if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
-
-        // Muestra el resultado en un nuevo bottom sheet
-        _showResultSheet(result);
-      },
-
-      // 3. Algo falló → muestra snackbar con el error
-      onError: (String message) {
-        setState(() => _analyzing = false);
+        _ringCtrl.reset();
+        _ringCtrl.forward();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: Colors.redAccent,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          _showResultSheet(result);
         }
+      },
+      onError: (msg) {
+        setState(() => _analyzing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: Colors.redAccent),
+        );
       },
     );
   }
@@ -112,138 +64,118 @@ class _TrackerScreenState extends State<TrackerScreen>
     super.dispose();
   }
 
-  // ── Cámara ───────────────────────────────────
-  Future<void> _openCamera() async {
-    setState(() => _scanning = true);
-    try {
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 85,
-      );
-      if (photo != null) {
-        _showConfirmSheet(photo.path);
-      }
-    } finally {
-      setState(() => _scanning = false);
-    }
-  }
-
-  // ── Galería ──────────────────────────────────
-  Future<void> _openGallery() async {
-    setState(() => _scanning = true);
-    try {
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 85,
-      );
-      if (photo != null) {
-        _showConfirmSheet(photo.path);
-      }
-    } finally {
-      setState(() => _scanning = false);
-    }
-  }
-
-  // ── Bottom sheet: confirmación de foto ───────
-  void _showConfirmSheet(String path) {
+  void _showResultSheet(MealEntity result) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => _ConfirmSheet(
-        imagePath: path,
-        onAnalyze: () {
-          // El usuario confirma → le pasamos la foto al Presenter
-          _presenter.onImageCaptured(File(path));
-        },
-      ),
-    );
-  }
-
-  // ── Bottom sheet: resultado del análisis ─────
-  void _showResultSheet(NutritionResult result) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (_) => _ResultSheet(result: result),
     );
   }
 
-  // ── Build ────────────────────────────────────
+  void _showMealDetail(MealEntity meal) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _MealDetailSheet(meal: meal),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            Icon(Icons.restaurant_menu, color:  Color(0xFFFF6347), size: 28),
-            const SizedBox(width: 8),
-            const Text('FoodGram',
-                style: TextStyle(color: Color(0xFFFF6347), fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-      body: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (overScroll) {
-          overScroll.disallowIndicator();
-          return true;
-        },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              _buildScanButton(),
-              const SizedBox(height: 28),
-              _buildProgressCard(),
+        elevation: 0.5,
+        automaticallyImplyLeading: false,
+        leadingWidth: 173,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: Row(
+            children: const [
+              Icon(Icons.restaurant_menu, color: Color(0xFFFF6347), size: 28),
+              SizedBox(width: 4),
+              Text('FoodGram', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFFF6347))),
             ],
           ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            _buildScanButton(),
+            const SizedBox(height: 28),
+            const SizedBox(height: 28),
+            StreamBuilder<double>(
+              stream: _presenter.caloriesGoalStream,
+              builder: (context, goalSnapshot) {
+                final double currentGoal = goalSnapshot.data ?? 2000.0;
+
+                return StreamBuilder<Map<String, double>>(
+                  stream: _presenter.dailyStatsStream,
+                  builder: (context, statsSnapshot) {
+                    if (statsSnapshot.hasData) {
+                      final stats = statsSnapshot.data!;
+                      _displayKcal = stats['kcal']!.toInt();
+                      _displayProtein = stats['protein']!;
+                      _displayCarbs = stats['carbs']!;
+                      _displayFat = stats['fat']!;
+                    }
+
+                    return _buildProgressCard(currentGoal); 
+                  },
+                );
+              },
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 30, bottom: 10),
+              child: Text(
+                "Logged Meals",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF4A3428)),
+              ),
+            ),
+            StreamBuilder<List<MealEntity>>(
+              stream: _presenter.loggedMealsStream,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox.shrink();
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text("No meals logged today."),
+                    ),
+                  );
+                }
+                final meals = snapshot.data!;
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: meals.length,
+                  itemBuilder: (context, index) {
+                    return LoggedMealCard(
+                      meal: meals[index],
+                      onTap: () => _showMealDetail(meals[index]),
+                    );
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: 100),
+          ],
         ),
       ),
     );
   }
 
-  // ── Header ───────────────────────────────────
-  Widget _buildHeader() => Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Hola, ${_user.name} 👋',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1A1A1A),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'Track your nutrition today',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-              ),
-            ],
-          ),
-          const Spacer(),
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: _orange.withOpacity(0.15),
-            child: const Icon(Icons.person_outline, color: _orange, size: 22),
-          ),
-        ],
-      );
-
-  // ── Botones escanear / galería ───────────────
   Widget _buildScanButton() {
     final bool blocked = _scanning || _analyzing;
     return Row(
@@ -253,41 +185,15 @@ class _TrackerScreenState extends State<TrackerScreen>
           child: SizedBox(
             height: 56,
             child: ElevatedButton.icon(
-              onPressed: blocked ? null : _openCamera,
+              onPressed: blocked ? null : () => _pickImage(ImageSource.camera),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _orange,
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: _orange.withOpacity(0.6),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
               ),
               icon: const Icon(Icons.camera_alt_outlined, size: 22),
-              label: _analyzing
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text('Analyzing...'),
-                      ],
-                    )
-                  : Text(
-                      _scanning ? 'Opening...' : 'Scan meal',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
+              label: Text(_analyzing ? 'Analyzing...' : 'Scan meal'),
             ),
           ),
         ),
@@ -296,16 +202,13 @@ class _TrackerScreenState extends State<TrackerScreen>
           height: 56,
           width: 56,
           child: ElevatedButton(
-            onPressed: blocked ? null : _openGallery,
+            onPressed: blocked ? null : () => _pickImage(ImageSource.gallery),
             style: ElevatedButton.styleFrom(
               backgroundColor: _orange.withOpacity(0.12),
               foregroundColor: _orange,
-              disabledBackgroundColor: _orange.withOpacity(0.06),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               elevation: 0,
               padding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
             ),
             child: const Icon(Icons.photo_library_outlined, size: 22),
           ),
@@ -314,75 +217,49 @@ class _TrackerScreenState extends State<TrackerScreen>
     );
   }
 
-  // ── Tarjeta de progreso ──────────────────────
-  Widget _buildProgressCard() => Container(
+  Widget _buildProgressCard(double currentGoal) => Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration( 
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
         ),
         child: Column(
           children: [
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Today\'s Progress',
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1A1A1A),
-                ),
-              ),
+              child: Text('Today\'s Progress', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 28),
-            _buildRing(),
+            _buildRing(currentGoal), 
             const SizedBox(height: 28),
             _buildMacroRow(),
           ],
         ),
       );
 
-  // ── Rueda animada ────────────────────────────
-  Widget _buildRing() {
-    final progress = _user.goalKcal > 0
-        ? (_displayKcal / _user.goalKcal).clamp(0.0, 1.0)
-        : 0.0;
-
+  Widget _buildRing(double goal) { 
     return AnimatedBuilder(
       animation: _ringAnim,
       builder: (_, __) {
-        // Si está analizando muestra un spinner en lugar de la rueda
         if (_analyzing) {
           return const SizedBox(
-            width: 180,
             height: 180,
-            child: Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFFFF6B35),
-                strokeWidth: 6,
-              ),
-            ),
+            child: Center(child: CircularProgressIndicator(color: _orange)),
           );
         }
 
-        final sweep = _ringAnim.value * progress;
+        final double safeGoal = goal > 0 ? goal : 2000.0;
+        final double progressValue = (_displayKcal / safeGoal).clamp(0, 1);
+
         return SizedBox(
           width: 180,
           height: 180,
           child: CustomPaint(
             painter: _RingPainter(
-              progress:    sweep,
-              trackColor:  const Color(0xFFF2F2F2),
-              fillColor:   _orange,
-              strokeWidth: 14,
+              progress: _ringAnim.value * progressValue,
+              fillColor: _orange,
             ),
             child: Center(
               child: Column(
@@ -390,21 +267,11 @@ class _TrackerScreenState extends State<TrackerScreen>
                 children: [
                   Text(
                     '${(_displayKcal * _ringAnim.value).round()}',
-                    style: const TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF1A1A1A),
-                      height: 1,
-                    ),
+                    style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 4),
                   Text(
-                    'of ${_user.goalKcal} kcal',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade500,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    'of ${safeGoal.round()} kcal',
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                   ),
                 ],
               ),
@@ -415,301 +282,371 @@ class _TrackerScreenState extends State<TrackerScreen>
     );
   }
 
-  // ── Fila de macros ───────────────────────────
   Widget _buildMacroRow() => Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _MacroBadge(label: 'PROTEIN', value: '${_displayProtein.toStringAsFixed(0)}g'),
           _MacroBadge(label: 'CARBS',   value: '${_displayCarbs.toStringAsFixed(0)}g'),
-          _MacroBadge(label: 'FATS',   value: '${_displayFat.toStringAsFixed(0)}g'),
+          _MacroBadge(label: 'FATS',    value: '${_displayFat.toStringAsFixed(0)}g'),
         ],
       );
-}
 
-// ─────────────────────────────────────────────
-// RING PAINTER
-// ─────────────────────────────────────────────
-class _RingPainter extends CustomPainter {
-  final double progress;
-  final Color  trackColor;
-  final Color  fillColor;
-  final double strokeWidth;
-
-  const _RingPainter({
-    required this.progress,
-    required this.trackColor,
-    required this.fillColor,
-    required this.strokeWidth,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center     = Offset(size.width / 2, size.height / 2);
-    final radius     = (size.shortestSide - strokeWidth) / 2;
-    const startAngle = -1.5707963267948966;
-
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      0, 6.283185307179586, false,
-      Paint()
-        ..color       = trackColor
-        ..style       = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth
-        ..strokeCap   = StrokeCap.round,
-    );
-
-    if (progress > 0) {
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle, 6.283185307179586 * progress, false,
-        Paint()
-          ..color       = fillColor
-          ..style       = PaintingStyle.stroke
-          ..strokeWidth = strokeWidth
-          ..strokeCap   = StrokeCap.round,
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? photo = await _picker.pickImage(source: source, imageQuality: 85);
+    if (photo != null) {
+      showModalBottomSheet(
+        context: context,
+        builder: (_) => _ConfirmSheet(
+          path: photo.path,
+          // El usuario confirma la accion y dispara el evento en el Presenter
+          onConfirm: () => _presenter.onImageCaptured(File(photo.path)),
+        ),
       );
     }
   }
+} 
+
+class _RingPainter extends CustomPainter {
+  final double progress;
+  final Color fillColor;
+  _RingPainter({required this.progress, required this.fillColor});
 
   @override
-  bool shouldRepaint(_RingPainter old) =>
-      old.progress != progress ||
-      old.fillColor != fillColor ||
-      old.trackColor != trackColor;
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 14
+      ..strokeCap = StrokeCap.round;
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      (size.width - 14) / 2,
+      paint..color = const Color(0xFFF2F2F2),
+    );
+    canvas.drawArc(
+      Rect.fromLTWH(7, 7, size.width - 14, size.height - 14),
+      -1.57, 6.28 * progress, false,
+      paint..color = fillColor,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
-// ─────────────────────────────────────────────
-// MACRO BADGE
-// ─────────────────────────────────────────────
 class _MacroBadge extends StatelessWidget {
-  final String label;
-  final String value;
-
+  final String label, value;
   const _MacroBadge({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) => Column(children: [
+    Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+    Text(value,  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+  ]);
+}
+
+class _ConfirmSheet extends StatelessWidget {
+  final String path;
+  final VoidCallback onConfirm;
+  const _ConfirmSheet({required this.path, required this.onConfirm});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(24),
+    child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Image.file(File(path), height: 200, fit: BoxFit.cover),
+      const SizedBox(height: 20),
+      ElevatedButton(
+        onPressed: () { Navigator.pop(context); onConfirm(); },
+        child: const Text('Analyze'),
+      ),
+    ]),
+  );
+}
+
+class _ResultSheet extends StatelessWidget {
+  final MealEntity result;
+  const _ResultSheet({required this.result});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40, height: 4,
+            margin: const EdgeInsets.only(bottom: 24),
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Text(
+            result.dishName,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF6B35).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Total Energy', style: TextStyle(fontWeight: FontWeight.w600)),
+                Text('${result.totalCalories} kcal',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFFF6B35))),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _MacroInfo(label: 'Protein', value: '${result.totalProteinG.toStringAsFixed(1)}g', color: Colors.blue),
+              _MacroInfo(label: 'Carbs',   value: '${result.totalCarbsG.toStringAsFixed(1)}g',   color: Colors.orange),
+              _MacroInfo(label: 'Fats',    value: '${result.totalFatG.toStringAsFixed(1)}g',    color: Colors.redAccent),
+            ],
+          ),
+          const SizedBox(height: 30),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF6B35),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Text('Got it!', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MacroInfo extends StatelessWidget {
+  final String label, value;
+  final Color color;
+  const _MacroInfo({required this.label, required this.value, required this.color});
+
+  @override
+  Widget build(BuildContext context) => Column(children: [
+    Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+    const SizedBox(height: 4),
+    Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+  ]);
+}
+
+class LoggedMealCard extends StatelessWidget {
+  final MealEntity meal;
+  final VoidCallback onTap;
+  const LoggedMealCard({super.key, required this.meal, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        ),
+        child: Row(
+          children: [
+            ClipOval(
+              child: meal.imagePath != null
+                  ? Image.file(
+                      File(meal.imagePath!),
+                      width: 60, height: 60, fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _placeholder(),
+                    )
+                  : _placeholder(),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _mealLabel(meal.timestamp),
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFFFF6B35)),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    meal.dishName,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF6B35).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Text(
+                "${meal.totalCalories} kcal",
+                style: const TextStyle(color: Color(0xFFFF6B35), fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _placeholder() => Container(
+        width: 60, height: 60,
+        color: const Color(0xFFF0F0F0),
+        child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
+      );
+
+  String _mealLabel(DateTime time) {
+    final h = time.hour;
+    if (h < 11) return 'Breakfast';
+    if (h < 15) return 'Lunch';
+    if (h < 19) return 'Snack';
+    return 'Dinner';
+  }
+}
+
+class _MealDetailSheet extends StatelessWidget {
+  final MealEntity meal;
+  const _MealDetailSheet({required this.meal});
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.65,
+      maxChildSize: 0.92,
+      minChildSize: 0.45,
+      expand: false,
+      builder: (_, scrollCtrl) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: ListView(
+          controller: scrollCtrl,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          children: [
+            const SizedBox(height: 12),
+            Center(
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (meal.imagePath != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.file(
+                  File(meal.imagePath!),
+                  height: 180, width: double.infinity, fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
+              ),
+            const SizedBox(height: 16),
+            Text(meal.dishName,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text('Confidence: ${meal.confidence.name}',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF6B35).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Total calories',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+                  Text('${meal.totalCalories} kcal',
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFFFF6B35))),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _MacroCircle(label: 'Protein', value: meal.totalProteinG, color: Colors.redAccent),
+                _MacroCircle(label: 'Carbs',   value: meal.totalCarbsG,   color: Colors.orange),
+                _MacroCircle(label: 'Fats',    value: meal.totalFatG,     color: Colors.amber),
+              ],
+            ),
+            const Divider(height: 32),
+            const Text('Detected ingredients',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            ...meal.components.map(
+              (c) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text('${c.food} (${c.estimatedPortion})',
+                          style: const TextStyle(fontSize: 13)),
+                    ),
+                    Text('${c.calories} kcal',
+                        style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MacroCircle extends StatelessWidget {
+  final String label;
+  final double value;
+  final Color color;
+  const _MacroCircle({required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) => Column(
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade400,
-              letterSpacing: 0.8,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1A1A1A),
-            ),
-          ),
-        ],
-      );
-}
-
-// ─────────────────────────────────────────────
-// BOTTOM SHEET: confirmación de foto
-// ─────────────────────────────────────────────
-class _ConfirmSheet extends StatelessWidget {
-  final String    imagePath;
-  final VoidCallback onAnalyze;
-
-  const _ConfirmSheet({required this.imagePath, required this.onAnalyze});
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle
-            Container(
-              width: 40, height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.file(
-                File(imagePath),
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Photo captured',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Analyze the macros of this meal?',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade500,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // cierra este sheet
-                  onAnalyze();            // llama al Presenter
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF6B35),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: const Text(
-                  'Analyze meal',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
+          Container(
+            width: 72, height: 72,
+            decoration: BoxDecoration(shape: BoxShape.circle, color: color.withOpacity(0.1)),
+            child: Center(
               child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey.shade500),
+                '${value.toStringAsFixed(0)}g',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: color),
               ),
             ),
-          ],
-        ),
-      );
-}
-
-// ─────────────────────────────────────────────
-// BOTTOM SHEET: resultado del análisis
-// ─────────────────────────────────────────────
-class _ResultSheet extends StatelessWidget {
-  final NutritionResult result;
-
-  const _ResultSheet({required this.result});
-
-  @override
-  Widget build(BuildContext context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        maxChildSize: 0.9,
-        minChildSize: 0.4,
-        expand: false,
-        builder: (_, scrollCtrl) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: ListView(
-            controller: scrollCtrl,
-            children: [
-              const SizedBox(height: 12),
-              // Handle
-              Center(
-                child: Container(
-                  width: 40, height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                result.dishName,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Confidence: ${result.confidence.name}',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-              ),
-              const SizedBox(height: 20),
-              // Totales
-              _ResultRow('Total calories', '${result.totalCalories} kcal', bold: true),
-              _ResultRow('Protein',  '${result.totalProteinG.toStringAsFixed(1)}g'),
-              _ResultRow('Carbohydrates', '${result.totalCarbsG.toStringAsFixed(1)}g'),
-              _ResultRow('Fats',    '${result.totalFatG.toStringAsFixed(1)}g'),
-              const Divider(height: 32),
-              // Ingredientes
-              const Text(
-                'Detected ingredients',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 12),
-              ...result.components.map(
-                (c) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '${c.food} (${c.estimatedPortion})',
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ),
-                      Text(
-                        '${c.calories} kcal',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-            ],
           ),
-        ),
-      );
-}
-
-class _ResultRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool   bold;
-
-  const _ResultRow(this.label, this.value, {this.bold = false});
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
-              ),
-            ),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
-                color: bold ? const Color(0xFFFF6B35) : null,
-              ),
-            ),
-          ],
-        ),
+          const SizedBox(height: 6),
+          Text(label,
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey.shade500)),
+        ],
       );
 }

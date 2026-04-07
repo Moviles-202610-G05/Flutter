@@ -6,6 +6,11 @@ import 'package:foodgram/View/Login_screen.dart';
 import 'package:foodgram/View/orders_user_screen.dart';
 import 'package:foodgram/View/reviews_user_screen.dart';
 import 'package:foodgram/View/saved_user_screen.dart';
+import 'package:foodgram/Presenter/UsarioPresenter.dart';
+import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/MealRepository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -14,255 +19,294 @@ class UserScreen extends StatefulWidget {
   State<UserScreen> createState() => _UserScreenState();
 }
 
-class _UserScreenState extends State<UserScreen> {
+class _UserScreenState extends State<UserScreen> implements UserView {
 
-  // Metas del usuario
+  late UserPresenter _presenter;
+  final MealRepository _mealRepo = MealRepository();
+  bool _isLoading = true;
   double _caloriesGoal = 2000;
   double _proteinGoal  = 150;
   double _carbsGoal    = 200;
   double _fatGoal      = 67;
-
-  // Consumido hoy
-  double _caloriesConsumed = 1200;
-  double _proteinConsumed  = 80;
-  double _carbsConsumed    = 140;
-  double _fatConsumed      = 35;    
-
-  // Datos de perfil
-  String _name     = 'Alex Johnson';
-  String _username = '@alex_j';
-  String _email    = 'alex.j@email.com';
-  String _location = 'London, UK';
+  String _name     = '';
+  String _username = '';
+  String _email    = '';
+  String _location = '';
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        automaticallyImplyLeading: false,
-        leadingWidth: 173,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: Row(
-            children: const [
-              Icon(Icons.restaurant_menu, color: Color(0xFFFF6347), size: 28),
-              SizedBox(width: 4),
-              Text(
-                'FoodGram',
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFFF6347),
-                ),
-              ),
-            ],
-          ),
-        ),
-        title: null,
-        titleSpacing: 0,
-      ),
-      body: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (overScroll) {
-          overScroll.disallowIndicator();
-          return true;
-        },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              const SizedBox(height: 28),
-
-              // --- FOTO DE PERFIL ---
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFFF6347), width: 3),
-                ),
-                child: const CircleAvatar(
-                  radius: 57,
-                  backgroundColor: Color(0xFFF0F0F0),
-                  child: Icon(Icons.person, size: 64, color: Colors.white),
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              // Nombre y ubicación
-              Text(_name,
-                  style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A237E))),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
-                  Text(' $_location', style: const TextStyle(color: Colors.grey)),
-                ],
-              ),
-
-              const SizedBox(height: 28),
-
-              // --- ESTADÍSTICAS ---
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 15,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const OrdersUserScreen()),
-                        ),
-                        child: _buildStatCard("42", "ORDERS"),
-                      ),
-                    ),
-                    _buildDivider(),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ReviewsUserScreen()),
-                        ),
-                        child: _buildStatCard("15", "REVIEWS"),
-                      ),
-                    ),
-                    _buildDivider(),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const SavedUserScreen()),
-                        ),
-                        child: _buildStatCard("88", "SAVED"),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // --- NUTRITION GOALS ---
-              _buildSectionHeader(
-                "Nutrition Goals",
-                "Details",
-                onAction: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => NutritionGoalsScreen(
-                        calories: _caloriesGoal,
-                        protein:  _proteinGoal,
-                        carbs:    _carbsGoal,
-                        fat:      _fatGoal,
-                      ),
-                    ),
-                  );
-                  if (result != null) {
-                    setState(() {
-                      _caloriesGoal = result['calories'];
-                      _proteinGoal  = result['protein'];
-                      _carbsGoal    = result['carbs'];
-                      _fatGoal      = result['fat'];
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 12),
-              _buildNutritionCard(),
-              const SizedBox(height: 32),
-
-              // --- ACCOUNT SETTINGS ---
-              _buildSectionHeader("Account Settings", ""),
-              const SizedBox(height: 12),
-              _buildSettingsItem(
-                Icons.person_outline,
-                "Personal Information",
-                null,
-                const Color(0xFFFF6347).withOpacity(0.1),
-                onTap: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => InfoUserScreen(
-                        name:     _name,
-                        username: _username,
-                        email:    _email,
-                        location: _location,
-                      ),
-                    ),
-                  );
-                  if (result != null) {
-                    setState(() {
-                      _name     = result['name'];
-                      _username = result['username'];
-                      _email    = result['email'];
-                      _location = result['location'];
-                    });
-                  }
-                },
-              ),
-              _buildSettingsItem(
-                Icons.lock_outline,
-                "Post & Privacy Settings",
-                "Configure social publications",
-                const Color(0xFFFF6347).withOpacity(0.1),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PostPrivacityScreen()),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // --- LOGOUT ---
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (route) => false,
-                  );
-                },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.logout, color: Color.fromARGB(255, 255, 38, 0)),
-                    SizedBox(width: 8),
-                    Text("Logout",
-                        style: TextStyle(
-                            color: Color(0xFFFF6347),
-                            fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
-    );
+  void initState() {
+    super.initState();
+    _presenter = UserPresenter(UserRepository(), this);
+    _presenter.cargarPerfilActual();
   }
 
-  // ── WIDGETS ──────────────────────────────────────────────────────────────────
+  @override
+  void mostrarPerfil(Ususario usuario) {
+    setState(() {
+      _name          = usuario.name;
+      _username      = usuario.username;
+      _email         = usuario.email;
+      _location      = usuario.carrier;
+      _caloriesGoal  = usuario.caloriesGoal;
+      _proteinGoal   = usuario.proteinGoal;
+      _carbsGoal     = usuario.carbsGoal;
+      _fatGoal       = usuario.fatGoal;
+      _isLoading     = false;
+    });
+  }
+
+  @override
+  void mostrarError(String mensaje) {
+    setState(() => _isLoading = false);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
+  }
+
+  @override
+  void mostrarExito(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
+  }
+
+  @override
+  void mostrarUsuarios(List<Ususario> usuarios) {}
+
+  @override
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: _isLoading
+        ? const Center(child: CircularProgressIndicator(color: Color(0xFFFF6347)))
+        : NotificationListener<OverscrollIndicatorNotification>(
+            onNotification: (overScroll) {
+              overScroll.disallowIndicator();
+              return true;
+            },
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  backgroundColor: Colors.white,
+                  elevation: 0.5,
+                  floating: true,
+                  snap: true,
+                  automaticallyImplyLeading: false,
+                  leadingWidth: 173, 
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.restaurant_menu, 
+                          color: Color(0xFFFF6347), 
+                          size: 28
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'FoodGram',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFF6347),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      const SizedBox(height: 28),
+
+                      Center(
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xFFFF6347), width: 3),
+                          ),
+                          child: const CircleAvatar(
+                            radius: 57,
+                            backgroundColor: Color(0xFFF0F0F0),
+                            child: Icon(Icons.person, size: 64, color: Colors.white),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 14),
+
+                      Center(
+                        child: Text(_name,
+                            style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1A237E))),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+                          Text(' $_location', style: const TextStyle(color: Colors.grey)),
+                        ],
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.06),
+                              blurRadius: 15,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) => const OrdersUserScreen())),
+                                child: _buildStatCard("42", "ORDERS"),
+                              ),
+                            ),
+                            _buildDivider(),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) => const ReviewsUserScreen())),
+                                child: _buildStatCard("15", "REVIEWS"),
+                              ),
+                            ),
+                            _buildDivider(),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) => const SavedUserScreen())),
+                                child: _buildStatCard("88", "SAVED"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      _buildSectionHeader(
+                        "Nutrition Goals",
+                        "Details",
+                        onAction: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => NutritionGoalsScreen(
+                                calories: _caloriesGoal,
+                                protein:  _proteinGoal,
+                                carbs:    _carbsGoal,
+                                fat:      _fatGoal,
+                              ),
+                            ),
+                          );
+                          if (result != null) {
+                            final map = result as Map<String, double>;
+                            setState(() {
+                              _caloriesGoal = map['calories']!;
+                              _proteinGoal  = map['protein']!;
+                              _carbsGoal    = map['carbs']!;
+                              _fatGoal      = map['fat']!;
+                            });
+                            _presenter.guardarNutritionGoals(
+                              calories: map['calories']!,
+                              protein:  map['protein']!,
+                              carbs:    map['carbs']!,
+                              fat:      map['fat']!,
+                            );
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNutritionCard(),
+                      const SizedBox(height: 32),
+
+                      _buildSectionHeader("Account Settings", ""),
+                      const SizedBox(height: 12),
+                      _buildSettingsItem(
+                        Icons.person_outline,
+                        "Personal Information",
+                        null,
+                        const Color(0xFFFF6347).withOpacity(0.1),
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => InfoUserScreen(
+                                name:     _name,
+                                username: _username,
+                                email:    _email,
+                                location: _location,
+                              ),
+                            ),
+                          );
+                          if (result != null) {
+                            final map = result as Map<String, String>;
+                            setState(() {
+                              _name     = map['name']!;
+                              _username = map['username']!;
+                              _email    = map['email']!;
+                              _location = map['location']!;
+                            });
+                          }
+                        },
+                      ),
+                      _buildSettingsItem(
+                        Icons.lock_outline,
+                        "Post & Privacy Settings",
+                        "Configure social publications",
+                        const Color(0xFFFF6347).withOpacity(0.1),
+                        onTap: () => Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => const PostPrivacityScreen())),
+                      ),
+                      const SizedBox(height: 24),
+
+                      InkWell(
+                        onTap: () async {
+                          await FirebaseAuth.instance.signOut();
+                          if (mounted) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                              (route) => false, // Esto evita que el usuario pueda volver atrás
+                            );
+                          }
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.logout, color: Color.fromARGB(255, 255, 38, 0)),
+                            SizedBox(width: 8),
+                            Text("Log out",
+                                style: TextStyle(
+                                    color: Color(0xFFFF6347),
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
+          ),
+  );
+}
 
   Widget _buildStatCard(String value, String label) {
     return Expanded(
@@ -286,108 +330,94 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   Widget _buildDivider() {
-    return Container(
-      width: 1,
-      height: 36,
-      color: Colors.grey.shade200,
-    );
+    return Container(width: 1, height: 36, color: Colors.grey.shade200);
   }
 
-  Widget _buildSectionHeader(String title, String action,
-      {VoidCallback? onAction}) {
+  Widget _buildSectionHeader(String title, String action, {VoidCallback? onAction}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         GestureDetector(
           onTap: onAction,
           child: Text(action,
-              style: const TextStyle(
-                  color: Color(0xFFFF6347), fontWeight: FontWeight.w600)),
+              style: const TextStyle(color: Color(0xFFFF6347), fontWeight: FontWeight.w600)),
         ),
       ],
     );
   }
 
   Widget _buildNutritionCard() {
-    final double calProgress =
-        (_caloriesConsumed / _caloriesGoal).clamp(0.0, 1.0);
-    final int calPct = (calProgress * 100).round();
+    // Event consumer, el streamBuilder se reconstruye cada vez que el stream emite un nuevo valor
+    return StreamBuilder<Map<String, double>>(
+      stream: _mealRepo.getDailyStatsStream(_email), 
+      builder: (context, snapshot) {
+        final stats = snapshot.data ?? {'kcal': 0.0, 'protein': 0.0, 'carbs': 0.0, 'fat': 0.0};
+        final double consumedKcal = stats['kcal']!;
+        final double consumedProtein = stats['protein']!;
+        final double consumedCarbs = stats['carbs']!;
+        final double consumedFat = stats['fat']!;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Daily Calorie Goal",
-              style: TextStyle(color: Colors.grey)),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text("${_caloriesConsumed.round()}",
-                  style: const TextStyle(
-                      fontSize: 28, fontWeight: FontWeight.bold)),
-              Text(" / ${_caloriesGoal.round()} kcal",
-                  style: const TextStyle(color: Colors.grey)),
-              const Spacer(),
-              Text("$calPct%",
-                  style: const TextStyle(
-                      color: Color(0xFFFF6347),
-                      fontWeight: FontWeight.bold)),
-            ],
+        // Cálculos de progreso (validando no dividir por cero)
+        final double calProgress = (consumedKcal / (_caloriesGoal > 0 ? _caloriesGoal : 2000)).clamp(0.0, 1.0);
+        final int calPct = (calProgress * 100).round();
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
           ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: calProgress,
-              minHeight: 10,
-              backgroundColor: const Color(0xFFEEEEEE),
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(Color(0xFFFF6347)),
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text("Macro Targets",
-              style: TextStyle(color: Colors.grey, fontSize: 13)),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildMacroItem(
-                "Protein",
-                "${_proteinConsumed.round()}g",
-                "${_proteinGoal.round()}g",
-                Colors.redAccent,
-                (_proteinConsumed / _proteinGoal).clamp(0.0, 1.0),
+              const Text("Daily Calorie Goal", style: TextStyle(color: Colors.grey)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text("${consumedKcal.round()}",
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                  Text(" / ${_caloriesGoal.round()} kcal",
+                      style: const TextStyle(color: Colors.grey)),
+                  const Spacer(),
+                  Text("$calPct%",
+                      style: const TextStyle(
+                          color: Color(0xFFFF6347), fontWeight: FontWeight.bold)),
+                ],
               ),
-              _buildMacroItem(
-                "Carbs",
-                "${_carbsConsumed.round()}g",
-                "${_carbsGoal.round()}g",
-                Colors.orange,
-                (_carbsConsumed / _carbsGoal).clamp(0.0, 1.0),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: calProgress,
+                  minHeight: 10,
+                  backgroundColor: const Color(0xFFEEEEEE),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFF6347)),
+                ),
               ),
-              _buildMacroItem(
-                "Fat",
-                "${_fatConsumed.round()}g",
-                "${_fatGoal.round()}g",
-                Colors.amber,
-                (_fatConsumed / _fatGoal).clamp(0.0, 1.0),
+              const SizedBox(height: 20),
+              const Text("Macro Targets", style: TextStyle(color: Colors.grey, fontSize: 13)),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildMacroItem("Protein", "${consumedProtein.round()}g",
+                      "${_proteinGoal.round()}g", Colors.redAccent,
+                      (consumedProtein / (_proteinGoal > 0 ? _proteinGoal : 1)).clamp(0.0, 1.0)),
+                  _buildMacroItem("Carbs", "${consumedCarbs.round()}g",
+                      "${_carbsGoal.round()}g", Colors.orange,
+                      (consumedCarbs / (_carbsGoal > 0 ? _carbsGoal : 1)).clamp(0.0, 1.0)),
+                  _buildMacroItem("Fat", "${consumedFat.round()}g",
+                      "${_fatGoal.round()}g", Colors.amber,
+                      (consumedFat / (_fatGoal > 0 ? _fatGoal : 1)).clamp(0.0, 1.0)),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -398,15 +428,10 @@ class _UserScreenState extends State<UserScreen> {
       children: [
         Row(
           children: [
-            Text(label,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w500, fontSize: 12)),
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
             const SizedBox(width: 4),
             Text(consumed,
-                style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12)),
+                style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
           ],
         ),
         const SizedBox(height: 4),
@@ -426,23 +451,19 @@ class _UserScreenState extends State<UserScreen> {
     );
   }
 
-  Widget _buildSettingsItem(
-      IconData icon, String title, String? subtitle, Color bgColor,
+  Widget _buildSettingsItem(IconData icon, String title, String? subtitle, Color bgColor,
       {VoidCallback? onTap}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
       child: ListTile(
         onTap: onTap,
         leading: CircleAvatar(
             backgroundColor: bgColor,
             child: Icon(icon, color: const Color(0xFFFF6347))),
-        title: Text(title,
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: subtitle != null
-            ? Text(subtitle,
-                style: const TextStyle(fontSize: 12, color: Colors.grey))
+            ? Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey))
             : null,
         trailing: const Icon(Icons.chevron_right, color: Colors.grey),
       ),
