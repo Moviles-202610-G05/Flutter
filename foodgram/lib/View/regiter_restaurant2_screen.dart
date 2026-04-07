@@ -10,6 +10,7 @@ import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/MenuPresenter.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RestaurantRegisterScreen2 extends StatefulWidget {
@@ -547,6 +548,26 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
   @override
   void mostrarRestaurantes(List<Restaurant> restaurantes) {
     // TODO: implement mostrarRestaurantes
+  }
+  
+  @override
+  void hideLoading() {
+    // TODO: implement hideLoading
+  }
+  
+  @override
+  void showLoading() {
+    // TODO: implement showLoading
+  }
+  
+  @override
+  void updateCameraPosition(double lat, double lng) {
+    // TODO: implement updateCameraPosition
+  }
+
+  @override
+  void mostrarRuta(List<LatLng> polylineCoordinates) {
+    // TODO: implement mostrarRuta
   }
   
 }

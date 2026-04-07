@@ -47,7 +47,7 @@ class Restaurant{
   
 
   factory Restaurant.fromMap(Map<String, dynamic> map) {
-    print("-----REVICION-----11");
+
     return Restaurant(
       name: map['name'] ?? '',
       image: map['restaurantImage'] ?? '',

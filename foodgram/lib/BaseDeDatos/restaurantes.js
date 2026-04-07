@@ -8,60 +8,132 @@ admin.initializeApp({
 const db = admin.firestore();
 
 async function seedRestaurants() {
-  const restaurants = [
-   {
-    "name": "La Pizzería",
-    "restaurantImage": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200",
-    "rating": 4.5,
-    "price": "$$",
-    "cuisine": "Italiana",
-    "time": "30-40 min",
-    "distance": "2 km",
-    "long": -74.08175,
-    "lat": 4.60971,
-    'badge': 'TOP RATED',
-    'badge2': 'FREE DELIVERY',
-    "description": 'Authentic wood-fired pizzas, handmade tagliatelle, and traditional tiramisu in an intimat…',
-    "nuberReviews": 10,
-    "spots": 340,
-    "spotsA": 230
-
-  },
-  {
-    "name": "Sushi House",
-    "restaurantImage": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200",
-    "rating": 4.7,
-    "price": "$$$",
-    "cuisine": "Japonesa",
-    "time": "20-30 min",
-    "distance": "3.5 km",
-    "long": -74.08200,
-    "lat": 4.61000,
-    'badge': 'TOP RATED',
-    'badge2': '',
-    "description": 'Authentic wood-fired pizzas, handmade tagliatelle, and traditional tiramisu in an intimat…',
-    "nuberReviews": 100,
-    "spots": 100,
-    "spotsA": 100
-  },
-  {
-    "name": "Burger Palace",
-    "restaurantImage": "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200",
-    "rating": 4.3,
-    "price": "$$",
-    "cuisine": "Americana",
-    "time": "25-35 min",
-    "distance": "1.2 km",
-    "long": -74.083,
-    "lat": 4.612,
-    'badge': 'GOOD',
-    'badge2': '',
-    "description": 'Authentic wood-fired pizzas, handmade tagliatelle, and traditional tiramisu in an intimat…',
-    "nuberReviews": 234,
-    "spots": 150,
-    "spotsA": 10
-    
-  }
+ const restaurants = [
+    {
+      "name": "La Pizzería Uniandes",
+      "restaurantImage": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200",
+      "rating": 4.5,
+      "price": "$$",
+      "cuisine": "Italiana",
+      "time": "10-15 min",
+      "distance": "0.2 km",
+      "lat": 4.6018, // Muy cerca de la entrada de la 18
+      "long": -74.0665,
+      "position": {
+        "geohash": "d2g6qz3", // Geohash aproximado de la zona
+        "geopoint": new admin.firestore.GeoPoint(4.6018, -74.0665)
+      },
+      "badge": "TOP RATED",
+      "badge2": "FREE DELIVERY",
+      "description": "Pizzas artesanales ideales para el almuerzo entre clases.",
+      "nuberReviews": 10,
+      "spots": 340,
+      "spotsA": 230
+    },
+    {
+      "name": "Sushi House Candelaria",
+      "restaurantImage": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200",
+      "rating": 4.7,
+      "price": "$$$",
+      "cuisine": "Japonesa",
+      "time": "15-20 min",
+      "distance": "0.5 km",
+      "lat": 4.6005, // Cerca del eje ambiental
+      "long": -74.0675,
+      "position": {
+        "geohash": "d2g6qz1",
+        "geopoint": new admin.firestore.GeoPoint(4.6005, -74.0675)
+      },
+      "badge": "TOP RATED",
+      "badge2": "",
+      "description": "Rollos frescos y bento boxes para estudiantes y profesores.",
+      "nuberReviews": 100,
+      "spots": 100,
+      "spotsA": 100
+    },
+    {
+      "name": "Burger Palace CityU",
+      "restaurantImage": "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200",
+      "rating": 4.3,
+      "price": "$$",
+      "cuisine": "Americana",
+      "time": "5-10 min",
+      "distance": "0.1 km",
+      "lat": 4.6025, // Justo en la zona de las torres de CityU
+      "long": -74.0655,
+      "position": {
+        "geohash": "d2g6qz6",
+        "geopoint": new admin.firestore.GeoPoint(4.6025, -74.0655)
+      },
+      "badge": "GOOD",
+      "badge2": "",
+      "description": "Las mejores hamburguesas para después de un parcial pesado.",
+      "nuberReviews": 234,
+      "spots": 150,
+      "spotsA": 10
+    },
+    {"name": "Suba Steak House",
+      "restaurantImage": "https://images.unsplash.com/photo-1546241072-48010ad28c2c?w=1200",
+      "rating": 4.6,
+      "price": "$$$",
+      "cuisine": "Parrilla",
+      "time": "20-30 min",
+      "distance": "0.3 km",
+      "lat": 4.7315, 
+      "long": -74.0725,
+      "position": {
+        "geohash": "d2g6vsh", 
+        "geopoint": new admin.firestore.GeoPoint(4.7315, -74.0725)
+      },
+      "badge": "PREMIUM",
+      "badge2": "FREE DELIVERY",
+      "description": "Cortes madurados a la brasa en un ambiente familiar cerca de tu casa.",
+      "nuberReviews": 45,
+      "spots": 120,
+      "spotsA": 45
+    },
+    {
+      "name": "Wok & Roll Colina",
+      "restaurantImage": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=1200",
+      "rating": 4.8,
+      "price": "$$",
+      "cuisine": "Asiática",
+      "time": "15-25 min",
+      "distance": "0.6 km",
+      "lat": 4.7335,
+      "long": -74.0705,
+      "position": {
+        "geohash": "d2g6vsk",
+        "geopoint": new admin.firestore.GeoPoint(4.7335, -74.0705)
+      },
+      "badge": "TOP RATED",
+      "badge2": "PROMO",
+      "description": "Lo mejor del sushi y pad thai con ingredientes frescos locales.",
+      "nuberReviews": 89,
+      "spots": 80,
+      "spotsA": 20
+    },
+    {
+      "name": "Boccone Pizza",
+      "restaurantImage": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=1200",
+      "rating": 4.4,
+      "price": "$",
+      "cuisine": "Italiana",
+      "time": "10-20 min",
+      "distance": "0.2 km",
+      "lat": 4.7328,
+      "long": -74.0722,
+      "position": {
+        "geohash": "d2g6vsg",
+        "geopoint": new admin.firestore.GeoPoint(4.7328, -74.0722)
+      },
+      "badge": "ECONOMY",
+      "badge2": "",
+      "description": "Pizza artesanal de masa delgada lista para llevar o disfrutar en el sitio.",
+      "nuberReviews": 156,
+      "spots": 50,
+      "spotsA": 15
+    }
   ];
 
   for (const r of restaurants) {
@@ -70,398 +142,9 @@ async function seedRestaurants() {
 
   console.log("Datos insertados en Firestore");
 }
-async function seedMenu() {
-  const menuItems = [
-    // La Pizzería
-    {
-      name: "Pizza Margherita",
-      price: "12",
-      description: "Clásica pizza italiana con salsa de tomate, mozzarella fresca y albahaca.",
-      image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Pizza Pepperoni",
-      price: "14",
-      description: "Pizza con abundante pepperoni y queso fundido.",
-      image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Pasta Bolognese",
-      price: "15",
-      description: "Pasta italiana con salsa de carne y tomate.",
-      image: "https://images.unsplash.com/photo-1598866594230-a7c12756260f?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Tiramisú",
-      price: "8",
-      description: "Postre clásico italiano con mascarpone y cacao.",
-      image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Bruschetta",
-      price: "6",
-      description: "Pan tostado con tomate fresco, ajo y albahaca.",
-      image: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800",
-      restaurant: "La Pizzería"
-    },
 
-    // Sushi House
-    {
-      name: "Sushi Platter",
-      price: "20",
-      description: "Variedad de rolls frescos con salmón, aguacate y pepino.",
-      image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Salmon Nigiri",
-      price: "12",
-      description: "Nigiri de salmón fresco sobre arroz avinagrado.",
-      image: "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Tempura de Camarón",
-      price: "14",
-      description: "Camarones rebozados y fritos al estilo japonés.",
-      image: "https://images.unsplash.com/photo-1615361200141-f45040f367be?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Ramen Tradicional",
-      price: "16",
-      description: "Sopa japonesa con fideos, huevo y cerdo.",
-      image: "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Miso Soup",
-      price: "6",
-      description: "Sopa japonesa con tofu, algas y cebollín.",
-      image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800",
-      restaurant: "Sushi House"
-    },
 
-    // Burger Palace
-    {
-      name: "Cheeseburger Clásica",
-      price: "10",
-      description: "Hamburguesa de res con queso cheddar y papas fritas.",
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Double Bacon Burger",
-      price: "14",
-      description: "Hamburguesa doble con tocino crujiente y queso.",
-      image: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Chicken Sandwich",
-      price: "12",
-      description: "Sándwich de pollo frito con lechuga y salsa.",
-      image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Milkshake",
-      price: "6",
-      description: "Batido cremoso con crema batida y cereza.",
-      image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Loaded Nachos",
-      price: "9",
-      description: "Nachos con queso fundido, carne y guacamole.",
-      image: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=800",
-      restaurant: "Burger Palace"
-    }
-  ];
 
-  for (const item of menuItems) {
-    await db.collection("menu").add(item);
-  }
-
-  console.log("Menú insertado en Firestore");
-}
-async function seedMenu() {
-  const menuItems = [
-    // La Pizzería
-    {
-      name: "Pizza Margherita",
-      price: "12",
-      description: "Clásica pizza italiana con salsa de tomate, mozzarella fresca y albahaca.",
-      image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Pizza Pepperoni",
-      price: "14",
-      description: "Pizza con abundante pepperoni y queso fundido.",
-      image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Pasta Bolognese",
-      price: "15",
-      description: "Pasta italiana con salsa de carne y tomate.",
-      image: "https://images.unsplash.com/photo-1598866594230-a7c12756260f?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Tiramisú",
-      price: "8",
-      description: "Postre clásico italiano con mascarpone y cacao.",
-      image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Bruschetta",
-      price: "6",
-      description: "Pan tostado con tomate fresco, ajo y albahaca.",
-      image: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800",
-      restaurant: "La Pizzería"
-    },
-
-    // Sushi House
-    {
-      name: "Sushi Platter",
-      price: "20",
-      description: "Variedad de rolls frescos con salmón, aguacate y pepino.",
-      image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Salmon Nigiri",
-      price: "12",
-      description: "Nigiri de salmón fresco sobre arroz avinagrado.",
-      image: "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Tempura de Camarón",
-      price: "14",
-      description: "Camarones rebozados y fritos al estilo japonés.",
-      image: "https://images.unsplash.com/photo-1615361200141-f45040f367be?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Ramen Tradicional",
-      price: "16",
-      description: "Sopa japonesa con fideos, huevo y cerdo.",
-      image: "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Miso Soup",
-      price: "6",
-      description: "Sopa japonesa con tofu, algas y cebollín.",
-      image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800",
-      restaurant: "Sushi House"
-    },
-
-    // Burger Palace
-    {
-      name: "Cheeseburger Clásica",
-      price: "10",
-      description: "Hamburguesa de res con queso cheddar y papas fritas.",
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Double Bacon Burger",
-      price: "14",
-      description: "Hamburguesa doble con tocino crujiente y queso.",
-      image: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Chicken Sandwich",
-      price: "12",
-      description: "Sándwich de pollo frito con lechuga y salsa.",
-      image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Milkshake",
-      price: "6",
-      description: "Batido cremoso con crema batida y cereza.",
-      image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Loaded Nachos",
-      price: "9",
-      description: "Nachos con queso fundido, carne y guacamole.",
-      image: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=800",
-      restaurant: "Burger Palace"
-    }
-  ];
-
-  for (const item of menuItems) {
-    await db.collection("menu").add(item);
-  }
-
-  console.log("Menú insertado en Firestore");
-}
-async function seedReviews() {
-  const reviews = [
-    // La Pizzería
-    {
-      name: "Carlos Pérez",
-      rating: 5,
-      date: "2026-03-01",
-      comment: "La mejor pizza que he probado, auténtico sabor italiano.",
-      avatar: "CP",
-      avatarColor: "#FF9800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "María Gómez",
-      rating: 4,
-      date: "2026-03-02",
-      comment: "Muy buena pasta, aunque el servicio fue un poco lento.",
-      avatar: "MG",
-      avatarColor: "#4CAF50",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Andrés López",
-      rating: 5,
-      date: "2026-03-03",
-      comment: "El tiramisú es espectacular, volveré sin duda.",
-      avatar: "AL",
-      avatarColor: "#2196F3",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Lucía Torres",
-      rating: 4,
-      date: "2026-03-04",
-      comment: "La pizza estaba deliciosa, pero el lugar estaba lleno.",
-      avatar: "LT",
-      avatarColor: "#9C27B0",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Jorge Ramírez",
-      rating: 5,
-      date: "2026-03-05",
-      comment: "Excelente atención y comida, recomendado.",
-      avatar: "JR",
-      avatarColor: "#F44336",
-      restaurant: "La Pizzería"
-    },
-
-    // Sushi House
-    {
-      name: "Akira Tanaka",
-      rating: 5,
-      date: "2026-03-01",
-      comment: "El sushi es fresco y delicioso, auténtico sabor japonés.",
-      avatar: "AT",
-      avatarColor: "#3F51B5",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Sofía Martínez",
-      rating: 4,
-      date: "2026-03-02",
-      comment: "El ramen estaba muy bueno, aunque un poco salado.",
-      avatar: "SM",
-      avatarColor: "#009688",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Diego Fernández",
-      rating: 5,
-      date: "2026-03-03",
-      comment: "El nigiri de salmón es espectacular.",
-      avatar: "DF",
-      avatarColor: "#795548",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Laura Castillo",
-      rating: 4,
-      date: "2026-03-04",
-      comment: "La sopa miso estaba rica, pero pequeña la porción.",
-      avatar: "LC",
-      avatarColor: "#607D8B",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Mateo Ríos",
-      rating: 5,
-      date: "2026-03-05",
-      comment: "Excelente experiencia, volveré pronto.",
-      avatar: "MR",
-      avatarColor: "#E91E63",
-      restaurant: "Sushi House"
-    },
-
-    // Burger Palace
-    {
-      name: "Kevin Smith",
-      rating: 5,
-      date: "2026-03-01",
-      comment: "La hamburguesa doble con bacon es increíble.",
-      avatar: "KS",
-      avatarColor: "#FF5722",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Ana Rodríguez",
-      rating: 4,
-      date: "2026-03-02",
-      comment: "Las papas fritas estaban crujientes, pero el batido muy dulce.",
-      avatar: "AR",
-      avatarColor: "#CDDC39",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Luis Hernández",
-      rating: 5,
-      date: "2026-03-03",
-      comment: "La cheeseburger clásica nunca falla.",
-      avatar: "LH",
-      avatarColor: "#FFC107",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Paula Díaz",
-      rating: 4,
-      date: "2026-03-04",
-      comment: "Los nachos estaban buenos, aunque un poco grasosos.",
-      avatar: "PD",
-      avatarColor: "#8BC34A",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Tomás Vega",
-      rating: 5,
-      date: "2026-03-05",
-      comment: "Excelente lugar para comer hamburguesas.",
-      avatar: "TV",
-      avatarColor: "#00BCD4",
-      restaurant: "Burger Palace"
-    }
-  ];
-
-  for (const review of reviews) {
-    await db.collection("reviews").add(review);
-  }
-
-  console.log("Reviews insertados en Firestore");
-}
 
 
 seedRestaurants();
-seedMenu();
-seedReviews();

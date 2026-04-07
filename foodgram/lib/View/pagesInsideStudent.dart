@@ -83,7 +83,11 @@ Widget _getBody(int index, int index2, rest) {
       case 3: 
         return TrackerScreen();
       case 4: 
-        return RestaurantMapPage();
+      switch (index2) {
+          case 1:
+            return RestaurantDetailScreen(rest: rest);
+        default:
+          return RestaurantMapPage();}
       default:
         return Container();
     }

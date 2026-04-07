@@ -6,6 +6,7 @@ import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart' show Pages, PagesState;
 import 'package:foodgram/View/restaurant_detalle_screen.dart';
 import 'package:foodgram/View/widgets/restaurants.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 
 class RestaurantFeed extends StatefulWidget {
   @override
@@ -235,5 +236,25 @@ class _RestaurantFeed extends State<RestaurantFeed>
         ),
       ),
     );
+  }
+  
+  @override
+  void hideLoading() {
+    // TODO: implement hideLoading
+  }
+  
+  @override
+  void showLoading() {
+    // TODO: implement showLoading
+  }
+  
+  @override
+  void updateCameraPosition(double lat, double lng) {
+    // TODO: implement updateCameraPosition
+  }
+
+  @override
+  void mostrarRuta(List<LatLng> polylineCoordinates) {
+    // TODO: implement mostrarRuta
   }
 }

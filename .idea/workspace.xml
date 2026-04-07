@@ -5,10 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5df29327-2628-4acd-9121-d1f05cf5c538" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/.metadata" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/.metadata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/lib/BaseDeDatos/restaurantes.js" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/BaseDeDatos/restaurantes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/Model/Restaurant.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Model/Restaurant.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/Model/RestaurantEntity.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Model/RestaurantEntity.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/Model/RestaurantRepository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Model/RestaurantRepository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/Presenter/RestaurantPresenter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Presenter/RestaurantPresenter.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/mapa.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/mapa.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/regiter_restaurant2_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/regiter_restaurant2_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/lib/View/restaurants_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/restaurants_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
@@ -32,19 +44,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Base-de-datos&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "mapa-restaurantes"
   }
-}</component>
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="5df29327-2628-4acd-9121-d1f05cf5c538" name="Changes" comment="" />

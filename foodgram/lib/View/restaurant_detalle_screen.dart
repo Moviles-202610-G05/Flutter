@@ -417,11 +417,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
   }
 
   Widget _buildLocationTab() {
-    final String apiKey = "AIzaSyAE3EJISlN6vJF1vWEIVAB0ke62y80R0x4"; // Reemplaza con tu clave de Google Maps
+    final String apiKey = "AIzaSyDxzMLWUCmAQqm2dpmpDzkC3L8r09rEri4"; // Reemplaza con tu clave de Google Maps
     final String url =
       "https://maps.googleapis.com/maps/api/staticmap?"
-      "center=${restaurants.long},${restaurants.lat}&zoom=14&size=600x400"
-      "&markers=color:red%7C${restaurants.long},${restaurants.lat}"
+      "center=${restaurants.lat},${restaurants.long}&zoom=14&size=600x400"
+      "&markers=color:red%7C${restaurants.lat},${restaurants.long}"
       "&key=$apiKey";
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
