@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/View/create_post_screen.dart';
-import 'package:foodgram/View/widgets/widgets.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});

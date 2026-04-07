@@ -5,7 +5,6 @@ import 'package:foodgram/Model/MealRepository.dart';
 import 'package:foodgram/Model/MealEntity.dart';
 import 'package:foodgram/Model/NutritionApiService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:async/async.dart' show StreamZip;
 
 class TrackerPresenter {

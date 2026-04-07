@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-
 class Menu {
   final String name;
   final String price;
@@ -21,7 +19,6 @@ class Menu {
     this.category,
   });
 
-  // Convertir objeto a Map (para guardar en Firestore)
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -32,7 +29,6 @@ class Menu {
     };
   }
 
-  // Crear objeto desde Map (cuando leemos de Firestore)
   factory Menu.fromMap(Map<String, dynamic> map) {
     return Menu(
       name: map['name'] ?? '',

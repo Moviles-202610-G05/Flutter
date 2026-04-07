@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> implements UserView {
       );
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const Pages()),
+        MaterialPageRoute(builder: (context) => Pages()),
       );
     } on FirebaseAuthException catch (e) {
       String message;
@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> implements UserView {
   void onLoginSuccess() {
     Navigator.pushReplacement(
       context, 
-      MaterialPageRoute(builder: (context) => const Pages())
+      MaterialPageRoute(builder: (context) => Pages())
     );
   }
 
