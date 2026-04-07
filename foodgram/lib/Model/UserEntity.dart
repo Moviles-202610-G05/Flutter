@@ -6,7 +6,11 @@ class Ususario {
   String roll = "ESTUDIANTE";
   final String password;
   final List<String> preferences;
-  final  String username;
+  final String username;
+  final double caloriesGoal;
+  final double proteinGoal;
+  final double carbsGoal;
+  final double fatGoal;
 
   Ususario({
     required this.universityId,
@@ -17,6 +21,10 @@ class Ususario {
     required this.preferences,
     required this.username, 
     roll = "ESTUDIANTE",
+    this.caloriesGoal = 2000,
+    this.proteinGoal  = 150,
+    this.carbsGoal    = 200,
+    this.fatGoal      = 67,
   });
 
   // Convierte el objeto en un Map
@@ -30,6 +38,10 @@ class Ususario {
       'password': password,
       'preferences': preferences,
       'username': username,
+      'caloriesGoal': caloriesGoal,
+      'proteinGoal':  proteinGoal,
+      'carbsGoal':    carbsGoal,
+      'fatGoal':      fatGoal,
     };
   }
 
@@ -43,7 +55,11 @@ class Ususario {
       roll: map['roll'] ?? '',
       password: map['password'] ?? '',
       preferences: List<String>.from(map['preferences'] ?? []),
-      username: map['username']
+      username: map['username'],
+      caloriesGoal: (map['caloriesGoal'] ?? 2000).toDouble(),
+      proteinGoal:  (map['proteinGoal']  ?? 150).toDouble(),
+      carbsGoal:    (map['carbsGoal']    ?? 200).toDouble(),
+      fatGoal:      (map['fatGoal']      ?? 67).toDouble(),
     );
   }
 
