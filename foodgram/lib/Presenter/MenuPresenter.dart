@@ -1,10 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/MenuRepository.dart';
-import 'package:foodgram/Model/UserEntity.dart';
-import 'package:foodgram/Model/UserRepository.dart';
-import 'package:foodgram/Model/UtilitysFierbase.dart';
 
 abstract class MenuView {
   void mostrarPlatos(List<Menu> platos);

@@ -5,7 +5,6 @@ import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/ReviewsEntity.dart';
 import 'package:foodgram/Model/ReviwsRepository.dart';
-import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/Presenter/RestauranteDetalle.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/write_review_screen.dart';

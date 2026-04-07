@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/View/feed_screen.dart';
 import 'package:foodgram/View/mapa.dart';
 import 'package:foodgram/View/restaurant_detalle_screen.dart';
@@ -7,19 +6,27 @@ import 'package:foodgram/View/restaurants_screen.dart';
 import 'package:foodgram/View/tracker_user_screen.dart';
 import 'package:foodgram/View/user_screen.dart';
 
+final GlobalKey<PagesState> pagesKey = GlobalKey<PagesState>();
 class Pages extends StatefulWidget {
-  const Pages({Key? key}) : super(key: key);
+  Pages({Key? key}) : super(key: pagesKey);
 
   @override
   State<Pages> createState() => PagesState();
-
-  
 }
 
 class PagesState extends State<Pages> {
-  int _currentIndex = 0; // estado inicial
+  int _currentIndex = 0; 
   int currentIndex2 = 0; 
   String rest = "";
+
+  void navegarARestauranteDirecto(String nombre) {
+    setState(() {
+      _currentIndex = 1; 
+      currentIndex2 = 1; 
+      rest = nombre;
+    });
+  }
+
 @override
 Widget build(BuildContext context) {
   return Scaffold(

@@ -2,9 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:foodgram/View/Notificaciones.dart';
 import 'package:foodgram/View/login_screen.dart';
-import 'package:foodgram/View/mapa.dart';
-import 'package:foodgram/View/restaurants_screen.dart';
-import 'package:foodgram/View/tracker_user_screen.dart' show TrackerScreen;
 import 'package:foodgram/firebase_options.dart';
 
 Future<void> main() async {
@@ -13,11 +10,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await NotificationService.init();
- 
   runApp(const MyApp());
-  await NotificationService.showSmartNotification();
-
-  
 }
 
 class MyApp extends StatelessWidget {
