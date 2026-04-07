@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
-import 'package:foodgram/Presenter/UsarioPresenter.dart';
+import 'package:foodgram/Presenter/UserPresenter.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
 
@@ -20,11 +20,11 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
   final _usernameController= TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _paswordController = TextEditingController();
-
-  
   late UserPresenter presenter;
 
-  
+  @override
+  void onLoginSuccess() {
+  }
   
   String? _selectedCarrier;
   List<String> _selectedPreferences = [];
@@ -32,7 +32,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
   @override
   void initState() {
     super.initState();
-    presenter = UserPresenter(UserRepository(), this); // inicialización aquí
+    presenter = UserPresenter(this);
   }
 
 
@@ -363,8 +363,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
   }
   
   @override
-  void mostrarPerfil(Ususario usuario) {
-    // TODO: implement mostrarPerfil
+  void mostrarPerfil(Usuario usuario) {
   }
   
 }

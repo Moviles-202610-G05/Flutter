@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/preregister_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:foodgram/Presenter/UserPresenter.dart';
 
 class LoginScreen extends StatefulWidget {
+
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
-
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> implements UserView {
   final _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  late UserPresenter _userPresenter;
   bool _obscurePassword = true;
 
   @override
@@ -51,7 +52,38 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _userPresenter = UserPresenter(this); 
+  }
 
+  @override
+  void onLoginSuccess() {
+    Navigator.pushReplacement(
+      context, 
+      MaterialPageRoute(builder: (context) => const Pages())
+    );
+  }
+
+  @override
+  void mostrarError(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje), backgroundColor: Colors.red)
+    );
+  }
+
+  @override
+  void mostrarExito(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje), backgroundColor: Colors.green)
+    );
+  }
+
+  @override
+  void mostrarPerfil(usuario) => {};
+  @override
+  void mostrarUsuarios(usuarios) => {};
 
   @override
   Widget build(BuildContext context) {
@@ -213,58 +245,76 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              // Social Login Buttons
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Handle Google login
-                      },
-                      icon: const Icon(Icons.g_mobiledata, color: Colors.black, size: 32),
-                      label: const Text(
-                        'Google',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
+                    child: SizedBox(
+                      height: 60, 
+                      child: OutlinedButton(
+                        onPressed: () => _userPresenter.iniciarSesionGoogle(),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: BorderSide(color: Colors.grey[300]!),
                         ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 32, // Ancho fijo
+                              height: 32, // Alto fijo
+                              alignment: Alignment.center,
+                              child: const Icon(
+                                Icons.g_mobiledata, 
+                                color: Colors.black, 
+                                size: 32 
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Google',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
                         ),
-                        side: BorderSide(color: Colors.grey[300]!),
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Handle Apple login
-                      },
-                      icon: const Icon(Icons.apple, color: Colors.black, size: 24),
-                      label: const Text(
-                        'Apple',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
+                    child: SizedBox(
+                      height: 60,
+                      child: OutlinedButton.icon(
+                        onPressed: () { /* Lógica Apple */ },
+                        icon: const Icon(Icons.apple, color: Colors.black, size: 26),
+                        label: const Text(
+                          'Apple',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        style: OutlinedButton.styleFrom(
+                          // Padding ajustado para coincidir visualmente
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: BorderSide(color: Colors.grey[300]!),
                         ),
-                        side: BorderSide(color: Colors.grey[300]!),
                       ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 32),
-              // Sign Up Link
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -6,8 +6,7 @@ import 'package:foodgram/View/Login_screen.dart';
 import 'package:foodgram/View/orders_user_screen.dart';
 import 'package:foodgram/View/reviews_user_screen.dart';
 import 'package:foodgram/View/saved_user_screen.dart';
-import 'package:foodgram/Presenter/UsarioPresenter.dart';
-import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Presenter/UserPresenter.dart';
 import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/MealRepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,12 +35,12 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   @override
   void initState() {
     super.initState();
-    _presenter = UserPresenter(UserRepository(), this);
+    _presenter = UserPresenter(this);
     _presenter.cargarPerfilActual();
   }
 
   @override
-  void mostrarPerfil(Ususario usuario) {
+  void mostrarPerfil(Usuario usuario) {
     setState(() {
       _name          = usuario.name;
       _username      = usuario.username;
@@ -56,6 +55,10 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   }
 
   @override
+  void onLoginSuccess() {
+  }
+
+  @override
   void mostrarError(String mensaje) {
     setState(() => _isLoading = false);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
@@ -67,9 +70,8 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   }
 
   @override
-  void mostrarUsuarios(List<Ususario> usuarios) {}
+  void mostrarUsuarios(List<Usuario> usuarios) {}
 
-  @override
   @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -274,7 +276,6 @@ Widget build(BuildContext context) {
                             MaterialPageRoute(builder: (_) => const PostPrivacityScreen())),
                       ),
                       const SizedBox(height: 24),
-
                       InkWell(
                         onTap: () async {
                           await FirebaseAuth.instance.signOut();
@@ -282,20 +283,52 @@ Widget build(BuildContext context) {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => const LoginScreen()),
-                              (route) => false, // Esto evita que el usuario pueda volver atrás
+                              (route) => false,
                             );
                           }
                         },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.logout, color: Color.fromARGB(255, 255, 38, 0)),
-                            SizedBox(width: 8),
-                            Text("Log out",
+                        // Agregamos un BorderRadius al InkWell para que el efecto visual al tocarlo
+                        // coincida con la forma del botón
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          // Espaciado interno para que el contenido no toque los bordes
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white, // Fondo blanco
+                            borderRadius: BorderRadius.circular(12), // Bordes redondeados
+                            border: Border.all(
+                              color: const Color(0xFFFF6347), // Tu color naranja característico
+                              width: 1.8, // Grosor del borde
+                            ),
+                            // Opcional: una sombra muy suave para dar profundidad
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 5,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min, // Hace que el botón se ajuste al contenido
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.logout, 
+                                color: Color(0xFFFF6347), // Color unificado
+                                size: 20,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Log out",
                                 style: TextStyle(
-                                    color: Color(0xFFFF6347),
-                                    fontWeight: FontWeight.bold)),
-                          ],
+                                  color: Color(0xFFFF6347),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(height: 40),

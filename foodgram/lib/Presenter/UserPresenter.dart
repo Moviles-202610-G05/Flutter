@@ -4,18 +4,18 @@ import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 
 abstract class UserView {
+  void onLoginSuccess();
   void mostrarUsuarios(List<Usuario> usuarios);
   void mostrarError(String mensaje);
   void mostrarExito(String mensaje);
-  void mostrarPerfil(Ususario usuario);
+  void mostrarPerfil(Usuario usuario);
 }
 
 class UserPresenter {
-  final UserRepository repository;
+  final UserRepository repository = UserRepository();
   final UserView view;
 
-  UserPresenter(this.repository, this.view);
-
+  UserPresenter(this.view);
 
   /// Crear un nuevo usuario con unicidad de correo y username
   Future<void> crearEstudiante(Usuario usuario) async {
@@ -39,7 +39,6 @@ class UserPresenter {
     }
   }
 
-   // Carga el perfil del usuario actualmente logueado
   Future<void> cargarPerfilActual() async {
     try {
       final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -55,6 +54,19 @@ class UserPresenter {
       view.mostrarPerfil(usuario);
     } catch (e) {
       view.mostrarError("Error al cargar perfil: $e");
+    }
+  }
+
+  Future<void> iniciarSesionGoogle() async {
+    try {
+      final user = await repository.signInWithGoogle();
+      if (user != null) {
+        view.onLoginSuccess();
+      } else {
+        view.mostrarError("Inicio de sesión cancelado.");
+      }
+    } catch (e) {
+      view.mostrarError("Error de autenticación: $e");
     }
   }
 
