@@ -6,7 +6,7 @@ import 'package:foodgram/Model/ReviewsEntity.dart';
 
 class Restaurant{
   final String name;
-  final String image;
+  String image;
   final double rating;
   final String price;
   final String cuisine;
@@ -48,9 +48,11 @@ class Restaurant{
 
   factory Restaurant.fromMap(Map<String, dynamic> map) {
 
+    print(map);
+
     return Restaurant(
       name: map['name'] ?? '',
-      image: map['restaurantImage'] ?? '',
+      image: map['image'] ?? '',
       rating: (map['rating'] ?? 0).toDouble(),
       price: map['price'] ?? '',
       cuisine: map['cuisine'] ?? '',
@@ -58,7 +60,7 @@ class Restaurant{
       distance: map['distance'] ?? '',
       long: (map['long'] ?? 0).toDouble(),
       lat: (map['lat'] ?? 0).toDouble(),
-      numberReviews: map['nuberReviews'],
+      numberReviews: int.parse(map['numberReviews']?? 0),
       badge: map['badge'] ?? '', 
       badge2: map['badge2'] ?? '',
       description: map['description'] ?? '',
@@ -97,6 +99,8 @@ class Restaurant{
   String toString() {
     return 'Restaurant(nombre: $name, direccion: $rating)';
   }
+
+  
 
  
 

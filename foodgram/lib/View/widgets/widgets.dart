@@ -1,5 +1,7 @@
   import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 
 class CustomWidgets {
 
@@ -41,16 +43,18 @@ class CustomWidgets {
     required String? value,
     required List<String> items,
     required Function(String?) onChanged,
-    required IconData icon
+    required IconData icon,
   }) {
     return DropdownButtonFormField<String>(
       value: value,
       onChanged: onChanged,
-     
+      isExpanded: true,
+      alignment: AlignmentDirectional.centerStart,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.grey, size: 20),
         filled: true,
+        
         
         fillColor: Colors.grey[100],
         border: OutlineInputBorder(
@@ -64,7 +68,7 @@ class CustomWidgets {
           .map(
             (item) => DropdownMenuItem(
               value: item,
-
+              
               child: 
                   Text(
                     item,
@@ -79,5 +83,57 @@ class CustomWidgets {
     );
   }
 
+  
+
 }
+
+class AddressField extends StatelessWidget {
+  final TextEditingController controller;
+  final Function(String address, double lat, double lng)? onSelected;
+
+  const AddressField({
+    super.key,
+    required this.controller,
+    this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child:GooglePlaceAutoCompleteTextField(
+      textEditingController: controller,
+      googleAPIKey: "AIzaSyDxzMLWUCmAQqm2dpmpDzkC3L8r09rEri4",
+      inputDecoration: InputDecoration(
+        labelText: 'Restaurant adress',
+        prefixIcon: Icon(Icons.location_on_outlined),
+        filled: true,
+        
+        fillColor: Colors.grey[100],
+
+        border: OutlineInputBorder(
+          
+          borderRadius: BorderRadius.circular(28),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        labelStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+      ),
+      debounceTime: 400,        // ms de espera al escribir
+      countries: const ["co"],  // solo Colombia
+      isLatLngRequired: true,
+      getPlaceDetailWithLatLng: (Prediction prediction) {
+        onSelected?.call(
+          prediction.description ?? '',
+          double.parse(prediction.lat ?? '0'),
+          double.parse(prediction.lng ?? '0'),
+        );
+      },
+      itemClick: (Prediction prediction) {
+        controller.text = prediction.description ?? '';
+        controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: controller.text.length),
+        );
+      },
+    ));
+  }}
 

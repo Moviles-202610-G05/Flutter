@@ -17,8 +17,8 @@ class Menu {
     required this.description,
     required this.image,
     required this.restaurant,
-    this.imagenFiel, required 
-    this.category,
+    this.imagenFiel, 
+    required this.category,
   });
 
   // Convertir objeto a Map (para guardar en Firestore)
@@ -45,6 +45,6 @@ class Menu {
   }
 
   Future<void> setImagen(Future<String> subirImagen) async {
-    this.image = await subirImagen;
+    image = await subirImagen;
   }
 }

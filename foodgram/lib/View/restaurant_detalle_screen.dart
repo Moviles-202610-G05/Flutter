@@ -421,8 +421,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     final String url =
       "https://maps.googleapis.com/maps/api/staticmap?"
       "center=${restaurants.lat},${restaurants.long}&zoom=14&size=600x400"
-      "&markers=color:red%7C${restaurants.lat},${restaurants.long}"
       "&key=$apiKey";
+    print (url);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -465,8 +465,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            '123 Culinary Lane',
+          Text(
+            "${restaurants.direction}",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -474,7 +474,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
           ),
           const SizedBox(height: 4),
           Text(
-            'Foodie District, Gastronomy City, GC\n10101',
+            '0101',
             style: TextStyle(
               fontSize: 13,
               color: Colors.grey[600],
@@ -553,55 +553,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     );
   }
 
-  Widget _buildBottomBar() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          _BottomNavItem(
-            icon: Icons.list_alt,
-            label: 'FEED',
-            isSelected: false,
-            onTap: () {},
-          ),
-          _BottomNavItem(
-            icon: Icons.search,
-            label: 'SEARCH',
-            isSelected: false,
-            onTap: () {},
-          ),
-          _BottomNavItem(
-            icon: Icons.person_outline,
-            label: 'PROFILE',
-            isSelected: false,
-            onTap: () {},
-          ),
-          _BottomNavItem(
-            icon: Icons.trending_up,
-            label: 'TRACKER',
-            isSelected: true,
-            onTap: () {},
-          ),
-          _BottomNavItem(
-            icon: Icons.map_outlined,
-            label: 'MAP',
-            isSelected: false,
-            onTap: () {},
-          ),
-        ],
-      ),
-    );
-  }
   
   @override
   void mostrarMenu(List<Menu> menu) {
@@ -647,12 +598,18 @@ class _DishCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              dish.image, 
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
+            borderRadius: BorderRadius.circular(8),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 80,
+                maxHeight: 80,
+              ),
+              child: Image.network(
+                dish.image,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(width: 12),

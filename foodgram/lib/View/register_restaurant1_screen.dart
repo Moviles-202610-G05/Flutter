@@ -28,6 +28,9 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
   final _paswordController = TextEditingController();
   final _spotsController = TextEditingController();
   final _descriptionController = TextEditingController();
+
+  double? _lat, _lng;
+  String? _address;
   String? _selectedBiginning;
   String? _selectedEnd;
   final List<String> _time = [
@@ -60,9 +63,9 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
   String? _selectedPrice;
 final List<String> _prices = [
     'less 10k',
-    'between 10k and 25k',
-    'between 25k and 50k',
-    'more 40k'
+    '10k-25k',
+    '25k-50k',
+    'more 50k'
   ];
 final  Map<String, String> _prices2 = {
   'less 10k': "\$",
@@ -283,17 +286,19 @@ final  Map<String, String> _prices2 = {
                     },
                   ),
                   const SizedBox(height: 16),
-                  CustomWidgets.buildTextField(
-                    controller: _addressController,
-                    label: 'Business Address',
-                    icon: Icons.location_on_outlined,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter address';
-                      }
-                      return null;
-                    },
-                  ),
+                  SizedBox(
+                          width: double.infinity,
+                          child: AddressField(
+                          controller: _addressController,
+                          onSelected: (address, lat, lng) {
+                            setState(() {
+                              _address = address;
+                              _lat = lat;
+                              _lng = lng;
+                            });
+                          },
+                        )),
+
                    const SizedBox(height: 16),
                   // --- CUISINE TYPE DROPDOWN ---
                   CustomWidgets.buildDropdownField(
@@ -315,7 +320,7 @@ final  Map<String, String> _prices2 = {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                               CustomWidgets.buildTextField (controller: _spotsController, keyboardType: TextInputType.number,label: "Spots in the restaurant", icon: Icons.lock,  ocultar: true ,validator: (value) {
+                               CustomWidgets.buildTextField (controller: _spotsController, keyboardType: TextInputType.number,label: "Spots", icon: Icons.lock,validator: (value) {
                            if (value == null || value.isEmpty) {
                             return 'Please enter a number of spots';
                             }
@@ -324,13 +329,18 @@ final  Map<String, String> _prices2 = {
                           ],
                         ),
                       ),
+                    
+            
+
+
+
                       const SizedBox(width: 16),
                       Expanded(
                         flex: 1,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             CustomWidgets.buildDropdownField(label: "Carrier", value: _selectedPrice, items: _prices, icon: Icons.attach_money, onChanged: (value) {
+                             CustomWidgets.buildDropdownField(label: "Price", value: _selectedPrice, items: _prices, icon: Icons.attach_money, onChanged: (value) {
                              setState(() {
                                   _selectedPrice = value;
                                 });
@@ -341,7 +351,7 @@ final  Map<String, String> _prices2 = {
                       ),
                     ],
                   ),
-
+                  const SizedBox(height: 16),
                   Row(
                     children: [
                       Expanded(
@@ -349,7 +359,7 @@ final  Map<String, String> _prices2 = {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                           CustomWidgets.buildDropdownField(label: "Carrier", value: _selectedBiginning, items: _time, icon: Icons.access_time, onChanged: (value) {
+                           CustomWidgets.buildDropdownField(label: "Bigining", value: _selectedBiginning, items: _time, icon: Icons.access_time, onChanged: (value) {
                              setState(() {
                                   _selectedBiginning = value;
                                 });
@@ -365,7 +375,7 @@ final  Map<String, String> _prices2 = {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             CustomWidgets.buildDropdownField(label: "Carrier", value: _selectedEnd, items: _time, icon: Icons.access_time, onChanged: (value) {
+                             CustomWidgets.buildDropdownField(label: "End", value: _selectedEnd, items: _time, icon: Icons.access_time, onChanged: (value) {
                              setState(() {
                                   _selectedEnd = value;
                                 });
@@ -548,9 +558,9 @@ final  Map<String, String> _prices2 = {
                           price: _pricer, 
                           cuisine: _selectedCuisine ?? "", 
                           time: _time, 
-                          distance: '2 km', 
-                          long: 0, 
-                          lat: 0, 
+                          distance: '0 km', 
+                          long: _lng ?? 0, 
+                          lat: _lat ?? 0, 
                           badge: '', 
                           badge2: '', 
                           numberReviews: 0, 
