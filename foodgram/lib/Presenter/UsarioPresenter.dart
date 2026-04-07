@@ -4,7 +4,7 @@ import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 
 abstract class UserView {
-  void mostrarUsuarios(List<Ususario> usuarios);
+  void mostrarUsuarios(List<Usuario> usuarios);
   void mostrarError(String mensaje);
   void mostrarExito(String mensaje);
   void mostrarPerfil(Ususario usuario);
@@ -16,7 +16,9 @@ class UserPresenter {
 
   UserPresenter(this.repository, this.view);
 
-  Future<void> crearEstudiante(Ususario usuario) async {
+
+  /// Crear un nuevo usuario con unicidad de correo y username
+  Future<void> crearEstudiante(Usuario usuario) async {
     try {
       bool disponible = await repository.isUsernameAvailable(usuario.username);
       if (!disponible) {

@@ -1,9 +1,15 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+
 class Menu {
   final String name;
   final String price;
   final String description;
-  final String image;
+  String image;
   final String restaurant;
+  File? imagenFiel;
+  final String category;
 
   Menu({
     required this.name,
@@ -11,6 +17,8 @@ class Menu {
     required this.description,
     required this.image,
     required this.restaurant,
+    this.imagenFiel, required 
+    this.category,
   });
 
   // Convertir objeto a Map (para guardar en Firestore)
@@ -32,6 +40,11 @@ class Menu {
       description: map['description'] ?? '',
       image: map['image'] ?? '',
       restaurant: map['restaurant']?? '',
+      category: map['category']?? '',
     );
+  }
+
+  Future<void> setImagen(Future<String> subirImagen) async {
+    this.image = await subirImagen;
   }
 }
