@@ -34,7 +34,7 @@ class NotificationService {
     final int hour = DateTime.now().hour;
 
     if (hour >= 0 && hour < 24) {
-      return "🍕 ¡Buenoss días! ¿Ya pensaste en el almuerzo? La Pizzería tiene las mejores opciones para ti.";
+      return "Two of your friends are having lunch at La Pizzería🍕";
     } else {
       return "Hola";
     }
@@ -61,7 +61,7 @@ class NotificationService {
 
     await notifications.show(
       0,
-      '🍽️ Recomendación del momento',
+      '¿Where are your Frends?',
       message,
       details,
     );

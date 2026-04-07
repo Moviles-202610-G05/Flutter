@@ -16,8 +16,7 @@ Future<void> main() async {
  
   runApp(const MyApp());
   await NotificationService.showSmartNotification();
-  print("hola");
-  
+
   
 }
 

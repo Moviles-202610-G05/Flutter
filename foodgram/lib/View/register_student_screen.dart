@@ -362,4 +362,9 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
       
   }
   
+  @override
+  void mostrarPerfil(Ususario usuario) {
+    // TODO: implement mostrarPerfil
+  }
+  
 }
