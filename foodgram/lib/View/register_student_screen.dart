@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/UserEntity.dart';
-import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/UserPresenter.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/widgets/widgets.dart';

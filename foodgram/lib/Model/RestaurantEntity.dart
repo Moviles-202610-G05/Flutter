@@ -1,9 +1,5 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:foodgram/Model/ReviewsEntity.dart';
-
-
 class Restaurant{
   final String name;
   String image;
