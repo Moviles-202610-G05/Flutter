@@ -35,7 +35,7 @@ class RestaurantPresenter {
     }
   }
   UtilitisFirebase utilitisFirebase = UtilitisFirebase();
-  Future<void> agregarRestaurante(Restaurant restaurante, Usuario usuario) async {
+  Future<bool> agregarRestaurante(Restaurant restaurante, Usuario usuario) async {
     try {
       
       
@@ -43,7 +43,7 @@ class RestaurantPresenter {
       bool disponible = await repositoryUsuario.isUsernameAvailable(usuario.username);
       if (!disponible) {
         view.mostrarError("The user name is in use.");
-        return;
+        return false;
       }
 
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: usuario.email, password: usuario.password, );
@@ -54,12 +54,13 @@ class RestaurantPresenter {
       restaurante.image = await imagen; 
       await repository.crearRestaurante(restaurante);
       view.mostrarExito("Restaurante agregado correctamente");
-
-      view.mostrarExito("Usuario creado correctamente."); 
+      return true;
     } on FirebaseAuthException catch (e) {
       view.mostrarError("Error de autenticación: ${e.message}");
+      return false;
     } catch (e) {
       view.mostrarError("Error al crear usuario: $e");
+      return false;
     }
     
   }

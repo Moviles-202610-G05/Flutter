@@ -11,7 +11,7 @@ async function seedRestaurants() {
  const restaurants = [
     {
       "name": "La Pizzería Uniandes",
-      "restaurantImage": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200",
+      "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200",
       "rating": 4.5,
       "price": "$$",
       "cuisine": "Italiana",
@@ -28,11 +28,12 @@ async function seedRestaurants() {
       "description": "Pizzas artesanales ideales para el almuerzo entre clases.",
       "nuberReviews": 10,
       "spots": 340,
-      "spotsA": 230
+      "spotsA": 230,
+      "tags": ["Vegetarian", "Fast Food"]
     },
     {
       "name": "Sushi House Candelaria",
-      "restaurantImage": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200",
+      "image": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200",
       "rating": 4.7,
       "price": "$$$",
       "cuisine": "Japonesa",
@@ -49,11 +50,12 @@ async function seedRestaurants() {
       "description": "Rollos frescos y bento boxes para estudiantes y profesores.",
       "nuberReviews": 100,
       "spots": 100,
-      "spotsA": 100
+      "spotsA": 100,
+      "tags": ["Healthy", "Gluten-Free", "Dairy-Free"]
     },
     {
       "name": "Burger Palace CityU",
-      "restaurantImage": "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200",
+      "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200",
       "rating": 4.3,
       "price": "$$",
       "cuisine": "Americana",
@@ -70,10 +72,11 @@ async function seedRestaurants() {
       "description": "Las mejores hamburguesas para después de un parcial pesado.",
       "nuberReviews": 234,
       "spots": 150,
-      "spotsA": 10
+      "spotsA": 10,
+      "tags": ["Fast Food", "Halal"]
     },
     {"name": "Suba Steak House",
-      "restaurantImage": "https://images.unsplash.com/photo-1546241072-48010ad28c2c?w=1200",
+      "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200",
       "rating": 4.6,
       "price": "$$$",
       "cuisine": "Parrilla",
@@ -90,11 +93,12 @@ async function seedRestaurants() {
       "description": "Cortes madurados a la brasa en un ambiente familiar cerca de tu casa.",
       "nuberReviews": 45,
       "spots": 120,
-      "spotsA": 45
+      "spotsA": 45,
+      "tags": ["Keto", "Gluten-Free"]
     },
     {
       "name": "Wok & Roll Colina",
-      "restaurantImage": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=1200",
+      "image": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=1200",
       "rating": 4.8,
       "price": "$$",
       "cuisine": "Asiática",
@@ -111,11 +115,12 @@ async function seedRestaurants() {
       "description": "Lo mejor del sushi y pad thai con ingredientes frescos locales.",
       "nuberReviews": 89,
       "spots": 80,
-      "spotsA": 20
+      "spotsA": 20,
+      "tags": ["Vegan", "Healthy", "Dairy-Free"]
     },
     {
       "name": "Boccone Pizza",
-      "restaurantImage": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=1200",
+      "image": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=1200",
       "rating": 4.4,
       "price": "$",
       "cuisine": "Italiana",
@@ -132,7 +137,8 @@ async function seedRestaurants() {
       "description": "Pizza artesanal de masa delgada lista para llevar o disfrutar en el sitio.",
       "nuberReviews": 156,
       "spots": 50,
-      "spotsA": 15
+      "spotsA": 15,
+      "tags": ["Vegetarian", "Fast Food"]
     }
   ];
 

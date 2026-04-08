@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart';
 
 
 class FeaturedCard extends StatelessWidget {
@@ -14,11 +15,20 @@ class FeaturedCard extends StatelessWidget {
     required this.rating,
     required this.primary,
   });
-
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+                          onTap: () {
+                                final pagesState = context.findAncestorStateOfType<PagesState>();
+                                pagesState?.setState(() {
+                                print(name);
+                                pagesState.setCurrentIndex2(1, name); // Cambia al índice de tu vista especial
+                            } );
+                            },
+      
+      
       child: Stack(
         children: [
           SizedBox(
@@ -46,7 +56,7 @@ class FeaturedCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 
@@ -287,7 +297,7 @@ class Badge extends StatelessWidget {
 class Recommended extends StatelessWidget{
 
   final Color primary;
-  final featured;
+  final List<Restaurant> featured;
 
   const Recommended({
     required this.primary,
@@ -301,6 +311,7 @@ class Recommended extends StatelessWidget{
     
 
       child: Column(
+        
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -329,9 +340,10 @@ class Recommended extends StatelessWidget{
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 14),
               itemBuilder: (_, index) => FeaturedCard(
-                image: featured[index]['image'],
-                name: featured[index]['name'],
-                rating: featured[index]['rating'],
+                
+                image: featured[index].image,
+                name: featured[index].name,
+                rating: featured[index].rating,
                 primary: primary,
               ),
               separatorBuilder: (_, __) => const SizedBox(width: 10),

@@ -28,11 +28,22 @@ class _RestaurantRegisterScreenState extends State<RestaurantRegisterScreen> {
   final _paswordController = TextEditingController();
   final _spotsController = TextEditingController();
   final _descriptionController = TextEditingController();
+  List<String> _selectedPreferences = [];
 
   double? _lat, _lng;
   String? _address;
   String? _selectedBiginning;
   String? _selectedEnd;
+  final List<String> _foodPreferences = [
+    'Vegan',
+    'Vegetarian',
+    'Gluten-Free',
+    'Halal',
+    'Fast Food',
+    'Healthy',
+    'Keto',
+    'Dairy-Free',
+  ];
   final List<String> _time = [
     "00:00","00:30",
     "01:00","01:30",
@@ -512,6 +523,61 @@ final  Map<String, String> _prices2 = {
                       ],
                     ),
                   ),),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Restaurant Tags',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _foodPreferences.map((preference) {
+                      final isSelected = _selectedPreferences.contains(preference);
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              _selectedPreferences.remove(preference);
+                            } else {
+                              _selectedPreferences.add(preference);
+                            }
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFFFF6933)
+                                : Colors.white,
+                            border: Border.all(
+                              color: isSelected
+                                  ? const Color(0xFFFF6933)
+                                  : Colors.grey[300]!,
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            preference,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: isSelected ? Colors.white : Colors.grey[700],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                   const SizedBox(height: 32),
 
                   // --- LOGIN LINK ---
@@ -568,6 +634,7 @@ final  Map<String, String> _prices2 = {
                           direction: _addressController.text, 
                           spots: int.tryParse(_spotsController.text) ?? 0, 
                           spotsA: int.tryParse(_spotsController.text) ?? 0, 
+                          tags: _selectedPreferences,
                           imagenFiel: _imagenSeleccionada);
                           var user = Usuario(universityId: '', name: _ownerNameController.text, email: _emailController.text, carrier: _restaurantNameController.text, password: _paswordController.text, preferences: [], username: _usernameController.text);
                           Navigator.push(

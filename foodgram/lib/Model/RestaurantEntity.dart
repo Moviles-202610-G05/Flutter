@@ -21,6 +21,7 @@ class Restaurant{
   final String direction;
   final int spots;
   final int spotsA;
+  final List<dynamic> tags;
   File? imagenFiel;
 
 
@@ -42,6 +43,7 @@ class Restaurant{
     required this.spots,
     required this.spotsA,
     this.imagenFiel,
+    required this.tags
 
   });
   
@@ -53,20 +55,21 @@ class Restaurant{
     return Restaurant(
       name: map['name'] ?? '',
       image: map['image'] ?? '',
-      rating: (map['rating'] ?? 0).toDouble(),
+      rating: double.tryParse(map['rating']?.toString() ?? '0.0') ?? 0.0,
       price: map['price'] ?? '',
       cuisine: map['cuisine'] ?? '',
       time: map['time'] ?? '',
       distance: map['distance'] ?? '',
       long: (map['long'] ?? 0).toDouble(),
       lat: (map['lat'] ?? 0).toDouble(),
-      numberReviews: int.parse(map['numberReviews']?? 0),
+      numberReviews: int.tryParse(map['nuberReviews']?.toString() ?? '0') ?? 0,
       badge: map['badge'] ?? '', 
       badge2: map['badge2'] ?? '',
       description: map['description'] ?? '',
       direction: map['direction']??'',
-      spots: map['spots'],
-      spotsA: map['spotsA'],
+      spots: map['spots']?? 0,
+      spotsA: map['spotsA'] ?? 0,
+      tags: map['tags'] ?? [],
     
     );
   }
@@ -90,7 +93,8 @@ class Restaurant{
       'description': description,
       'direction': direction,
       'spots': spots,
-      'spotsA': spots
+      'spotsA': spots,
+      'tags': tags
     };
   }
 
