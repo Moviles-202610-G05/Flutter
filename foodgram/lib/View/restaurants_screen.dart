@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
+import 'package:foodgram/Model/RestauranteUsuarioRepository.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
-import 'package:foodgram/View/pagesInsideStudent.dart' show PagesState;
+import 'package:foodgram/Presenter/UsuarioRestaurantePresenter.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart' show Pages, PagesState;
+import 'package:foodgram/View/restaurant_detalle_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:foodgram/View/widgets/restaurants.dart';
 import 'package:foodgram/View/Notificaciones.dart';
@@ -14,39 +17,29 @@ class RestaurantFeed extends StatefulWidget {
 }
 
 class _RestaurantFeed extends State<RestaurantFeed> 
-  implements RestaurantView {
+  implements RestaurantView, RestaurantUsuarioView{
   late RestaurantPresenter presenter;
+  late RestaurantUsuarioPresenter presenter2;
   List<Restaurant> restaurantes = [];
   static const Color primary = Color(0xFFFF6933);
   final Set<int> favorites = {};
   int selectedCategory = 0;
   final categories = const ['Italian', 'Mexican', 'Fast Food'];
 
-  final List<Map<String, dynamic>> featured = const [
-    {
-      'name': 'Oasis Garden',
-      'rating': 4.9,
-      'image':
-          'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200',
-    },
-    {
-      'name': 'Steakhouse',
-      'rating': 4.7,
-      'image':
-          'https://images.unsplash.com/photo-1544025162-d76694265947?w=1200',
-    },
+  List<Restaurant> featured = const [
   ];
 
-@override
-void initState() {
-  super.initState();
-  presenter = RestaurantPresenter(RestaurantRepository(), UserRepository() ,this);
-  presenter.cargarRestaurantes();
-  
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    NotificationService.showSmartNotification();
-  });
-}
+  @override
+  void initState() {
+    super.initState();
+    presenter = RestaurantPresenter(RestaurantRepository(), UserRepository() ,this);
+    presenter2 = RestaurantUsuarioPresenter(RestaurantUsuarioRepository(), this);
+    presenter.cargarRestaurantes();
+    presenter2.recomendaciones();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.showSmartNotification();
+    });
+  }
 
   @override
   void mostrarRestaurantes(List<Restaurant> restaurantes) {
@@ -259,5 +252,18 @@ void initState() {
 
   @override
   void mostrarRuta(List<LatLng> polylineCoordinates) {
+  }
+  
+  @override
+  void mostrarError2(String mensaje) {
+    // TODO: implement mostrarError2
+  }
+  
+  @override
+  void mostrarRecomendaciones(List<Restaurant>? restaurantesSugeridos) {
+    print("--------------hola---------------");
+    featured = (restaurantesSugeridos ?? restaurantes)
+      .take(4) 
+      .toList();
   }
 }

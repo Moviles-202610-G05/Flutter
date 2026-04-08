@@ -9,6 +9,7 @@ import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/MenuPresenter.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,6 +43,10 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
   void mostrarExito(String mensaje) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(mensaje)),
+    );
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Pages()),
     );
   }
   
@@ -487,6 +492,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
           ],
         ),
       ),
+
     bottomNavigationBar: Container(
       color: const Color.fromARGB(0, 33, 149, 243),
       padding: EdgeInsets.all(16),
@@ -497,9 +503,10 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
           color: const Color.fromARGB(0, 33, 149, 243),
           height: 56,
           child: ElevatedButton(
-            onPressed: () {
-              presenterMenu.crearPlatos(menuItems);
-              presenterRestaurant.agregarRestaurante(widget.restaurante, widget.user);
+            onPressed: () async {
+              if (await presenterRestaurant.agregarRestaurante(widget.restaurante, widget.user)){
+                presenterMenu.crearPlatos(menuItems);
+              }
               
             },
             style: ElevatedButton.styleFrom(

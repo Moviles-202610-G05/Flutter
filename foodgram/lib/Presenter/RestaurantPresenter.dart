@@ -5,7 +5,6 @@ import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Model/UtilitysFierbase.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 abstract class RestaurantView {
@@ -27,31 +26,6 @@ class RestaurantPresenter {
 
   RestaurantPresenter(this.repository, this.repositoryUsuario, this.view);
 
-  Future<void> calcularRuta(double destLat, double destLng) async {
-  PolylinePoints polylinePoints = PolylinePoints(apiKey: 'AIzaSyDxzMLWUCmAQqm2dpmpDzkC3L8r09rEri4');
-  Position position = await _getCurrentLocation();
-  // 1. Pedir la ruta a Google
-  PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-    request: PolylineRequest(
-      origin: PointLatLng(position.latitude, position.longitude),
-      destination: PointLatLng(destLat, destLng),
-      mode: TravelMode.driving, // Puede ser walking para estudiantes en Uniandes
-    ),
-  );
-
-  if (result.points.isNotEmpty) {
-    List<LatLng> polylineCoordinates = [];
-    
-    // 2. Convertir los puntos de la respuesta en LatLng de Flutter
-    for (var point in result.points) {
-      polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-    }
-    print("STATUS DE LA RUTA: ${result.status}");
-    // 3. Enviarlo a la vista para que lo pinte
-    view.mostrarRuta(polylineCoordinates);
-  }
-}
-
   Future<void> cargarRestaurantes() async {
     try {
       final restaurantes = await repository.todosRestaurantes();
@@ -61,29 +35,32 @@ class RestaurantPresenter {
     }
   }
   UtilitisFirebase utilitisFirebase = UtilitisFirebase();
-  Future<void> agregarRestaurante(Restaurant restaurante, Usuario usuario) async {
+  Future<bool> agregarRestaurante(Restaurant restaurante, Usuario usuario) async {
     try {
       
-      view.mostrarExito("Restaurante agregado correctamente");
+      
       usuario.setRol("RESTAURANTE") ;
       bool disponible = await repositoryUsuario.isUsernameAvailable(usuario.username);
       if (!disponible) {
-        view.mostrarError("El nombre de usuario ya está en uso.");
-        return;
+        view.mostrarError("The user name is in use.");
+        return false;
       }
 
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: usuario.email, password: usuario.password, );
 
       
-      utilitisFirebase.subirImagen(restaurante.imagenFiel!);
+      var imagen = utilitisFirebase.subirImagen(restaurante.imagenFiel!);
       await repositoryUsuario.crearUser(usuario); 
+      restaurante.image = await imagen; 
       await repository.crearRestaurante(restaurante);
-
-      view.mostrarExito("Usuario creado correctamente."); 
+      view.mostrarExito("Restaurante agregado correctamente");
+      return true;
     } on FirebaseAuthException catch (e) {
       view.mostrarError("Error de autenticación: ${e.message}");
+      return false;
     } catch (e) {
       view.mostrarError("Error al crear usuario: $e");
+      return false;
     }
     
   }

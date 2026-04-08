@@ -16,6 +16,7 @@ class MenuPresenter {
   
 
   Future<void> crearPlatos(List<Menu> platos) async {
+    print(platos);
     try {
       
       await repository.crearPlatos(platos);

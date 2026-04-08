@@ -2,7 +2,7 @@ import 'dart:io';
 
 class Restaurant{
   final String name;
-  final String image;
+  String image;
   final double rating;
   final String price;
   final String cuisine;
@@ -17,6 +17,7 @@ class Restaurant{
   final String direction;
   final int spots;
   final int spotsA;
+  final List<dynamic> tags;
   File? imagenFiel;
 
 
@@ -38,29 +39,33 @@ class Restaurant{
     required this.spots,
     required this.spotsA,
     this.imagenFiel,
+    required this.tags
 
   });
   
 
   factory Restaurant.fromMap(Map<String, dynamic> map) {
 
+    print(map);
+
     return Restaurant(
       name: map['name'] ?? '',
-      image: map['restaurantImage'] ?? '',
-      rating: (map['rating'] ?? 0).toDouble(),
+      image: map['image'] ?? '',
+      rating: double.tryParse(map['rating']?.toString() ?? '0.0') ?? 0.0,
       price: map['price'] ?? '',
       cuisine: map['cuisine'] ?? '',
       time: map['time'] ?? '',
       distance: map['distance'] ?? '',
       long: (map['long'] ?? 0).toDouble(),
       lat: (map['lat'] ?? 0).toDouble(),
-      numberReviews: map['nuberReviews'],
+      numberReviews: int.tryParse(map['nuberReviews']?.toString() ?? '0') ?? 0,
       badge: map['badge'] ?? '', 
       badge2: map['badge2'] ?? '',
       description: map['description'] ?? '',
       direction: map['direction']??'',
-      spots: map['spots'],
-      spotsA: map['spotsA'],
+      spots: map['spots']?? 0,
+      spotsA: map['spotsA'] ?? 0,
+      tags: map['tags'] ?? [],
     
     );
   }
@@ -84,7 +89,8 @@ class Restaurant{
       'description': description,
       'direction': direction,
       'spots': spots,
-      'spotsA': spots
+      'spotsA': spots,
+      'tags': tags
     };
   }
 
@@ -93,6 +99,8 @@ class Restaurant{
   String toString() {
     return 'Restaurant(nombre: $name, direccion: $rating)';
   }
+
+  
 
  
 
