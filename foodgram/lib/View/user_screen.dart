@@ -31,6 +31,7 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   String _username = '';
   String _email    = '';
   String _location = '';
+  List<String> _preferences = [];
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _UserScreenState extends State<UserScreen> implements UserView {
       _username      = usuario.username;
       _email         = usuario.email;
       _location      = usuario.carrier;
+      _preferences   = List<String>.from(usuario.preferences);
       _caloriesGoal  = usuario.caloriesGoal;
       _proteinGoal   = usuario.proteinGoal;
       _carbsGoal     = usuario.carbsGoal;
@@ -249,20 +251,20 @@ Widget build(BuildContext context) {
                             context,
                             MaterialPageRoute(
                               builder: (_) => InfoUserScreen(
-                                name:     _name,
-                                username: _username,
-                                email:    _email,
-                                location: _location,
+                                name:        _name,
+                                username:    _username,
+                                email:       _email,
+                                preferences: _preferences,
                               ),
                             ),
                           );
                           if (result != null) {
-                            final map = result as Map<String, String>;
+                            final map = result as Map<String, dynamic>;
                             setState(() {
-                              _name     = map['name']!;
-                              _username = map['username']!;
-                              _email    = map['email']!;
-                              _location = map['location']!;
+                              _name        = map['name'] as String;
+                              _username    = map['username'] as String;
+                              _email       = map['email'] as String;
+                              _preferences = List<String>.from(map['preferences'] as List);
                             });
                           }
                         },

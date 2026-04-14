@@ -1,10 +1,14 @@
+import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:foodgram/View/pagesInsideStudent.dart';
 
 class NotificationService {
-  static bool _notificacionMostradaEnSesion = false;
+  static DateTime? _ultimaNotificacion;
+  static const Duration _cooldown = Duration(seconds: 30);
+  static const List<String> _amigos = ["María", "Juan", "Camila", "Andrés", "Sofía"];
+  static const List<String> _restaurantes = ["Uniandes Pizzeria", "CityU Burger Palace"];
 
   static final FlutterLocalNotificationsPlugin notifications =
       FlutterLocalNotificationsPlugin();
@@ -36,10 +40,15 @@ class NotificationService {
     await androidPlugin?.requestNotificationsPermission();
   }
 
-  static Future<void> showSmartNotification() async {
-    if (_notificacionMostradaEnSesion) return;
+  static Future<void> showSmartNotification({String? friendName, String? restaurantName}) async {
+    final ahora = DateTime.now();
+    if (_ultimaNotificacion != null && ahora.difference(_ultimaNotificacion!) < _cooldown) {
+      return;
+    }
 
-    const String restauranteObjetivo = "La Pizzería Uniandes";
+    final random = Random();
+    final amigo = friendName ?? _amigos[random.nextInt(_amigos.length)];
+    final restaurante = restaurantName ?? _restaurantes[random.nextInt(_restaurantes.length)];
 
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'restaurant_channel',
@@ -51,11 +60,11 @@ class NotificationService {
 
     await notifications.show(
       0,
-      'Craving some Pizza? 🍕', 
-      'Your friends are eating at $restauranteObjetivo right now. Join them! ✨', 
+      'Craving some food? 🍕',
+      '$amigo is eating at $restaurante right now. Join them! ✨',
       const NotificationDetails(android: androidDetails),
-      payload: restauranteObjetivo,
+      payload: restaurante,
     );
-    _notificacionMostradaEnSesion = true;
+    _ultimaNotificacion = ahora;
   }
 }

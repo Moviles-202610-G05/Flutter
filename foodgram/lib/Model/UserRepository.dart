@@ -71,6 +71,41 @@ class UserRepository {
     return Usuario.fromMap(snapshot.docs.first.data());
   }
 
+  Future<void> updateProfile(
+    String currentEmail, {
+    required String name,
+    required String username,
+    required List<String> preferences,
+    String newEmail = '',
+    String password = '',
+  }) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('user')
+        .where('email', isEqualTo: currentEmail)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isEmpty) return;
+
+    final Map<String, dynamic> updates = {
+      'name': name,
+      'username': username,
+      'preferences': preferences,
+    };
+
+    if (password.isNotEmpty) {
+      updates['password'] = password;
+      await FirebaseAuth.instance.currentUser?.updatePassword(password);
+    }
+
+    if (newEmail.isNotEmpty && newEmail != currentEmail) {
+      updates['email'] = newEmail;
+      await FirebaseAuth.instance.currentUser?.verifyBeforeUpdateEmail(newEmail);
+    }
+
+    await snapshot.docs.first.reference.update(updates);
+  }
+
   Future<void> updateNutritionGoals(String email, {
     required double calories,
     required double protein,

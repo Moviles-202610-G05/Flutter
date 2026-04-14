@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/View/create_post_screen.dart';
+import 'package:foodgram/View/Notificaciones.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -106,12 +107,15 @@ Widget build(BuildContext context) {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.favorite_border, color: Colors.red, size: 24),
+                icon: const Icon(Icons.favorite_border,color: Color(0xFFFF6347), size: 24),
                 onPressed: () {},
               ),
               IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.black, size: 24),
-                onPressed: () {},
+                icon: const Icon(Icons.notifications_none, color: Color(0xFFFF6347), size: 24),
+                onPressed: () => NotificationService.showSmartNotification(
+                  friendName: "María",
+                  restaurantName: "CityU Burger Palace",
+                ),
               ),
               const SizedBox(width: 8),
             ],
@@ -158,11 +162,6 @@ Widget build(BuildContext context) {
   );
 }}
 
-// ============================================
-// COMPONENTES REUTILIZABLES PARA TODA LA APP
-// ============================================
-
-/// Componente reutilizable para mostrar tarjetas de posts
 class FoodPostCard extends StatefulWidget {
   final String userName;
   final String userInitial;
