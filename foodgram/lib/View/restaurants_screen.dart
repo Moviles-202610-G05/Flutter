@@ -36,8 +36,8 @@ class _RestaurantFeed extends State<RestaurantFeed>
     presenter2 = RestaurantUsuarioPresenter(RestaurantUsuarioRepository(), this);
     presenter.cargarRestaurantes();
     presenter2.recomendaciones();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationService.showSmartNotification();
+    Future.delayed(const Duration(seconds: 30), () {
+      if (mounted) NotificationService.showSmartNotification();
     });
   }
 
@@ -261,9 +261,11 @@ class _RestaurantFeed extends State<RestaurantFeed>
   
   @override
   void mostrarRecomendaciones(List<Restaurant>? restaurantesSugeridos) {
-    print("--------------hola---------------");
-    featured = (restaurantesSugeridos ?? restaurantes)
-      .take(4) 
-      .toList();
+    if (!mounted) return;
+    setState(() {
+      featured = (restaurantesSugeridos ?? restaurantes)
+        .take(4)
+        .toList();
+    });
   }
 }

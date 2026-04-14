@@ -69,6 +69,31 @@ class UserPresenter {
     }
   }
 
+  Future<void> actualizarPerfil({
+    required String currentEmail,
+    required String name,
+    required String username,
+    required List<String> preferences,
+    String newEmail = '',
+    String password = '',
+  }) async {
+    try {
+      await repository.updateProfile(
+        currentEmail,
+        name: name,
+        username: username,
+        preferences: preferences,
+        newEmail: newEmail,
+        password: password,
+      );
+      view.mostrarExito("Profile updated successfully.");
+    } on FirebaseAuthException catch (e) {
+      view.mostrarError("Auth error: ${e.message}");
+    } catch (e) {
+      view.mostrarError("Error updating profile: $e");
+    }
+  }
+
   Future<void> guardarNutritionGoals({
     required double calories,
     required double protein,
