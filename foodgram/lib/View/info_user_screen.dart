@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:foodgram/View/widgets/widgets.dart';
 class InfoUserScreen extends StatefulWidget {
   final String name;
   final String username;
@@ -85,7 +85,6 @@ class _InfoUserScreenState extends State<InfoUserScreen> {
               ),
               onPressed: () {
                 if (_isEditing) {
-                  // Cancelar: restaurar valores originales y salir del modo edición
                   setState(() {
                     _nameCtrl.text     = widget.name;
                     _usernameCtrl.text = widget.username;
@@ -111,8 +110,6 @@ class _InfoUserScreenState extends State<InfoUserScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 32),
-
-                // --- FOTO DE PERFIL ---
                 Center(
                   child: Stack(
                     children: [
@@ -138,7 +135,6 @@ class _InfoUserScreenState extends State<InfoUserScreen> {
                           right: 2,
                           child: GestureDetector(
                             onTap: () {
-                              // TODO: agregar image_picker cuando esté disponible
                             },
                             child: Container(
                               width: 30,
@@ -225,46 +221,41 @@ class _InfoUserScreenState extends State<InfoUserScreen> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey,
-              letterSpacing: 0.8,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Row(
+      child: _isEditing
+        ? CustomWidgets.buildTextField(
+            controller: controller,
+            label: label,
+            icon: icon,
+            keyboardType: keyboardType,
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, size: 18, color: Colors.grey),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _isEditing
-                    ? TextField(
-                        controller: controller,
-                        keyboardType: keyboardType,
-                        style: const TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w500),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      )
-                    : Text(
-                        controller.text,
-                        style: const TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w500),
-                      ),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey,
+                  letterSpacing: 0.8,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(icon, size: 18, color: Colors.grey),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      controller.text,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
     );
   }
 

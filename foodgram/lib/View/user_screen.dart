@@ -454,27 +454,37 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget _buildMacroItem(
-      String label, String consumed, String goal, Color color, double progress) {
+  Widget _buildMacroItem(String label, String consumed, String goal, Color color, double progress) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
-            const SizedBox(width: 4),
-            Text(consumed,
-                style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
-          ],
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: Colors.grey),
         ),
         const SizedBox(height: 4),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              consumed,
+              style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            Text(
+              ' / $goal',
+              style: const TextStyle(color: Colors.grey, fontSize: 11),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
         SizedBox(
-          width: 80,
+          width: 90,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: progress,
-              minHeight: 6,
+              minHeight: 7,
               backgroundColor: const Color(0xFFEEEEEE),
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
