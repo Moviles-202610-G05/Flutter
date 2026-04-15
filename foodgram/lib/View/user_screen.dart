@@ -8,7 +8,6 @@ import 'package:foodgram/View/reviews_user_screen.dart';
 import 'package:foodgram/View/saved_user_screen.dart';
 import 'package:foodgram/Presenter/UserPresenter.dart';
 import 'package:foodgram/Model/UserEntity.dart';
-import 'package:foodgram/Model/MealRepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserScreen extends StatefulWidget {
@@ -21,7 +20,6 @@ class UserScreen extends StatefulWidget {
 class _UserScreenState extends State<UserScreen> implements UserView {
 
   late UserPresenter _presenter;
-  final MealRepository _mealRepo = MealRepository();
   bool _isLoading = true;
   double _caloriesGoal = 2000;
   double _proteinGoal  = 150;
@@ -385,7 +383,7 @@ Widget build(BuildContext context) {
   Widget _buildNutritionCard() {
     // Event consumer, el streamBuilder se reconstruye cada vez que el stream emite un nuevo valor
     return StreamBuilder<Map<String, double>>(
-      stream: _mealRepo.getDailyStatsStream(_email), 
+      stream: _presenter.dailyStatsStream,
       builder: (context, snapshot) {
         final stats = snapshot.data ?? {'kcal': 0.0, 'protein': 0.0, 'carbs': 0.0, 'fat': 0.0};
         final double consumedKcal = stats['kcal']!;

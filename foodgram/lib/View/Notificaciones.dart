@@ -6,7 +6,7 @@ import 'package:foodgram/View/pagesInsideStudent.dart';
 
 class NotificationService {
   static DateTime? _ultimaNotificacion;
-  static const Duration _cooldown = Duration(seconds: 30);
+  static const Duration _cooldown = Duration(seconds: 5);
   static const List<String> _amigos = ["María", "Juan", "Camila", "Andrés", "Sofía"];
   static const List<String> _restaurantes = ["Uniandes Pizzeria", "CityU Burger Palace"];
 
