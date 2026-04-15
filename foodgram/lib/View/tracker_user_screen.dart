@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:foodgram/Model/MealEntity.dart';
+import 'package:foodgram/Model/NutritionApiAdapter.dart';
+import 'package:foodgram/Model/NutritionApiService.dart';
 import 'package:foodgram/Presenter/TrackerPresenter.dart';
 
 class TrackerScreen extends StatefulWidget {
@@ -34,6 +36,9 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
     _ringCtrl.forward();
 
     _presenter = TrackerPresenter(
+      // Adapter - Se crea el presenter con el Adapter y la API 
+      // Si quiero cambiar de IA, debo cambiar aqui
+      nutritionService: NutritionApiAdapter(NutritionApiService()),
       onLoadingStart: () => setState(() => _analyzing = true),
       onSuccess: (result) {
         setState(() {
@@ -104,7 +109,10 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
+        child: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,6 +180,7 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
             const SizedBox(height: 100),
           ],
         ),
+      ),
       ),
     );
   }
@@ -298,7 +307,7 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
         context: context,
         builder: (_) => _ConfirmSheet(
           path: photo.path,
-          // El usuario confirma la accion y dispara el evento en el Presenter
+          // Adapter - El usuario manda la foto al presenter 
           onConfirm: () => _presenter.onImageCaptured(File(photo.path)),
         ),
       );
@@ -481,17 +490,6 @@ class LoggedMealCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _mealLabel(meal.timestamp),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFFFF6B35),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
                     meal.dishName,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     maxLines: 2,           
@@ -524,13 +522,6 @@ class LoggedMealCard extends StatelessWidget {
         child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
       );
 
-  String _mealLabel(DateTime time) {
-    final h = time.hour;
-    if (h < 11) return 'Breakfast';
-    if (h < 15) return 'Lunch';
-    if (h < 19) return 'Snack';
-    return 'Dinner';
-  }
 }
 
 class _MealDetailSheet extends StatelessWidget {
