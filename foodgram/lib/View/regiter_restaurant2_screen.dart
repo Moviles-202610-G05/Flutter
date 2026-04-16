@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/MenuRepository.dart';
+import 'package:foodgram/Model/MenuSugestionApiAdapter.dart';
+import 'package:foodgram/Model/MenuSugestionApiService.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/UserEntity.dart';
@@ -71,7 +73,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
   @override
   void initState() {
     super.initState();
-    presenterMenu = MenuPresenter( MenuRepository() ,this );
+    presenterMenu = MenuPresenter( MenuRepository() ,this,  MenuSugestionApiAdapter(MenuSugestionApiService()));
     presenterRestaurant = RestaurantPresenter(RestaurantRepository(), UserRepository(), this);
   }
 
@@ -544,10 +546,15 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
   final XFile? image = await picker.pickImage(source: source);
 
   if (image != null) {
-      setState(() {
+    Menu menu= await presenterMenu.onImageCaptured(File(image.path));
+     setState(() {
         _imagenSeleccionada = File(image.path);
-      });
+        _dishNameController.text = menu.name;
+       _priceController.text = menu.price;
+       _descriptionController.text = menu.description;
 
+
+      });
   }
 }
 
@@ -580,5 +587,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
   void mostrarRuta(List<LatLng> polylineCoordinates) {
     // TODO: implement mostrarRuta
   }
+  
+
   
 }
