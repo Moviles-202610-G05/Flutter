@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:foodgram/Model/MealEntity.dart';
+import 'package:foodgram/Model/NutritionApiAdapter.dart';
+import 'package:foodgram/Model/NutritionApiService.dart';
 import 'package:foodgram/Presenter/TrackerPresenter.dart';
 
 class TrackerScreen extends StatefulWidget {
@@ -34,6 +36,9 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
     _ringCtrl.forward();
 
     _presenter = TrackerPresenter(
+      // Adapter - Se crea el presenter con el Adapter y la API 
+      // Si quiero cambiar de IA, debo cambiar aqui
+      nutritionService: NutritionApiAdapter(NutritionApiService()),
       onLoadingStart: () => setState(() => _analyzing = true),
       onSuccess: (result) {
         setState(() {
@@ -104,7 +109,10 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
+        child: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,6 +180,7 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
             const SizedBox(height: 100),
           ],
         ),
+      ),
       ),
     );
   }
@@ -298,7 +307,7 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
         context: context,
         builder: (_) => _ConfirmSheet(
           path: photo.path,
-          // El usuario confirma la accion y dispara el evento en el Presenter
+          // Adapter - El usuario manda la foto al presenter 
           onConfirm: () => _presenter.onImageCaptured(File(photo.path)),
         ),
       );
@@ -464,6 +473,7 @@ class LoggedMealCard extends StatelessWidget {
           boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipOval(
               child: meal.imagePath != null
@@ -480,15 +490,11 @@ class LoggedMealCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _mealLabel(meal.timestamp),
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFFFF6B35)),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
                     meal.dishName,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    maxLines: 1,
+                    maxLines: 2,           
                     overflow: TextOverflow.ellipsis,
+                    softWrap: true,       
                   ),
                 ],
               ),
@@ -516,18 +522,20 @@ class LoggedMealCard extends StatelessWidget {
         child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
       );
 
-  String _mealLabel(DateTime time) {
-    final h = time.hour;
-    if (h < 11) return 'Breakfast';
-    if (h < 15) return 'Lunch';
-    if (h < 19) return 'Snack';
-    return 'Dinner';
-  }
 }
 
 class _MealDetailSheet extends StatelessWidget {
   final MealEntity meal;
   const _MealDetailSheet({required this.meal});
+
+  Color _confidenceColor(ConfidenceLevel confidence) {
+    switch (confidence.name) { 
+      case 'high':   return Colors.green;
+      case 'medium': return Colors.orange;
+      case 'low':    return Colors.redAccent;
+      default:       return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -569,8 +577,70 @@ class _MealDetailSheet extends StatelessWidget {
             Text(meal.dishName,
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
             const SizedBox(height: 4),
-            Text('Confidence: ${meal.confidence.name}',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+            Row(
+              children: [
+                Text(
+                  'Confidence: ',
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                ),
+                Text(
+                  meal.confidence.name,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: _confidenceColor(meal.confidence),
+                  ),
+              ),
+              const SizedBox(width: 6),
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      title: const Row(
+                        children: [
+                          Icon(Icons.analytics_outlined, color: Color(0xFFFF6B35)),
+                          SizedBox(width: 8),
+                          Text('Confidence Levels', style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                      content: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _ConfidenceRow(
+                            level: 'High',
+                            color: Colors.green,
+                            description: 'The AI clearly identified the dish. Nutritional values are reliable.',
+                          ),
+                          SizedBox(height: 12),
+                          _ConfidenceRow(
+                            level: 'Medium',
+                            color: Colors.orange,
+                            description: 'The dish was identified with some uncertainty. Values are approximate.',
+                          ),
+                          SizedBox(height: 12),
+                          _ConfidenceRow(
+                            level: 'Low',
+                            color: Colors.redAccent,
+                            description: 'The AI could not clearly identify the dish. Values may be inaccurate.',
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Got it', style: TextStyle(color: Color(0xFFFF6B35))),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: const Icon(Icons.info_outline, size: 16, color: Colors.grey),
+              ),
+            ],
+          ),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(16),
@@ -649,4 +719,44 @@ class _MacroCircle extends StatelessWidget {
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey.shade500)),
         ],
       );
-}
+  }
+
+class _ConfidenceRow extends StatelessWidget {
+    final String level;
+    final Color color;
+    final String description;
+    const _ConfidenceRow({
+      required this.level,
+      required this.color,
+      required this.description,
+    });
+
+    @override
+    Widget build(BuildContext context) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 3),
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(level,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 13, color: color)),
+                const SizedBox(height: 2),
+                Text(description,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+  }

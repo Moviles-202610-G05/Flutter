@@ -30,13 +30,13 @@ class PagesState extends State<Pages> {
 @override
 Widget build(BuildContext context) {
   return Scaffold(
-    body: _getBody(_currentIndex, currentIndex2, rest), // tu contenido cambia según el índice
+    body: _getBody(_currentIndex, currentIndex2, rest), 
     bottomNavigationBar: BottomNavigationBar(
       currentIndex: _currentIndex,
       onTap: (index) {
         setState(() {
           _currentIndex = index;
-          currentIndex2 = 0; // aquí actualizas el seleccionado
+          currentIndex2 = 0; 
         });
       },
       type: BottomNavigationBarType.fixed,
@@ -80,19 +80,19 @@ Widget _getBody(int index, int index2, rest) {
       case 1:
         switch (index2) {
           case 1:
-            return RestaurantDetailScreen(rest: rest);
+            return RestaurantDetailScreen(key: ValueKey(rest), rest: rest);
         default:
           return RestaurantFeed();}
       case 0:
         return FeedScreen();
       case 2:
         return UserScreen();
-      case 3: 
+      case 3:
         return TrackerScreen();
-      case 4: 
+      case 4:
       switch (index2) {
           case 1:
-            return RestaurantDetailScreen(rest: rest);
+            return RestaurantDetailScreen(key: ValueKey(rest), rest: rest);
         default:
           return RestaurantMapPage();}
       default:

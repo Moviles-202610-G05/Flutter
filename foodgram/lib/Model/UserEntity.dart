@@ -3,6 +3,7 @@ class Usuario {
   final String name;
   final String email;
   final String carrier;
+  final String location;
   String roll = "ESTUDIANTE";
   final String password;
   final List<String> preferences;
@@ -17,9 +18,10 @@ class Usuario {
     required this.name,
     required this.email,
     required this.carrier,
+    this.location = 'Carrier 1',
     required this.password,
     required this.preferences,
-    required this.username, 
+    required this.username,
     roll = "ESTUDIANTE",
     this.caloriesGoal = 2000,
     this.proteinGoal  = 150,

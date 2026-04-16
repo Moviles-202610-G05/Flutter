@@ -20,6 +20,15 @@ class CustomWidgets {
     obscureText: ocultar, // aquí decides si se oculta o no
     inputFormatters: [
       LengthLimitingTextInputFormatter(50),
+      FilteringTextInputFormatter.deny(
+      RegExp(r'[\u{1F600}-\u{1F64F}'
+          r'\u{1F300}-\u{1F5FF}'
+          r'\u{1F680}-\u{1F6FF}'
+          r'\u{1F1E0}-\u{1F1FF}'
+          r'\u{2600}-\u{26FF}'
+          r'\u{2700}-\u{27BF}]',
+          unicode: true),
+        ),
     ],
     style: const TextStyle(color: Color.fromARGB(199, 22, 18, 18)),
     decoration: InputDecoration(

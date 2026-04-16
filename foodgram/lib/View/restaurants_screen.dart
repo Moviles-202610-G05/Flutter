@@ -36,8 +36,8 @@ class _RestaurantFeed extends State<RestaurantFeed>
     presenter2 = RestaurantUsuarioPresenter(RestaurantUsuarioRepository(), this);
     presenter.cargarRestaurantes();
     presenter2.recomendaciones();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationService.showSmartNotification();
+    Future.delayed(const Duration(seconds: 30), () {
+      if (mounted) NotificationService.showSmartNotification();
     });
   }
 

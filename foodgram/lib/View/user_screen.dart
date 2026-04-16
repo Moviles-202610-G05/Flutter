@@ -8,7 +8,6 @@ import 'package:foodgram/View/reviews_user_screen.dart';
 import 'package:foodgram/View/saved_user_screen.dart';
 import 'package:foodgram/Presenter/UserPresenter.dart';
 import 'package:foodgram/Model/UserEntity.dart';
-import 'package:foodgram/Model/MealRepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserScreen extends StatefulWidget {
@@ -21,7 +20,6 @@ class UserScreen extends StatefulWidget {
 class _UserScreenState extends State<UserScreen> implements UserView {
 
   late UserPresenter _presenter;
-  final MealRepository _mealRepo = MealRepository();
   bool _isLoading = true;
   double _caloriesGoal = 2000;
   double _proteinGoal  = 150;
@@ -31,6 +29,7 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   String _username = '';
   String _email    = '';
   String _location = '';
+  List<String> _preferences = [];
 
   @override
   void initState() {
@@ -46,6 +45,7 @@ class _UserScreenState extends State<UserScreen> implements UserView {
       _username      = usuario.username;
       _email         = usuario.email;
       _location      = usuario.carrier;
+      _preferences   = List<String>.from(usuario.preferences);
       _caloriesGoal  = usuario.caloriesGoal;
       _proteinGoal   = usuario.proteinGoal;
       _carbsGoal     = usuario.carbsGoal;
@@ -249,20 +249,20 @@ Widget build(BuildContext context) {
                             context,
                             MaterialPageRoute(
                               builder: (_) => InfoUserScreen(
-                                name:     _name,
-                                username: _username,
-                                email:    _email,
-                                location: _location,
+                                name:        _name,
+                                username:    _username,
+                                email:       _email,
+                                preferences: _preferences,
                               ),
                             ),
                           );
                           if (result != null) {
-                            final map = result as Map<String, String>;
+                            final map = result as Map<String, dynamic>;
                             setState(() {
-                              _name     = map['name']!;
-                              _username = map['username']!;
-                              _email    = map['email']!;
-                              _location = map['location']!;
+                              _name        = map['name'] as String;
+                              _username    = map['username'] as String;
+                              _email       = map['email'] as String;
+                              _preferences = List<String>.from(map['preferences'] as List);
                             });
                           }
                         },
@@ -381,7 +381,7 @@ Widget build(BuildContext context) {
   Widget _buildNutritionCard() {
     // Event consumer, el streamBuilder se reconstruye cada vez que el stream emite un nuevo valor
     return StreamBuilder<Map<String, double>>(
-      stream: _mealRepo.getDailyStatsStream(_email), 
+      stream: _presenter.dailyStatsStream,
       builder: (context, snapshot) {
         final stats = snapshot.data ?? {'kcal': 0.0, 'protein': 0.0, 'carbs': 0.0, 'fat': 0.0};
         final double consumedKcal = stats['kcal']!;
@@ -452,27 +452,37 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget _buildMacroItem(
-      String label, String consumed, String goal, Color color, double progress) {
+  Widget _buildMacroItem(String label, String consumed, String goal, Color color, double progress) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
-            const SizedBox(width: 4),
-            Text(consumed,
-                style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
-          ],
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: Colors.grey),
         ),
         const SizedBox(height: 4),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              consumed,
+              style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            Text(
+              ' / $goal',
+              style: const TextStyle(color: Colors.grey, fontSize: 11),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
         SizedBox(
-          width: 80,
+          width: 90,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: progress,
-              minHeight: 6,
+              minHeight: 7,
               backgroundColor: const Color(0xFFEEEEEE),
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),

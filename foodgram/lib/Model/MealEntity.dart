@@ -55,23 +55,21 @@ class MealEntity {
     this.imagePath,
   });
 
+  // Deserializa desde Firestore (formato camelCase).
+  // Para convertir la respuesta de la IA usar NutritionApiAdapter.
   factory MealEntity.fromJson(Map<String, dynamic> json) {
-    final macros = json['macronutrients_totals'] as Map<String, dynamic>?;
-
     return MealEntity(
-      dishName: (json['dishName'] ?? json['dish_name'] ?? '') as String,
-      components: (json['components'] as List? ?? [])
+      dishName:      (json['dishName']      ?? '') as String,
+      components:    (json['components'] as List? ?? [])
           .map((e) => NutritionComponent.fromJson(e as Map<String, dynamic>))
           .toList(),
-      totalCalories: (json['totalCalories'] ?? json['total_calories'] ?? 0) as int,
-      totalProteinG: (json['totalProteinG'] ?? macros?['protein_g'] ?? 0).toDouble(),
-      totalCarbsG:   (json['totalCarbsG']   ?? macros?['carbs_g']   ?? 0).toDouble(),
-      totalFatG:     (json['totalFatG']     ?? macros?['fat_g']     ?? 0).toDouble(),
-      confidence: _parseConfidence((json['confidence'] ?? 'low') as String),
-      timestamp: json['timestamp'] != null
-          ? DateTime.parse(json['timestamp'] as String)
-          : DateTime.now(),
-      imagePath: json['imagePath'] as String?,
+      totalCalories: (json['totalCalories'] ?? 0) as int,
+      totalProteinG: (json['totalProteinG'] ?? 0).toDouble(),
+      totalCarbsG:   (json['totalCarbsG']   ?? 0).toDouble(),
+      totalFatG:     (json['totalFatG']     ?? 0).toDouble(),
+      confidence:    _parseConfidence((json['confidence'] ?? 'low') as String),
+      timestamp:     DateTime.parse(json['timestamp'] as String),
+      imagePath:     json['imagePath'] as String?,
     );
   }
 
