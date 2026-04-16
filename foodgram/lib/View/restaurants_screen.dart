@@ -45,6 +45,9 @@ class _RestaurantFeed extends State<RestaurantFeed>
   void mostrarRestaurantes(List<Restaurant> restaurantes) {
     setState(() {
       this.restaurantes = restaurantes;
+      if (featured.length == 0){
+       featured =  restaurantes.take(4).toList();
+      }
     });
   }
 
@@ -261,11 +264,14 @@ class _RestaurantFeed extends State<RestaurantFeed>
   
   @override
   void mostrarRecomendaciones(List<Restaurant>? restaurantesSugeridos) {
-    if (!mounted) return;
-    setState(() {
-      featured = (restaurantesSugeridos ?? restaurantes)
-        .take(4)
-        .toList();
-    });
+    print("--------------hola---------------");
+    featured = (restaurantesSugeridos ?? restaurantes)
+      .take(4) 
+      .toList();
+
+    if (featured.length == 0){
+       featured =  restaurantes.take(4).toList();
+      }
+    
   }
 }

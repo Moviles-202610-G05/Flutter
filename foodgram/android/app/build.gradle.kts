@@ -11,7 +11,7 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true          // ✅ con "is"
+        isCoreLibraryDesugaringEnabled = true         
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -26,19 +26,24 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        multiDexEnabled = true                         // ✅ agrega esto
+        multiDexEnabled = true                         
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = false 
+            isShrinkResources = false
+        
+        // Para signingConfig en KTS se accede así:
+        signingConfig = signingConfigs.getByName("debug")
+
         }
     }
 }
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")  // ✅ nombre correcto
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")  
     implementation("com.google.firebase:firebase-analytics")
 }
 

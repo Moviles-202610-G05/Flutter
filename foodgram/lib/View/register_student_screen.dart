@@ -36,6 +36,14 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
 
 
   final List<String> _foodPreferences = [
+    'Italian',
+    'Mexican',
+    'Japanese',
+    'Chinese',
+    'Indian',
+    'Thai',
+    'American',
+    'Mediterranean',
     'Vegan',
     'Vegetarian',
     'Gluten-Free',
@@ -46,7 +54,28 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
     'Dairy-Free',
   ];
 
-  final List<String> _carriers = ['Carrier 1', 'Carrier 2', 'Carrier 3'];
+  final List<String> _carriers = [
+  'Systems Engineering',
+  'Industrial Engineering',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Biomedical Engineering',
+  'Business Administration',
+  'Economics',
+  'Law',
+  'Architecture',
+  'Design',
+  'Medicine',
+  'Psychology',
+  'Political Science',
+  'Physics',
+  'Mathematics',
+  'Arts',
+  'Literature',
+  'Philosophy',
+  'Journalism',
+  'Biology'
+];
 
   @override
   void dispose() {

@@ -7,6 +7,7 @@ import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Model/UtilitysFierbase.dart';
 import 'package:foodgram/Presenter/MenuPresenter.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
@@ -65,6 +66,8 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
   List<Menu> menuItems = [
   ];
 
+  UtilitisFirebase utilitisFirebase =UtilitisFirebase() ; 
+
   @override
   void initState() {
     super.initState();
@@ -82,12 +85,13 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
 
   void _addDishToMenu() {
     if (_formKey.currentState!.validate()) {
-      setState(() {
+      setState(()  {
+        print(_imagenSeleccionada);
         menuItems.add(Menu(
           name: _dishNameController.text,
           price: _priceController.text,
           description: '', 
-          image: '', 
+          image: "", 
           restaurant: widget.restaurante.name, 
           imagenFiel: _imagenSeleccionada, 
           category: _selectedCategory ?? 'Main Course',

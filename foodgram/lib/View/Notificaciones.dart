@@ -46,6 +46,7 @@ class NotificationService {
       return;
     }
 
+    const String restauranteObjetivo = "Uniandes Pizzeria";
     final random = Random();
     final amigo = friendName ?? _amigos[random.nextInt(_amigos.length)];
     final restaurante = restaurantName ?? _restaurantes[random.nextInt(_restaurantes.length)];
