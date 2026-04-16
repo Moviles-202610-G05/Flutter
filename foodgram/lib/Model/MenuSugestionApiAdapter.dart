@@ -12,7 +12,10 @@ class MenuSugestionApiAdapter {
   // Extiende el contrato del Services para traducir
   Future<Menu> analyzeImage(File image) async {
     // Pide el JSON de la API
+    print("------Holaaaaa1-------------");
     final aiJson = await service.getRawAnalysis(image);
+    print("------Holaaaaa-------------");
+    print(aiJson);
     // Traduce eso a un MealEntity
     return _adapt(aiJson);
   }

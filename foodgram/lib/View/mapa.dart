@@ -7,6 +7,7 @@ import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RestaurantMapPage extends StatefulWidget {
@@ -30,6 +31,7 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
 
   final List<String> categories = ['All', 'Burgers', 'Pizza', 'Sushi'];
   final PageController _pageController = PageController(viewportFraction: 0.88);
+  Set<Circle> _circles = {};
 
   bool _locationPermissionGranted = true;
   bool _isLoading = false;
@@ -47,12 +49,20 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
     zoom: 13.4,
   );
 
+  Future<void> _dibujarRadioEnMiUbicacion() async {
+    Position pos = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    _mostrarRadioEnMiUbicacion(pos.latitude, pos.longitude);
+ }
+
   @override
   void initState() {
     super.initState();
     _presenter = RestaurantPresenter(RestaurantRepository(), UserRepository(), this);
     _presenter.fetchNearbyRestaurants();
     _prepararIconos();
+    _dibujarRadioEnMiUbicacion();
   }
 
   @override
@@ -157,6 +167,7 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
             zoomControlsEnabled: false,
             padding: const EdgeInsets.only(bottom: 250),
             markers: _markers,
+            circles: _circles,
             polylines: _polylines,
             onMapCreated: (GoogleMapController controller) {
               _mapController = controller;
@@ -299,15 +310,33 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
     }
   }
 
+  void _mostrarRadioEnMiUbicacion(double lat, double lng) {
+  setState(() {
+    _circles = {
+      Circle(
+        circleId: CircleId('mi_radio'),
+        center: LatLng(lat, lng),
+        radius: 1000, // radio en metros
+        fillColor: ui.Color.fromARGB(31, 255, 153, 0),
+        strokeColor: Colors.orange,
+        strokeWidth: 2,
+      ),
+    };
+  });
+}
+
   BitmapDescriptor _iconForCategoryMarker(String category) {
     switch (category) {
       case 'Burgers':
+        return _categoryIcons['Burgers'] ?? BitmapDescriptor.defaultMarker;
       case 'Hamburguesas':
-        return _categoryIcons['Hamburguesas'] ?? BitmapDescriptor.defaultMarker;
-      case 'Italiana':
+        return _categoryIcons['Burgers'] ?? BitmapDescriptor.defaultMarker;
+      case 'Italian':
+        return _categoryIcons['Italiana'] ?? BitmapDescriptor.defaultMarker;
       case 'Pizza':
         return _categoryIcons['Italiana'] ?? BitmapDescriptor.defaultMarker;
       case 'Sushi':
+        return _categoryIcons['Sushi'] ?? BitmapDescriptor.defaultMarker;
       case 'Japonesa':
         return _categoryIcons['Sushi'] ?? BitmapDescriptor.defaultMarker;
       default:
@@ -325,7 +354,7 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
     if (!mounted) return;
     setState(() {
       _categoryIcons['Parrilla'] = burger;
-      _categoryIcons['Hamburguesas'] = burger;
+      _categoryIcons['Burgers'] = burger;
       _categoryIcons['Italiana'] = pizza;
       _categoryIcons['Sushi'] = sushi;
       _categoryIcons['Café'] = cafe;
@@ -486,27 +515,6 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
   @override
   void mostrarExito(String message) {}
 
-  @override
-  void mostrarRuta(List<LatLng> puntos) {
-    setState(() {
-      _polylines.add(
-        Polyline(
-          polylineId: const PolylineId('ruta_restaurante'),
-          points: puntos,
-          color: Colors.blue,
-          width: 5,
-          jointType: JointType.round,
-        ),
-      );
-    });
-
-    _ajustarCamaraParaVerRuta(puntos);
-  }
-
-  void _ajustarCamaraParaVerRuta(List<LatLng> puntos) {
-    final bounds = _boundsFromLatLngList(puntos);
-    _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
-  }
 
   Future<BitmapDescriptor> getMarkerIcon(IconData iconData, Color color) async {
     final pictureRecorder = ui.PictureRecorder();

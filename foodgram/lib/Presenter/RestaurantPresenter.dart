@@ -5,7 +5,6 @@ import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Model/UtilitysFierbase.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 abstract class RestaurantView {
   void showLoading();
@@ -15,7 +14,6 @@ abstract class RestaurantView {
   void mostrarError(String message);
   void mostrarExito(String message);
   
-  void mostrarRuta(List<LatLng> polylineCoordinates) {}
 
 }
 

@@ -61,7 +61,7 @@ Widget build(BuildContext context) {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.map_outlined),
-          label: 'MAP',
+          label: "Map",
         ),
       ],
     ),

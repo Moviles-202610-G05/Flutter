@@ -5,13 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5df29327-2628-4acd-9121-d1f05cf5c538" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/foodgram/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/android/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/BaseDeDatos/menu.js" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/BaseDeDatos/menu.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/BaseDeDatos/restaurantes.js" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/BaseDeDatos/restaurantes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/Notificaciones.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/Notificaciones.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/Model/MenuSugestionApiAdapter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Model/MenuSugestionApiAdapter.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/Presenter/MenuPresenter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Presenter/MenuPresenter.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodgram/lib/View/register_restaurant1_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/register_restaurant1_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/register_student_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/register_student_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/restaurants_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/restaurants_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/regiter_restaurant2_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/regiter_restaurant2_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/widgets/widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/widgets/widgets.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +41,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main"
+    "git-widget-placeholder": "prediction"
   }
 }]]></component>
   <component name="TaskManager">

@@ -13,21 +13,21 @@ class MenuSugestionApiService {
       Your task is to analyze a food image and predict diferent information of the dish.
 
       Instructions:
-      1. Identify the dish name (example: "Oatmeal with berries").
+      1. Identify the dish name (example: "Oatmeal with berries"), no more than 8 words.
       2. Identify every visible food component in the plate.
-      3. Estimate the price in US dolars.
-      4. Give a small description of the dish.
-      5. Select on of the folowing categoris for the dish Main Course, Appetizer, Dessert, Beverage, Soup, Salad.
+      3. Estimate a specific price in US dolars.
+      4. Give a small description of the dish no more than 50 words.
+      5. Select on of the folowing categoris for the dish: Main Course, Appetizer, Dessert, Beverage, Soup, Salad.
 
       Important rules:
       - Use realistic information.
-      - If portion size is uncertain, estimate based on a typical plate.
+      - The price do not need to have the \$ simboll
       - Avoid explanations outside JSON.
 
       Return ONLY valid JSON in this exact format:
       {
         "name": "",
-        "price": 0,
+        "price": "",
         "description": "",
         "category": ""
       }

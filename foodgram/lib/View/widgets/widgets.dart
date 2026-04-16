@@ -108,8 +108,8 @@ class AddressField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child:GooglePlaceAutoCompleteTextField(
+    return 
+      GooglePlaceAutoCompleteTextField(
       textEditingController: controller,
       googleAPIKey: "AIzaSyDxzMLWUCmAQqm2dpmpDzkC3L8r09rEri4",
       inputDecoration: InputDecoration(
@@ -143,6 +143,6 @@ class AddressField extends StatelessWidget {
           TextPosition(offset: controller.text.length),
         );
       },
-    ));
+    );
   }}
 

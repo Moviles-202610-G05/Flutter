@@ -11,6 +11,7 @@ abstract class MenuView {
   void mostrarPlatos(List<Menu> platos);
   void mostrarError(String mensaje);
   void mostrarExito(String mensaje);
+  void estaCargando(bool mensaje);
 }
 
 class MenuPresenter {
@@ -24,9 +25,10 @@ class MenuPresenter {
 
   Future<Menu> onImageCaptured(File image) async {
     try {
-
+      view.estaCargando(true);
       // Adapter - Llama al contrato del Adapter para analizar la foto 
       Menu prediction  = await menuSugestion.analyzeImage(image);
+      print("------Holaaaaa2-------------");
       var imagen = await utilitisFirebase.subirImagen(image);
       prediction.image = imagen; 
 
