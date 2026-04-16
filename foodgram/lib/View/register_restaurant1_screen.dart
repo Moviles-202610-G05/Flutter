@@ -80,10 +80,11 @@ final List<String> _prices = [
   ];
 final  Map<String, String> _prices2 = {
   'less 10k': "\$",
-    '10k-25k': "\$\$",
-    '25k-50k': "\$\$\$",
-    'more 50k': "\$\$\$\$"
+  '10k-25k': "\$\$",
+  '25k-50k': "\$\$\$",
+  'more 50k': "\$\$\$\$"
 };
+
 
   
   String? _selectedCuisine;
@@ -297,7 +298,9 @@ final  Map<String, String> _prices2 = {
                     },
                   ),
                   const SizedBox(height: 16),
-                   AddressField(
+                  SizedBox(
+                          width: double.infinity,
+                          child: AddressField(
                           controller: _addressController,
                           onSelected: (address, lat, lng) {
                             setState(() {
@@ -306,7 +309,7 @@ final  Map<String, String> _prices2 = {
                               _lng = lng;
                             });
                           },
-                        ),
+                        )),
 
                    const SizedBox(height: 16),
                   // --- CUISINE TYPE DROPDOWN ---
