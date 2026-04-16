@@ -149,8 +149,8 @@ Widget build(BuildContext context) {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
-                          Text(' $_location', style: const TextStyle(color: Colors.grey)),
+                          const Icon(Icons.alternate_email, size: 16, color: Colors.grey),
+                          Text(' $_username', style: const TextStyle(color: Colors.grey)),
                         ],
                       ),
 
@@ -342,8 +342,7 @@ Widget build(BuildContext context) {
 }
 
   Widget _buildStatCard(String value, String label) {
-    return Expanded(
-      child: Column(
+    return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(value,
@@ -358,8 +357,7 @@ Widget build(BuildContext context) {
                   color: Colors.blueGrey,
                   fontWeight: FontWeight.w600)),
         ],
-      ),
-    );
+      );
   }
 
   Widget _buildDivider() {

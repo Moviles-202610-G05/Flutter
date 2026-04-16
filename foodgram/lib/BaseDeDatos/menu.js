@@ -9,115 +9,115 @@ const db = admin.firestore();
 
 async function seedMenu() {
   const menuItems = [
-    // La Pizzería
+    // Uniandes Pizzeria
     {
-      name: "Pizza Margherita",
+      name: "Margherita Pizza",
       price: "12",
-      description: "Clásica pizza italiana con salsa de tomate, mozzarella fresca y albahaca.",
+      description: "Classic Italian pizza with tomato sauce, fresh mozzarella, and basil.",
       image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
     {
-      name: "Pizza Pepperoni",
+      name: "Pepperoni Pizza",
       price: "14",
-      description: "Pizza con abundante pepperoni y queso fundido.",
+      description: "Pizza with extra pepperoni and melted cheese.",
       image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
     {
       name: "Pasta Bolognese",
       price: "15",
-      description: "Pasta italiana con salsa de carne y tomate.",
+      description: "Italian pasta with meat and tomato sauce.",
       image: "https://images.unsplash.com/photo-1598866594230-a7c12756260f?w=800",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
     {
-      name: "Tiramisú",
+      name: "Tiramisu",
       price: "8",
-      description: "Postre clásico italiano con mascarpone y cacao.",
+      description: "Classic Italian dessert with mascarpone and cocoa.",
       image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
     {
       name: "Bruschetta",
       price: "6",
-      description: "Pan tostado con tomate fresco, ajo y albahaca.",
+      description: "Toasted bread with fresh tomato, garlic, and basil.",
       image: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
 
-    // Sushi House
+    // Candelaria Sushi House
     {
       name: "Sushi Platter",
       price: "20",
-      description: "Variedad de rolls frescos con salmón, aguacate y pepino.",
+      description: "Variety of fresh rolls with salmon, avocado, and cucumber.",
       image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
     {
       name: "Salmon Nigiri",
       price: "12",
-      description: "Nigiri de salmón fresco sobre arroz avinagrado.",
+      description: "Fresh salmon nigiri over seasoned rice.",
       image: "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=800",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
     {
-      name: "Tempura de Camarón",
+      name: "Shrimp Tempura",
       price: "14",
-      description: "Camarones rebozados y fritos al estilo japonés.",
+      description: "Japanese-style battered and fried shrimp.",
       image: "https://images.unsplash.com/photo-1615361200141-f45040f367be?w=800",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
     {
-      name: "Ramen Tradicional",
+      name: "Traditional Ramen",
       price: "16",
-      description: "Sopa japonesa con fideos, huevo y cerdo.",
+      description: "Japanese noodle soup with egg and pork.",
       image: "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=800",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
     {
       name: "Miso Soup",
       price: "6",
-      description: "Sopa japonesa con tofu, algas y cebollín.",
+      description: "Japanese soup with tofu, seaweed, and green onion.",
       image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
 
-    // Burger Palace
+    // CityU Burger Palace
     {
-      name: "Cheeseburger Clásica",
+      name: "Classic Cheeseburger",
       price: "10",
-      description: "Hamburguesa de res con queso cheddar y papas fritas.",
+      description: "Beef burger with cheddar cheese and French fries.",
       image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     },
     {
       name: "Double Bacon Burger",
       price: "14",
-      description: "Hamburguesa doble con tocino crujiente y queso.",
+      description: "Double patty burger with crispy bacon and cheese.",
       image: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     },
     {
       name: "Chicken Sandwich",
       price: "12",
-      description: "Sándwich de pollo frito con lechuga y salsa.",
+      description: "Fried chicken sandwich with lettuce and sauce.",
       image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=800",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     },
     {
       name: "Milkshake",
       price: "6",
-      description: "Batido cremoso con crema batida y cereza.",
+      description: "Creamy shake topped with whipped cream and a cherry.",
       image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     },
     {
       name: "Loaded Nachos",
       price: "9",
-      description: "Nachos con queso fundido, carne y guacamole.",
+      description: "Nachos with melted cheese, meat, and guacamole.",
       image: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=800",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     }
   ];
 
@@ -125,269 +125,150 @@ async function seedMenu() {
     await db.collection("menu").add(item);
   }
 
-  console.log("Menú insertado en Firestore");
+  console.log("Menu inserted into Firestore");
 }
-async function seedMenu() {
-  const menuItems = [
-    // La Pizzería
-    {
-      name: "Pizza Margherita",
-      price: "12",
-      description: "Clásica pizza italiana con salsa de tomate, mozzarella fresca y albahaca.",
-      image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Pizza Pepperoni",
-      price: "14",
-      description: "Pizza con abundante pepperoni y queso fundido.",
-      image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Pasta Bolognese",
-      price: "15",
-      description: "Pasta italiana con salsa de carne y tomate.",
-      image: "https://images.unsplash.com/photo-1598866594230-a7c12756260f?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Tiramisú",
-      price: "8",
-      description: "Postre clásico italiano con mascarpone y cacao.",
-      image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800",
-      restaurant: "La Pizzería"
-    },
-    {
-      name: "Bruschetta",
-      price: "6",
-      description: "Pan tostado con tomate fresco, ajo y albahaca.",
-      image: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800",
-      restaurant: "La Pizzería"
-    },
 
-    // Sushi House
-    {
-      name: "Sushi Platter",
-      price: "20",
-      description: "Variedad de rolls frescos con salmón, aguacate y pepino.",
-      image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Salmon Nigiri",
-      price: "12",
-      description: "Nigiri de salmón fresco sobre arroz avinagrado.",
-      image: "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Tempura de Camarón",
-      price: "14",
-      description: "Camarones rebozados y fritos al estilo japonés.",
-      image: "https://images.unsplash.com/photo-1615361200141-f45040f367be?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Ramen Tradicional",
-      price: "16",
-      description: "Sopa japonesa con fideos, huevo y cerdo.",
-      image: "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=800",
-      restaurant: "Sushi House"
-    },
-    {
-      name: "Miso Soup",
-      price: "6",
-      description: "Sopa japonesa con tofu, algas y cebollín.",
-      image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800",
-      restaurant: "Sushi House"
-    },
-
-    // Burger Palace
-    {
-      name: "Cheeseburger Clásica",
-      price: "10",
-      description: "Hamburguesa de res con queso cheddar y papas fritas.",
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Double Bacon Burger",
-      price: "14",
-      description: "Hamburguesa doble con tocino crujiente y queso.",
-      image: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Chicken Sandwich",
-      price: "12",
-      description: "Sándwich de pollo frito con lechuga y salsa.",
-      image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Milkshake",
-      price: "6",
-      description: "Batido cremoso con crema batida y cereza.",
-      image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800",
-      restaurant: "Burger Palace"
-    },
-    {
-      name: "Loaded Nachos",
-      price: "9",
-      description: "Nachos con queso fundido, carne y guacamole.",
-      image: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=800",
-      restaurant: "Burger Palace"
-    }
-  ];
-
-  for (const item of menuItems) {
-    await db.collection("menu").add(item);
-  }
-
-  console.log("Menú insertado en Firestore");
-}
 async function seedReviews() {
   const reviews = [
-    // La Pizzería
+    // Uniandes Pizzeria
     {
-      name: "Carlos Pérez",
+      name: "Carlos Perez",
       rating: 5,
       date: "2026-03-01",
-      comment: "La mejor pizza que he probado, auténtico sabor italiano.",
+      comment: "The best pizza I've ever had, authentic Italian flavor.",
       avatar: "CP",
       avatarColor: "#FF9800",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
     {
-      name: "María Gómez",
+      name: "Maria Gomez",
       rating: 4,
       date: "2026-03-02",
-      comment: "Muy buena pasta, aunque el servicio fue un poco lento.",
+      comment: "Very good pasta, although the service was a bit slow.",
       avatar: "MG",
       avatarColor: "#4CAF50",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
     {
-      name: "Andrés López",
+      name: "Andres Lopez",
       rating: 5,
       date: "2026-03-03",
-      comment: "El tiramisú es espectacular, volveré sin duda.",
+      comment: "The tiramisu is spectacular, I will definitely come back.",
       avatar: "AL",
       avatarColor: "#2196F3",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
     {
-      name: "Lucía Torres",
+      name: "Lucia Torres",
       rating: 4,
       date: "2026-03-04",
-      comment: "La pizza estaba deliciosa, pero el lugar estaba lleno.",
+      comment: "The pizza was delicious, but the place was very crowded.",
       avatar: "LT",
       avatarColor: "#9C27B0",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
     {
-      name: "Jorge Ramírez",
+      name: "Jorge Ramirez",
       rating: 5,
       date: "2026-03-05",
-      comment: "Excelente atención y comida, recomendado.",
+      comment: "Excellent service and food, highly recommended.",
       avatar: "JR",
       avatarColor: "#F44336",
-      restaurant: "La Pizzería"
+      restaurant: "Uniandes Pizzeria"
     },
 
-    // Sushi House
+    // Candelaria Sushi House
     {
       name: "Akira Tanaka",
       rating: 5,
       date: "2026-03-01",
-      comment: "El sushi es fresco y delicioso, auténtico sabor japonés.",
+      comment: "The sushi is fresh and delicious, authentic Japanese taste.",
       avatar: "AT",
       avatarColor: "#3F51B5",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
     {
-      name: "Sofía Martínez",
+      name: "Sofia Martinez",
       rating: 4,
       date: "2026-03-02",
-      comment: "El ramen estaba muy bueno, aunque un poco salado.",
+      comment: "The ramen was very good, although a bit salty.",
       avatar: "SM",
       avatarColor: "#009688",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
     {
-      name: "Diego Fernández",
+      name: "Diego Fernandez",
       rating: 5,
       date: "2026-03-03",
-      comment: "El nigiri de salmón es espectacular.",
+      comment: "The salmon nigiri is spectacular.",
       avatar: "DF",
       avatarColor: "#795548",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
     {
       name: "Laura Castillo",
       rating: 4,
       date: "2026-03-04",
-      comment: "La sopa miso estaba rica, pero pequeña la porción.",
+      comment: "The miso soup was tasty, but the portion was small.",
       avatar: "LC",
       avatarColor: "#607D8B",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
     {
-      name: "Mateo Ríos",
+      name: "Mateo Rios",
       rating: 5,
       date: "2026-03-05",
-      comment: "Excelente experiencia, volveré pronto.",
+      comment: "Excellent experience, I will be back soon.",
       avatar: "MR",
       avatarColor: "#E91E63",
-      restaurant: "Sushi House"
+      restaurant: "Candelaria Sushi House"
     },
 
-    // Burger Palace
+    // CityU Burger Palace
     {
       name: "Kevin Smith",
       rating: 5,
       date: "2026-03-01",
-      comment: "La hamburguesa doble con bacon es increíble.",
+      comment: "The double bacon burger is incredible.",
       avatar: "KS",
       avatarColor: "#FF5722",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     },
     {
-      name: "Ana Rodríguez",
+      name: "Ana Rodriguez",
       rating: 4,
       date: "2026-03-02",
-      comment: "Las papas fritas estaban crujientes, pero el batido muy dulce.",
+      comment: "The fries were crispy, but the milkshake was too sweet.",
       avatar: "AR",
       avatarColor: "#CDDC39",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     },
     {
-      name: "Luis Hernández",
+      name: "Luis Hernandez",
       rating: 5,
       date: "2026-03-03",
-      comment: "La cheeseburger clásica nunca falla.",
+      comment: "The classic cheeseburger never fails.",
       avatar: "LH",
       avatarColor: "#FFC107",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     },
     {
-      name: "Paula Díaz",
+      name: "Paula Diaz",
       rating: 4,
       date: "2026-03-04",
-      comment: "Los nachos estaban buenos, aunque un poco grasosos.",
+      comment: "The nachos were good, although a bit greasy.",
       avatar: "PD",
       avatarColor: "#8BC34A",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     },
     {
-      name: "Tomás Vega",
+      name: "Tomas Vega",
       rating: 5,
       date: "2026-03-05",
-      comment: "Excelente lugar para comer hamburguesas.",
+      comment: "Excellent place to eat burgers.",
       avatar: "TV",
       avatarColor: "#00BCD4",
-      restaurant: "Burger Palace"
+      restaurant: "CityU Burger Palace"
     }
   ];
 
@@ -395,11 +276,9 @@ async function seedReviews() {
     await db.collection("reviews").add(review);
   }
 
-  console.log("Reviews insertados en Firestore");}
+  console.log("Reviews inserted into Firestore");
+}
 
-
-
-
+// Run functions
 seedMenu();
-
-seddReviws();
+seedReviews();

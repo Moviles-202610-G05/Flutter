@@ -31,28 +31,29 @@ async function generarRecomendaciones() {
     SELECT 
       JSON_VALUE(data, "$.name") AS name, 
       JSON_VALUE(data, "$.rating") AS rating, 
-      JSON_VALUE(data, "$.image") AS image, 
-      tag 
-    FROM \`foodgram-d6ef7.firestore_export.restaurants_raw_latest\`, 
+      JSON_VALUE(data, "$.image") AS image,
+      tag,
+      JSON_VALUE(data, "$.cuisine") AS cuisine_type 
+    FROM \`foodgram-d6ef7.firestore_export.restaurants_raw_latest\`,
     UNNEST(JSON_VALUE_ARRAY(data, "$.tags")) AS tag
+    WHERE CAST(JSON_VALUE(data, "$.rating") AS FLOAT64) > 4.0
+    
   ),
   matches AS (
-    -- Usamos SELECT DISTINCT aquí para eliminar duplicados de restaurante por usuario
     SELECT DISTINCT 
       u.nombre_usuario, 
       u.email,
       r.name, 
       r.rating, 
       r.image
-      -- Eliminamos 'u.pref' de aquí para que no genere filas distintas si coinciden varios tags
     FROM usuarios_limpios u 
-    JOIN restaurantes_limpios r ON u.pref = r.tag
+    JOIN restaurantes_limpios r 
+      ON LOWER(u.pref) = LOWER(r.cuisine_type) 
+      OR LOWER(u.pref) = LOWER(r.tag)
   )
-  -- Consulta final
   SELECT 
     nombre_usuario, 
     email,
-    -- Ahora ARRAY_AGG solo tendrá restaurantes únicos
     ARRAY_AGG(STRUCT(name, rating, image)) AS sugerencias
   FROM matches
   GROUP BY nombre_usuario, email

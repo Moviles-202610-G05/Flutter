@@ -17,7 +17,7 @@ class MenuRepository {
   final collection = FirebaseFirestore.instance.collection('menu');
 
   for (final plato in platos) {
-    plato.setImagen( utilitisFirebase.subirImagen(plato.imagenFiel!));
+
     await collection.add(plato.toMap());
   }
 }

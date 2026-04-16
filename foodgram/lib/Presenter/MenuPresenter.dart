@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/MenuRepository.dart';
 
@@ -14,7 +16,9 @@ class MenuPresenter {
   MenuPresenter(this.repository, this.view);
 
   
-
+  String getImage(File imagen) {
+    return("");
+  }
   Future<void> crearPlatos(List<Menu> platos) async {
     print(platos);
     try {

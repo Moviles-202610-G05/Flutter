@@ -39,7 +39,7 @@ class NotificationService {
   static Future<void> showSmartNotification() async {
     if (_notificacionMostradaEnSesion) return;
 
-    const String restauranteObjetivo = "La Pizzería Uniandes";
+    const String restauranteObjetivo = "Uniandes Pizzeria";
 
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'restaurant_channel',
