@@ -619,7 +619,7 @@ final  Map<String, String> _prices2 = {
                           var _Biginig = _selectedBiginning ?? "00:00";
                           var _End = _selectedEnd ?? "00:00";
                           var _time = _Biginig + " - " + _End;
-                          var restaurante = Restaurant(name: _restaurantNameController.text, 
+                          var restaurante = Restaurant(id: '',name: _restaurantNameController.text, 
                           image: '', 
                           rating: 5, 
                           price: _pricer, 
