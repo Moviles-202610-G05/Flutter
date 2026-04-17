@@ -9,6 +9,7 @@ import 'package:foodgram/View/saved_user_screen.dart';
 import 'package:foodgram/Presenter/UserPresenter.dart';
 import 'package:foodgram/Model/UserEntity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:foodgram/View/friends_screen.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -268,6 +269,18 @@ Widget build(BuildContext context) {
                         },
                       ),
                       _buildSettingsItem(
+                        Icons.people_outline,
+                        "Friends",
+                        "Manage your friend connections",
+                        const Color(0xFFFF6347).withOpacity(0.1),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => FriendsScreen(currentEmail: _email),
+                          ),
+                        ),
+                      ),
+                      _buildSettingsItem(
                         Icons.lock_outline,
                         "Post & Privacy Settings",
                         "Configure social publications",
@@ -494,19 +507,46 @@ Widget build(BuildContext context) {
 
   Widget _buildSettingsItem(IconData icon, String title, String? subtitle, Color bgColor,
       {VoidCallback? onTap}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
-      child: ListTile(
-        onTap: onTap,
-        leading: CircleAvatar(
-            backgroundColor: bgColor,
-            child: Icon(icon, color: const Color(0xFFFF6347))),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: subtitle != null
-            ? Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey))
-            : null,
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+    return GestureDetector( 
+      onTap: onTap,
+      child: Container(
+        height: 72,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: bgColor,
+              child: Icon(icon, color: const Color(0xFFFF6347)),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.grey),
+          ],
+        ),
       ),
     );
   }

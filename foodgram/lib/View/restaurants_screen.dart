@@ -36,8 +36,9 @@ class _RestaurantFeed extends State<RestaurantFeed>
     presenter2 = RestaurantUsuarioPresenter(RestaurantUsuarioRepository(), this);
     presenter.cargarRestaurantes();
     presenter2.recomendaciones();
-    Future.delayed(const Duration(seconds: 30), () {
-      if (mounted) NotificationService.showSmartNotification();
+    // Duracion para mostrar la notificacion
+    Future.delayed(const Duration(seconds: 5), () async {
+      if (mounted) await NotificationService.showSmartNotification();
     });
   }
 
@@ -264,7 +265,6 @@ class _RestaurantFeed extends State<RestaurantFeed>
   
   @override
   void mostrarRecomendaciones(List<Restaurant>? restaurantesSugeridos) {
-    print("--------------hola---------------");
     featured = (restaurantesSugeridos ?? restaurantes)
       .take(4) 
       .toList();

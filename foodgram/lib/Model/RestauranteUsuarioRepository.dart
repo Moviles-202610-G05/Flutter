@@ -6,7 +6,6 @@ import 'package:geoflutterfire2/geoflutterfire2.dart';
 class RestaurantUsuarioRepository {
   Future<List<Restaurant>?> obtenerRecomendaciones(String email) async {
   try {
-    print("-----------------hola2---------------");
     // 1. Obtenemos la referencia al documento
     final querySnapshot = await FirebaseFirestore.instance
     .collection('user_recommendations')
@@ -28,7 +27,6 @@ class RestaurantUsuarioRepository {
         return []; // O tus restaurantes por defecto
       }
   } catch (e) {
-    print("----------------Error al obtener recomendaciones: $e-------------------");
     return null;
   }
 }

@@ -1,5 +1,6 @@
-import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:foodgram/Model/UserRepository.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:foodgram/View/pagesInsideStudent.dart';
@@ -7,8 +8,6 @@ import 'package:foodgram/View/pagesInsideStudent.dart';
 class NotificationService {
   static DateTime? _ultimaNotificacion;
   static const Duration _cooldown = Duration(seconds: 5);
-  static const List<String> _amigos = ["María", "Juan", "Camila", "Andrés", "Sofía"];
-  static const List<String> _restaurantes = ["Uniandes Pizzeria", "CityU Burger Palace"];
 
   static final FlutterLocalNotificationsPlugin notifications =
       FlutterLocalNotificationsPlugin();
@@ -46,12 +45,7 @@ class NotificationService {
       return;
     }
 
-    const String restauranteObjetivo = "Uniandes Pizzeria";
-    final random = Random();
-    final amigo = friendName ?? _amigos[random.nextInt(_amigos.length)];
-    final restaurante = restaurantName ?? _restaurantes[random.nextInt(_restaurantes.length)];
-
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       'restaurant_channel',
       'Smart Recommendations',
       importance: Importance.max,
@@ -59,13 +53,34 @@ class NotificationService {
       playSound: true,
     );
 
-    await notifications.show(
-      0,
-      'Craving some food? 🍕',
-      '$amigo is eating at $restaurante right now. Join them! ✨',
-      const NotificationDetails(android: androidDetails),
-      payload: restaurante,
-    );
+    if (friendName != null && restaurantName != null) {
+      await notifications.show(
+        0,
+        'Your friend is eating right now! 🍕',
+        '$friendName is at $restaurantName. Join them!',
+        const NotificationDetails(android: androidDetails),
+        payload: restaurantName,
+      );
+      _ultimaNotificacion = ahora;
+      return;
+    }
+
+    final email = FirebaseAuth.instance.currentUser?.email;
+    if (email == null) return;
+    final activos = await UserRepository().getActiveFriends(email);
+    if (activos.isEmpty) return;
+
+    for (var i = 0; i < activos.length; i++) {
+      final amigo = activos[i]['name']!;
+      final restaurante = activos[i]['restaurant']!;
+      await notifications.show(
+        i,
+        'Your friend is eating right now! 🍕',
+        '$amigo is at $restaurante. Join them!',
+        const NotificationDetails(android: androidDetails),
+        payload: restaurante,
+      );
+    }
     _ultimaNotificacion = ahora;
   }
 }

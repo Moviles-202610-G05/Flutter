@@ -12,6 +12,7 @@ class Usuario {
   final double proteinGoal;
   final double carbsGoal;
   final double fatGoal;
+  final List<String> friends;
 
   Usuario({
     required this.universityId,
@@ -27,9 +28,9 @@ class Usuario {
     this.proteinGoal  = 150,
     this.carbsGoal    = 200,
     this.fatGoal      = 67,
+    this.friends = const [],
   });
 
-  // Convierte el objeto en un Map
   Map<String, dynamic> toMap() {
     return {
       'universityId': universityId,
@@ -44,10 +45,10 @@ class Usuario {
       'proteinGoal':  proteinGoal,
       'carbsGoal':    carbsGoal,
       'fatGoal':      fatGoal,
+      'friends': friends,
     };
   }
 
-  // Crea un objeto User desde un Map (ej. al leer de Firebase)
   factory Usuario.fromMap(Map<String, dynamic> map) {
     return Usuario(
       universityId: map['universityId'] ?? '',
@@ -62,6 +63,8 @@ class Usuario {
       proteinGoal:  (map['proteinGoal']  ?? 150).toDouble(),
       carbsGoal:    (map['carbsGoal']    ?? 200).toDouble(),
       fatGoal:      (map['fatGoal']      ?? 67).toDouble(),
+      friends: List<String>.from(map['friends'] ?? []),
+      location: map['location'] as String? ?? 'Carrier 1',
     );
   }
 

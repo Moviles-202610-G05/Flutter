@@ -94,4 +94,51 @@ class UserRepository {
           return 2000.0;
         });
   }
+
+  Future<DocumentSnapshot?> _userByEmail(String email) async {
+    final snap = await FirebaseFirestore.instance
+        .collection('user')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+    return snap.docs.isEmpty ? null : snap.docs.first;
+  }
+
+  Future<String?> addFriend(String myEmail, String friendEmail) async {
+    final friendSnap = await FirebaseFirestore.instance
+        .collection('user')
+        .where('email', isEqualTo: friendEmail)
+        .limit(1)
+        .get();
+    if (friendSnap.docs.isEmpty) return null;
+    final friendName = (friendSnap.docs.first.data()['name'] as String?) ?? friendEmail;
+    final mySnap = await _userByEmail(myEmail);
+    if (mySnap == null) return null;
+    await mySnap.reference.update({'friends': FieldValue.arrayUnion([friendEmail])});
+    return friendName;
+  }
+
+  Future<List<Map<String, String>>> getActiveFriends(String myEmail) async {
+    final mySnap = await _userByEmail(myEmail);
+    if (mySnap == null) return [];
+    final friends = List<String>.from(
+        (mySnap.data() as Map<String, dynamic>)['friends'] ?? []);
+    if (friends.isEmpty) return [];
+    final friendsSnap = await FirebaseFirestore.instance
+        .collection('user')
+        .where('email', whereIn: friends.take(30).toList())
+        .get();
+    final result = <Map<String, String>>[];
+    for (final doc in friendsSnap.docs) {
+      final data = doc.data();
+      final location = data['location'] as String?;
+      if (location != null && location.isNotEmpty && location != 'Carrier 1') {
+        result.add({
+          'name': (data['name'] as String?) ?? (data['email'] as String? ?? ''),
+          'restaurant': location,
+        });
+      }
+    }
+    return result;
+  }
 }
