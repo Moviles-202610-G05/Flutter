@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
+import 'package:foodgram/Model/RestaurantStatsService.dart';
 import 'package:foodgram/Model/RestauranteUsuarioRepository.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
@@ -207,6 +208,18 @@ class _RestaurantFeed extends State<RestaurantFeed>
                   final r = restaurantes[index];
                   return (InkWell(
                           onTap: () {
+                                if (index == 0) {
+                                  RestaurantStatsService.registerFirstPositionClick(
+                                    r.name, r.id ?? "",  // asegúrate de tener el id del restaurante
+                                  );
+                                }
+                                else {
+                                  RestaurantStatsService.registerClick(
+                                    r.name, r.id ?? "",  // asegúrate de tener el id del restaurante
+                                  );
+                                }
+
+
                                 final pagesState = context.findAncestorStateOfType<PagesState>();
                                 pagesState?.setState(() {
                                 print(r.name);
