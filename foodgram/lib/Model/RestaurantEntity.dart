@@ -19,6 +19,7 @@ class Restaurant{
   final int spotsA;
   final List<dynamic> tags;
   File? imagenFiel;
+  final String id;
 
 
   Restaurant({
@@ -39,12 +40,13 @@ class Restaurant{
     required this.spots,
     required this.spotsA,
     this.imagenFiel,
-    required this.tags
+    required this.tags,
+    required this.id
 
   });
   
 
-  factory Restaurant.fromMap(Map<String, dynamic> map) {
+  factory Restaurant.fromMap(Map<String, dynamic> map, {required String id}) {
 
     print(map);
 
@@ -66,6 +68,7 @@ class Restaurant{
       spots: map['spots']?? 0,
       spotsA: map['spotsA'] ?? 0,
       tags: map['tags'] ?? [],
+      id: id ,
     
     );
   }

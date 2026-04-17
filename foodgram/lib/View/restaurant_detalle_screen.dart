@@ -31,7 +31,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
   late RestaurantDetalePresenter presenter;
   List<Reviews> reviews = [];
   List<Menu> dishes = [];
-  Restaurant restaurants = Restaurant(name: "", image: "", rating: 0, price: "", cuisine: "", time: "", distance: "", long: 0, lat: 0, badge: "", badge2: "", numberReviews: 0, description: "", direction: "", spots: 0, spotsA: 0, tags:[]);
+  Restaurant restaurants = Restaurant(id: "", name: "", image: "", rating: 0, price: "", cuisine: "", time: "", distance: "", long: 0, lat: 0, badge: "", badge2: "", numberReviews: 0, description: "", direction: "", spots: 0, spotsA: 0, tags:[]);
   
   bool lodedReviews = false;
   bool lodedMenu = false;

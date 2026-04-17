@@ -21,7 +21,7 @@ class RestaurantUsuarioRepository {
         final List<dynamic> sugerenciasRaw = doc.data()['sugerencias'] ?? [];
         
         // Convertimos cada mapa en un objeto Restaurant
-        return sugerenciasRaw.map((item) => Restaurant.fromMap(item)).toList();
+        return sugerenciasRaw.map((item) => Restaurant.fromMap(item, id: doc.id)).toList();
       } else {
         print("No hay recomendaciones para este email.");
         return []; // O tus restaurantes por defecto

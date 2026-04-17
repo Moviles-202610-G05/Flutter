@@ -6,8 +6,9 @@ import 'package:geoflutterfire2/geoflutterfire2.dart';
 class RestaurantRepository {
   Future<List<Restaurant>> todosRestaurantes() async {
     final snapshot = await FirebaseFirestore.instance.collection('restaurants').get();
-    print (snapshot.docs.map((doc) => Restaurant.fromMap(doc.data())).toList());
-    return snapshot.docs.map((doc) => Restaurant.fromMap(doc.data())).toList();
+    print ("---------Revicion-------");
+    print (snapshot.docs.map((doc) => Restaurant.fromMap(doc.data(), id: doc.id)).toList());
+    return snapshot.docs.map((doc) => Restaurant.fromMap(doc.data(), id: doc.id)).toList();
   }
 
   Future<void> crearRestaurante(Restaurant restaurante) async {
@@ -19,7 +20,7 @@ class RestaurantRepository {
 
   Future<Restaurant> restaurante(String nombre) async {
     final snapshot = await FirebaseFirestore.instance.collection('restaurants').where('name', isEqualTo: nombre).get();
-    return snapshot.docs.map((doc) => Restaurant.fromMap(doc.data())).toList()[0];
+    return snapshot.docs.map((doc) => Restaurant.fromMap(doc.data(), id: doc.id)).toList()[0];
   }
 
   final _geo = GeoFlutterFire();
@@ -43,7 +44,7 @@ class RestaurantRepository {
     ).map((List<DocumentSnapshot> documentList) {
       // Convertimos cada documento a un objeto Restaurant
       return documentList.map((doc) => 
-        Restaurant.fromMap(doc.data() as Map<String, dynamic>)
+        Restaurant.fromMap(doc.data() as Map<String, dynamic>, id: doc.id)
       ).toList();
     }); 
   print ("----Revisar----");
