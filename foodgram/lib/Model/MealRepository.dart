@@ -6,12 +6,13 @@ class MealRepository {
   // Es null hasta que alguien lo crea
   static MealRepository? _instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  
   // Construtor privado para que nadie cree otras instancias
   MealRepository._();
 
   // Metodo de acceso global  
   static MealRepository getInstance() {
-    // Solo crea una vez el MealRepository
+    // Solo crea una instancia si aun no existe
     _instance ??= MealRepository._();
     return _instance!;
   }

@@ -112,10 +112,9 @@ Widget build(BuildContext context) {
               ),
               IconButton(
                 icon: const Icon(Icons.notifications_none, color: Color(0xFFFF6347), size: 24),
-                onPressed: () => NotificationService.showSmartNotification(
-                  friendName: "María",
-                  restaurantName: "CityU Burger Palace",
-                ),
+                onPressed: () async {
+                  await NotificationService.showSmartNotification();
+                },
               ),
               const SizedBox(width: 8),
             ],

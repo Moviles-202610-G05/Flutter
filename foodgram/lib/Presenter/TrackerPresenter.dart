@@ -10,7 +10,7 @@ class TrackerPresenter {
   // Adapter - Guarda el Adapter creado como un Service
   final NutritionService _nutritionService;
 
-  // Singleton - MealRepository garantiza una sola instancia en toda la app
+  // Singleton -  Es la misma instancia de MealRepository
   final MealRepository _repository = MealRepository.getInstance();
   final UserRepository _userRepository = UserRepository();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -58,7 +58,7 @@ class TrackerPresenter {
       onLoadingStart();
       final email = _auth.currentUser?.email ?? "anonimo@foodgram.com";
 
-      // Adapter - Llama al contrato del Adapter para analizar la foto 
+      // Adapter - Llama al Adapter para analizar la foto 
       final nutritionResult = await _nutritionService.analyzeImage(image);
 
       // Crea el plato para guardar usando la info que le devolvio el Adapter

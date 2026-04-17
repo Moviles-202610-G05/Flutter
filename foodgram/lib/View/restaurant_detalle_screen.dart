@@ -34,9 +34,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
   Restaurant restaurants = Restaurant(id: "", name: "", image: "", rating: 0, price: "", cuisine: "", time: "", distance: "", long: 0, lat: 0, badge: "", badge2: "", numberReviews: 0, description: "", direction: "", spots: 0, spotsA: 0, tags:[]);
   
   bool lodedReviews = false;
-  
   bool lodedMenu = false;
-  
   bool lodedRestaurants = false;
 
   @override
@@ -53,18 +51,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     );
   }
 
-
  initState()  {
     super.initState();
     presenter =  RestaurantDetalePresenter(RestaurantRepository(), MenuRepository(), ReviwsRepository(), this);
     presenter.mostrarDetalle(widget.rest);
     _tabController = TabController(length: 3, vsync: this);
   }
-
-
-
-
-
 
   @override
   void dispose() {
