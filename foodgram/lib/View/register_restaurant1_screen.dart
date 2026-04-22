@@ -332,7 +332,7 @@ final  Map<String, String> _prices2 = {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                               CustomWidgets.buildTextField (controller: _spotsController, keyboardType: TextInputType.number,label: "Spots", icon: Icons.lock,validator: (value) {
+                               CustomWidgets.buildTextField (controller: _spotsController, keyboardType: TextInputType.number,label: "Spots", icon: Icons.chair_alt ,validator: (value) {
                            if (value == null || value.isEmpty) {
                             return 'Please enter a number of spots';
                             }
@@ -471,59 +471,59 @@ final  Map<String, String> _prices2 = {
                       },
                     child: Container(
 
-                    width: double.infinity,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFFFF6933),
-                        width: 2,
-                        style: BorderStyle.solid,
+                            width: double.infinity,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: const Color(0xFFFF6933),
+                                width: 2,
+                                style: BorderStyle.solid,
 
-                      ),
-                      image: _imagenSeleccionada != null
-                        ? DecorationImage(
-                            image: FileImage(_imagenSeleccionada!),
-                            fit: BoxFit.cover,
-                        )
-                      : null,
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFFFFEAE6),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: _imagenSeleccionada != null
-                      ?[Positioned(
+                              ),
+                              image: _imagenSeleccionada != null
+                                ? DecorationImage(
+                                    image: FileImage(_imagenSeleccionada!),
+                                    fit: BoxFit.cover,
+                                )
+                              : null,
+                              borderRadius: BorderRadius.circular(8),
+                              color: const Color(0xFFFFEAE6),
+                            ),
+                            child: Stack( 
+                                children: [
+                        if (_imagenSeleccionada == null)
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.camera_alt_outlined,
+                                    size: 48, color: Color(0xFFFF6933)),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Upload Photo',
+                                  style: TextStyle(
+                                    color: Color(0xFFFF6933),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (_imagenSeleccionada != null)
+                          Positioned(
+                            right: 8,
+                            bottom: 8,
                             child: Container(
                               decoration: BoxDecoration(
                                 color: const Color.fromARGB(118, 255, 99, 71),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               padding: const EdgeInsets.all(8),
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                                size: 20,
-                              ),
+                              child: const Icon(Icons.edit, color: Colors.white, size: 20),
                             ),
-                          ),]
-                      : [
-                        Icon(
-                          Icons.camera_alt_outlined,
-                          size: 48,
-                          color: const Color(0xFFFF6933),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Upload Photo',
-                          style: TextStyle(
-                            color: Color(0xFFFF6933),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),),
+                      ],)),),
                   const SizedBox(height: 24),
                   const Text(
                     'Restaurant Tags',

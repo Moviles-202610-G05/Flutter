@@ -86,7 +86,9 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
 
   void _addDishToMenu() {
     if (_formKey.currentState!.validate()) {
+        _MenuContorller.restaurant = widget.restaurante.name;
       setState(() {
+        
         menuItems.add(
           _MenuContorller
       );
@@ -554,7 +556,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
 
   if (image != null) {
     Menu menu= await presenterMenu.onImageCaptured(File(image.path));
-
+    
      setState(() {
         _imagenSeleccionada = File(image.path) ;
         _MenuContorller = menu;

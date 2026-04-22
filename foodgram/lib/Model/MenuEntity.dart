@@ -5,7 +5,7 @@ class Menu {
   final String price;
   final String description;
   String image;
-  final String restaurant;
+  String restaurant;
   File? imagenFiel;
   final String category;
 

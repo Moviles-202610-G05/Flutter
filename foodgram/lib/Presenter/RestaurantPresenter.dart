@@ -77,7 +77,7 @@ Future<void> fetchNearbyRestaurants() async {
     // Nota: Aquí quitamos el 'await' porque un Stream no se espera, se escucha.
     repository.getRestaurantsByProximity(
       position.latitude, 
-      position.longitude, 10
+      position.longitude, 1
     ).listen((restaurants) {
       
       // 4. Entregar los datos a la vista cada vez que el Stream emita algo
