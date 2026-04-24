@@ -1,22 +1,15 @@
 import 'dart:io';
 import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/MenuSugestionApiService.dart';
-
-// Adapter - Finje ser Services pero en realidad es Adapter
 class MenuSugestionApiAdapter {
 
   final MenuSugestionApiService service;
   MenuSugestionApiAdapter(this.service);
 
   @override
-  // Extiende el contrato del Services para traducir
   Future<Menu> analyzeImage(File image) async {
-    // Pide el JSON de la API
-    print("------Holaaaaa1-------------");
     final aiJson = await service.getRawAnalysis(image);
-    print("------Holaaaaa-------------");
     print(aiJson);
-    // Traduce eso a un MealEntity
     return _adapt(aiJson);
   }
 

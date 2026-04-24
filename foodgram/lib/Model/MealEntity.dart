@@ -21,13 +21,13 @@ class NutritionComponent {
 
   factory NutritionComponent.fromJson(Map<String, dynamic> json) {
     return NutritionComponent(
-      food: (json['food'] ?? 'Unknown') as String,
+      food:             (json['food'] ?? 'Unknown') as String,
       estimatedPortion: (json['estimated_portion'] ?? '') as String,
       estimatedWeightG: (json['estimated_weight_g'] ?? 0).toInt(),
-      calories: (json['calories'] ?? 0).toInt(),
-      proteinG: (json['protein_g'] ?? 0).toDouble(),
-      carbsG: (json['carbs_g'] ?? 0).toDouble(),
-      fatG: (json['fat_g'] ?? 0).toDouble(),
+      calories:         (json['calories'] ?? 0).toInt(),
+      proteinG:         (json['protein_g'] ?? 0).toDouble(),
+      carbsG:           (json['carbs_g'] ?? 0).toDouble(),
+      fatG:             (json['fat_g'] ?? 0).toDouble(),
     );
   }
 }
@@ -40,8 +40,8 @@ class MealEntity {
   final double totalCarbsG;
   final double totalFatG;
   final ConfidenceLevel confidence;
-  final DateTime timestamp; 
-  final String? imagePath;
+  final DateTime timestamp;
+  final String? imageUrl;
 
   const MealEntity({
     required this.dishName,
@@ -52,55 +52,52 @@ class MealEntity {
     required this.totalFatG,
     required this.confidence,
     required this.timestamp,
-    this.imagePath,
+    this.imageUrl,
   });
 
-  // Deserializa desde Firestore (formato camelCase).
-  // Para convertir la respuesta de la IA usar NutritionApiAdapter.
   factory MealEntity.fromJson(Map<String, dynamic> json) {
     return MealEntity(
       dishName:      (json['dishName']      ?? '') as String,
       components:    (json['components'] as List? ?? [])
           .map((e) => NutritionComponent.fromJson(e as Map<String, dynamic>))
           .toList(),
-      totalCalories: (json['totalCalories'] ?? 0) as int,
+      totalCalories: (json['totalCalories'] ?? 0).toInt(),
       totalProteinG: (json['totalProteinG'] ?? 0).toDouble(),
       totalCarbsG:   (json['totalCarbsG']   ?? 0).toDouble(),
       totalFatG:     (json['totalFatG']     ?? 0).toDouble(),
       confidence:    _parseConfidence((json['confidence'] ?? 'low') as String),
       timestamp:     DateTime.parse(json['timestamp'] as String),
-      imagePath:     json['imagePath'] as String?,
+      imageUrl:      json['imageUrl'] as String?,
     );
   }
 
   Map<String, dynamic> toMap(String email) {
     return {
-      'userEmail': email,
-      'dishName': dishName,
+      'userEmail':     email,
+      'dishName':      dishName,
       'totalCalories': totalCalories,
       'totalProteinG': totalProteinG,
-      'totalCarbsG': totalCarbsG,
-      'totalFatG': totalFatG,
-      'confidence': confidence.name,
-      'timestamp': timestamp.toIso8601String(),
-      'imagePath': imagePath,
-      'components': components.map((c) => {
-        'food': c.food,
-        'calories': c.calories,
-        'protein_g': c.proteinG, 
-        'carbs_g': c.carbsG,     
-        'fat_g': c.fatG,         
-        'estimated_portion': c.estimatedPortion
+      'totalCarbsG':   totalCarbsG,
+      'totalFatG':     totalFatG,
+      'confidence':    confidence.name,
+      'timestamp':     timestamp.toIso8601String(),
+      'imageUrl':      imageUrl,
+      'components':    components.map((c) => {
+        'food':              c.food,
+        'calories':          c.calories,
+        'protein_g':         c.proteinG,
+        'carbs_g':           c.carbsG,
+        'fat_g':             c.fatG,
+        'estimated_portion': c.estimatedPortion,
       }).toList(),
     };
   }
 
   static ConfidenceLevel _parseConfidence(String raw) {
     switch (raw.toLowerCase().trim()) {
-      case 'high': return ConfidenceLevel.high;
+      case 'high':   return ConfidenceLevel.high;
       case 'medium': return ConfidenceLevel.medium;
-      default: return ConfidenceLevel.low;
+      default:       return ConfidenceLevel.low;
     }
   }
-
 }

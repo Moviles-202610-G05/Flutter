@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodgram/Model/ConnectivityService.dart';
 import 'package:foodgram/View/feed_screen.dart';
 import 'package:foodgram/View/mapa.dart';
 import 'package:foodgram/View/restaurant_detalle_screen.dart';
@@ -15,16 +17,27 @@ class Pages extends StatefulWidget {
 }
 
 class PagesState extends State<Pages> {
-  int _currentIndex = 0; 
-  int currentIndex2 = 0; 
+  int _currentIndex = 0;
+  int currentIndex2 = 0;
   String rest = "";
+
+  @override
+  void initState() {
+    super.initState();
+    final email = FirebaseAuth.instance.currentUser?.email ?? '';
+    ConnectivityService.instance.initialize(email);
+  }
 
   void navegarARestauranteDirecto(String nombre) {
     setState(() {
-      _currentIndex = 1; 
-      currentIndex2 = 1; 
+      _currentIndex = 1;
+      currentIndex2 = 1;
       rest = nombre;
     });
+  }
+
+  void navegarAlTracker() {
+    setState(() => _currentIndex = 3);
   }
 
 @override
