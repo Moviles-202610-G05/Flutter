@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:foodgram/Model/ConnectivityService.dart';
 import 'package:foodgram/Model/MealEntity.dart';
 import 'package:foodgram/Model/NutritionApiAdapter.dart';
 import 'package:foodgram/Model/NutritionApiService.dart';
@@ -26,7 +28,34 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
   late final TrackerPresenter _presenter;
 
   static const _orange = Color(0xFFFF6B35);
-  static const _foodGramRed = Color(0xFFFF6347);
+
+  void _onAnalysisResult() {
+    final meal = TrackerPresenter.analysisResult.value;
+    if (meal == null || !mounted) return;
+    TrackerPresenter.analysisResult.value = null;
+    setState(() {
+      _analyzing = false;
+      _displayKcal = meal.totalCalories;
+      _displayProtein = meal.totalProteinG;
+      _displayCarbs = meal.totalCarbsG;
+      _displayFat = meal.totalFatG;
+    });
+    _ringCtrl.reset();
+    _ringCtrl.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _showResultSheet(meal);
+    });
+  }
+
+  void _onAnalyzingState() {
+    if (!mounted) return;
+    setState(() => _analyzing = TrackerPresenter.isAnalyzing.value);
+  }
+
+  void _onOfflineProcessing() {
+    if (!mounted) return;
+    setState(() => _analyzing = ConnectivityService.isProcessingOffline.value);
+  }
 
   @override
   void initState() {
@@ -35,29 +64,36 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
     _ringAnim = CurvedAnimation(parent: _ringCtrl, curve: Curves.easeOutCubic);
     _ringCtrl.forward();
 
+    TrackerPresenter.isAnalyzing.addListener(_onAnalyzingState);
+    TrackerPresenter.analysisResult.addListener(_onAnalysisResult);
+    ConnectivityService.isProcessingOffline.addListener(_onOfflineProcessing);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onAnalyzingState();
+      _onOfflineProcessing();
+      _onAnalysisResult();
+    });
+
     _presenter = TrackerPresenter(
-      // Adapter - Se crea el presenter con el Adapter y la API 
-      // Si quiero cambiar de IA, debo cambiar aqui
       nutritionService: NutritionApiAdapter(NutritionApiService()),
-      onLoadingStart: () => setState(() => _analyzing = true),
-      onSuccess: (result) {
-        setState(() {
-          _analyzing = false;
-          _displayKcal = result.totalCalories;
-          _displayProtein = result.totalProteinG;
-          _displayCarbs = result.totalCarbsG;
-          _displayFat = result.totalFatG;
-        });
-        _ringCtrl.reset();
-        _ringCtrl.forward();
-        if (mounted) {
-          _showResultSheet(result);
-        }
-      },
+      onLoadingStart: () {},
+      onSuccess: (_) {},
       onError: (msg) {
+        if (!mounted) return;
         setState(() => _analyzing = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: Colors.redAccent),
+        );
+      },
+      onOfflineSaved: () {
+        if (!mounted) return;
+        setState(() => _analyzing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Your meal will be analyzed when connection is restored'),
+            backgroundColor: Colors.orangeAccent,
+            duration: Duration(seconds: 4),
+          ),
         );
       },
     );
@@ -65,6 +101,9 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
 
   @override
   void dispose() {
+    TrackerPresenter.isAnalyzing.removeListener(_onAnalyzingState);
+    TrackerPresenter.analysisResult.removeListener(_onAnalysisResult);
+    ConnectivityService.isProcessingOffline.removeListener(_onOfflineProcessing);
     _ringCtrl.dispose();
     super.dispose();
   }
@@ -307,7 +346,6 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
         context: context,
         builder: (_) => _ConfirmSheet(
           path: photo.path,
-          // Adapter - El usuario manda la foto al presenter 
           onConfirm: () => _presenter.onImageCaptured(File(photo.path)),
         ),
       );
@@ -476,11 +514,12 @@ class LoggedMealCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipOval(
-              child: meal.imagePath != null
-                  ? Image.file(
-                      File(meal.imagePath!),
+              child: meal.imageUrl != null
+                  ? CachedNetworkImage(
+                      imageUrl: meal.imageUrl!,
                       width: 60, height: 60, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _placeholder(),
+                      placeholder: (_, __) => _placeholder(),
+                      errorWidget: (_, __, ___) => _placeholder(),
                     )
                   : _placeholder(),
             ),
@@ -564,13 +603,17 @@ class _MealDetailSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            if (meal.imagePath != null)
+            if (meal.imageUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.file(
-                  File(meal.imagePath!),
+                child: CachedNetworkImage(
+                  imageUrl: meal.imageUrl!,
                   height: 180, width: double.infinity, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  placeholder: (_, __) => const SizedBox(
+                    height: 180,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
                 ),
               ),
             const SizedBox(height: 16),
