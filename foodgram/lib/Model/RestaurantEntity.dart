@@ -48,7 +48,6 @@ class Restaurant{
 
   factory Restaurant.fromMap(Map<String, dynamic> map, {required String id}) {
 
-    print(map);
 
     return Restaurant(
       name: map['name'] ?? '',
@@ -77,6 +76,7 @@ class Restaurant{
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'image': image,
       'rating': rating,
