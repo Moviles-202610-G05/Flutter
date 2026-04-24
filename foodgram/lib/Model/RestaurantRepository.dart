@@ -101,8 +101,6 @@ Future<List<Restaurant>> _restaurantesLocales() async {
         Restaurant.fromMap(doc.data() as Map<String, dynamic>, id: doc.id)
       ).toList();
     }); 
-  print ("----Revisar----");
-  print (datos);
   return datos;
   }
   
