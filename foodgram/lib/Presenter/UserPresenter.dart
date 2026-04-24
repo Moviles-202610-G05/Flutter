@@ -14,7 +14,6 @@ abstract class UserView {
 
 class UserPresenter {
   final UserRepository repository = UserRepository();
-  // Singleton - Es la misma instancia de MealRepository
   final MealRepository _mealRepository = MealRepository.getInstance();
   final UserView view;
 

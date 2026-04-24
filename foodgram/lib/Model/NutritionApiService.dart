@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class NutritionApiService {
 
   static const String _apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
-  static const String _apiKey = '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';
+  static const String _apiKey = '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';
   static const String _model  = 'nvidia/nemotron-nano-12b-v2-vl:free';
   static const String _prompt = '''
       You are a nutrition analysis AI.
@@ -55,11 +55,17 @@ class NutritionApiService {
       }
   ''';
 
-  // Adapter - Llama al OPenRouter y devuelve el mapa de nutricion 
+  Future<Map<String, dynamic>> getRawAnalysisFromBase64(String base64Image) async {
+    return _callWithBase64(base64Image);
+  }
+
   Future<Map<String, dynamic>> getRawAnalysis(File imageFile) async {
     final bytes = await imageFile.readAsBytes();
     final base64Image = base64Encode(bytes);
+    return _callWithBase64(base64Image);
+  }
 
+  Future<Map<String, dynamic>> _callWithBase64(String base64Image) async {
     final body = jsonEncode({
       'model': _model,
       'messages': [
@@ -87,8 +93,11 @@ class NutritionApiService {
     }
 
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-    // Limpia losbloques markdown
-    final rawContent = decoded['choices'][0]['message']['content'] as String;
+    final choices = decoded['choices'] as List?;
+    if (choices == null || choices.isEmpty) {
+      throw Exception('API sin respuesta válida: ${response.body}');
+    }
+    final rawContent = choices[0]['message']['content'] as String;
     final cleanJson = _stripMarkdown(rawContent);
 
     return jsonDecode(cleanJson) as Map<String, dynamic>;

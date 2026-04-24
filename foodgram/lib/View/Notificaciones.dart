@@ -28,7 +28,9 @@ class NotificationService {
       settings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         final String? payload = response.payload;
-        if (payload != null && payload.isNotEmpty) {
+        if (payload == 'tracker') {
+          pagesKey.currentState?.navegarAlTracker();
+        } else if (payload != null && payload.isNotEmpty) {
           pagesKey.currentState?.navegarARestauranteDirecto(payload);
         }
       },
@@ -82,5 +84,23 @@ class NotificationService {
       );
     }
     _ultimaNotificacion = ahora;
+  }
+
+  static Future<void> showMealReadyNotification(String dishName) async {
+    const androidDetails = AndroidNotificationDetails(
+      'meal_analysis_channel',
+      'Meal Analysis',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+    );
+
+    await notifications.show(
+      999,
+      'Your meal analysis is ready! 🍽️',
+      '$dishName has been analyzed and logged.',
+      const NotificationDetails(android: androidDetails),
+      payload: 'tracker',
+    );
   }
 }
