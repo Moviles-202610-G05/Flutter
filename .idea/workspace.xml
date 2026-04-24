@@ -5,11 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5df29327-2628-4acd-9121-d1f05cf5c538" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/Model/MenuSugestionApiAdapter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Model/MenuSugestionApiAdapter.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/Presenter/MenuPresenter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Presenter/MenuPresenter.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/register_restaurant1_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/register_restaurant1_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/regiter_restaurant2_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/regiter_restaurant2_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodgram/lib/View/widgets/widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/View/widgets/widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/lib/Model/RestaurantRepository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/lib/Model/RestaurantRepository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/foodgram/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +45,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "prediction"
+    "git-widget-placeholder": "main"
   }
 }]]></component>
   <component name="TaskManager">
