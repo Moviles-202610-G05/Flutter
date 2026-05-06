@@ -43,13 +43,23 @@ class PagesState extends State<Pages> {
 @override
 Widget build(BuildContext context) {
   return Scaffold(
-    body: _getBody(_currentIndex, currentIndex2, rest), 
+    body: Stack(
+      fit: StackFit.expand,
+      children: [
+        Offstage(
+          offstage: _currentIndex != 3,
+          child: TrackerScreen(),
+        ),
+        if (_currentIndex != 3)
+          _getBody(_currentIndex, currentIndex2, rest),
+      ],
+    ),
     bottomNavigationBar: BottomNavigationBar(
       currentIndex: _currentIndex,
       onTap: (index) {
         setState(() {
           _currentIndex = index;
-          currentIndex2 = 0; 
+          currentIndex2 = 0;
         });
       },
       type: BottomNavigationBarType.fixed,

@@ -29,7 +29,6 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   String _name     = '';
   String _username = '';
   String _email    = '';
-  String _location = '';
   List<String> _preferences = [];
 
   @override
@@ -41,11 +40,11 @@ class _UserScreenState extends State<UserScreen> implements UserView {
 
   @override
   void mostrarPerfil(Usuario usuario) {
+    if (!mounted) return;
     setState(() {
       _name          = usuario.name;
       _username      = usuario.username;
       _email         = usuario.email;
-      _location      = usuario.carrier;
       _preferences   = List<String>.from(usuario.preferences);
       _caloriesGoal  = usuario.caloriesGoal;
       _proteinGoal   = usuario.proteinGoal;
@@ -56,17 +55,18 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   }
 
   @override
-  void onLoginSuccess() {
-  }
+  void onLoginSuccess() {}
 
   @override
   void mostrarError(String mensaje) {
+    if (!mounted) return;
     setState(() => _isLoading = false);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
   }
 
   @override
   void mostrarExito(String mensaje) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
   }
 
@@ -392,7 +392,6 @@ Widget build(BuildContext context) {
   }
 
   Widget _buildNutritionCard() {
-    // Event consumer, el streamBuilder se reconstruye cada vez que el stream emite un nuevo valor
     return StreamBuilder<Map<String, double>>(
       stream: _presenter.dailyStatsStream,
       builder: (context, snapshot) {
@@ -401,8 +400,6 @@ Widget build(BuildContext context) {
         final double consumedProtein = stats['protein']!;
         final double consumedCarbs = stats['carbs']!;
         final double consumedFat = stats['fat']!;
-
-        // Cálculos de progreso (validando no dividir por cero)
         final double calProgress = (consumedKcal / (_caloriesGoal > 0 ? _caloriesGoal : 2000)).clamp(0.0, 1.0);
         final int calPct = (calProgress * 100).round();
 

@@ -1,8 +1,14 @@
+import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:foodgram/BaseDeDatos/PendingMealDatabase.dart';
 import 'package:foodgram/Model/MealRepository.dart';
 import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Presenter/TrackerPresenter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class UserView {
   void onLoginSuccess();
@@ -20,20 +26,21 @@ class UserPresenter {
   UserPresenter(this.view);
 
   Stream<Map<String, double>> get dailyStatsStream {
-    final email = FirebaseAuth.instance.currentUser?.email ?? "anonimo@foodgram.com";
     final todayPrefix = DateTime.now().toIso8601String().substring(0, 10);
-
-    return _mealRepository.getMealsStream(email).map((meals) {
-      double kcal = 0, protein = 0, carbs = 0, fat = 0;
-      for (final meal in meals) {
-        if (meal.timestamp.toIso8601String().startsWith(todayPrefix)) {
-          kcal    += meal.totalCalories;
-          protein += meal.totalProteinG;
-          carbs   += meal.totalCarbsG;
-          fat     += meal.totalFatG;
+    return TrackerPresenter.userEmailStream.switchMap((email) {
+      final e = email.isNotEmpty ? email : 'anonimo@foodgram.com';
+      return _mealRepository.getMealsStream(e).map((meals) {
+        double kcal = 0, protein = 0, carbs = 0, fat = 0;
+        for (final meal in meals) {
+          if (meal.timestamp.toIso8601String().startsWith(todayPrefix)) {
+            kcal    += meal.totalCalories;
+            protein += meal.totalProteinG;
+            carbs   += meal.totalCarbsG;
+            fat     += meal.totalFatG;
+          }
         }
-      }
-      return {'kcal': kcal, 'protein': protein, 'carbs': carbs, 'fat': fat};
+        return {'kcal': kcal, 'protein': protein, 'carbs': carbs, 'fat': fat};
+      });
     });
   }
 
@@ -56,11 +63,45 @@ class UserPresenter {
     }
   }
 
-  Future<void> cargarPerfilActual() async {
+  // Login sin conexion — guarda el perfil en SharedPreferences al hacer login online
+  Future<void> cacheProfileSilently() async {
     try {
       final firebaseUser = FirebaseAuth.instance.currentUser;
+      if (firebaseUser == null) return;
+      final usuario = await repository.getUserByEmail(firebaseUser.email!);
+      if (usuario == null) return;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userProfileJson', jsonEncode(usuario.toMap()));
+    } catch (_) {}
+  }
+
+  Future<void> cargarPerfilActual() async {
+    try {
+      final connectivity = await Connectivity().checkConnectivity();
+
+      if (connectivity == ConnectivityResult.none) {
+        // Login sin conexion — carga perfil desde SharedPreferences 
+        final prefs = await SharedPreferences.getInstance();
+        final cachedJson = prefs.getString('userProfileJson');
+        if (cachedJson != null) {
+          final data = jsonDecode(cachedJson) as Map<String, dynamic>;
+          view.mostrarPerfil(Usuario.fromMap(data));
+        } else {
+          view.mostrarError("No internet connection. Profile data not available offline.");
+        }
+        return;
+      }
+
+      final firebaseUser = FirebaseAuth.instance.currentUser;
       if (firebaseUser == null) {
-        view.mostrarError("No hay sesión activa.");
+        final prefs = await SharedPreferences.getInstance();
+        final cachedJson = prefs.getString('userProfileJson');
+        if (cachedJson != null) {
+          final data = jsonDecode(cachedJson) as Map<String, dynamic>;
+          view.mostrarPerfil(Usuario.fromMap(data));
+        } else {
+          view.mostrarError("No hay sesión activa.");
+        }
         return;
       }
       final usuario = await repository.getUserByEmail(firebaseUser.email!);
@@ -68,6 +109,10 @@ class UserPresenter {
         view.mostrarError("No se encontró el perfil del usuario.");
         return;
       }
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userProfileJson', jsonEncode(usuario.toMap()));
+
       view.mostrarPerfil(usuario);
     } catch (e) {
       view.mostrarError("Error al cargar perfil: $e");
@@ -103,6 +148,7 @@ class UserPresenter {
         ));
       }
 
+      await cacheProfileSilently();
       view.onLoginSuccess();
     } on FirebaseAuthException catch (e) {
       view.mostrarError("Error de autenticación: ${e.message}");
@@ -118,7 +164,37 @@ class UserPresenter {
     required List<String> preferences,
     String newEmail = '',
     String password = '',
+    void Function()? onOfflineSaved,
   }) async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // Datos sin conexion — serializa el perfil como JSON y lo guarda en pending_profile_updates
+      final db = await PendingMealDatabase.getInstance();
+      final payload = jsonEncode({
+        'currentEmail': currentEmail,
+        'name': name,
+        'username': username,
+        'preferences': preferences,
+        'newEmail': newEmail,
+      });
+
+      await db.insertPendingProfile(payload, DateTime.now().toIso8601String());
+
+      // Se actualiza el perfil en SharedPreferences para reflejar los cambios o
+      final prefs = await SharedPreferences.getInstance();
+      final cachedJson = prefs.getString('userProfileJson');
+      if (cachedJson != null) {
+        final data = jsonDecode(cachedJson) as Map<String, dynamic>;
+        data['name'] = name;
+        data['username'] = username;
+        data['preferences'] = preferences;
+        if (newEmail.isNotEmpty) data['email'] = newEmail;
+        await prefs.setString('userProfileJson', jsonEncode(data));
+      }
+
+      onOfflineSaved?.call();
+      return;
+    }
     try {
       if (password.isNotEmpty) {
         await FirebaseAuth.instance.currentUser?.updatePassword(password);

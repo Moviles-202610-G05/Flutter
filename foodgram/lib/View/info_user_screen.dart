@@ -59,7 +59,6 @@ class _InfoUserScreenState extends State<InfoUserScreen> implements UserView {
     super.dispose();
   }
 
-  // ── UserView ────────────────────────────────────────────────
   @override void onLoginSuccess() {}
   @override void mostrarUsuarios(List<Usuario> usuarios) {}
   @override void mostrarPerfil(Usuario usuario) {}
@@ -84,7 +83,22 @@ class _InfoUserScreenState extends State<InfoUserScreen> implements UserView {
     });
   }
 
-  // ── Acciones ────────────────────────────────────────────────
+  void _onOfflineSaved() {
+    // Datos sin conexion — Retorna los nuevos datos para actualizar la interfaz
+    setState(() => _isSaving = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Profile update saved. It will sync when connection is restored"),
+      ),
+    );
+    Navigator.pop(context, {
+      'name':        _nameCtrl.text,
+      'username':    _usernameCtrl.text,
+      'email':       _emailCtrl.text,
+      'preferences': _selectedPreferences,
+    });
+  }
+
   void _save() {
     FocusScope.of(context).unfocus();
     setState(() {
@@ -93,27 +107,27 @@ class _InfoUserScreenState extends State<InfoUserScreen> implements UserView {
     });
     _presenter.actualizarPerfil(
       currentEmail: widget.email,
-      name:         _nameCtrl.text,
-      username:     _usernameCtrl.text,
-      preferences:  _selectedPreferences,
-      newEmail:     _emailCtrl.text,
-      password:     _passwordCtrl.text,
+      name: _nameCtrl.text,
+      username: _usernameCtrl.text,
+      preferences: _selectedPreferences,
+      newEmail: _emailCtrl.text,
+      password: _passwordCtrl.text,
+      onOfflineSaved: _onOfflineSaved,
     );
   }
 
   void _cancelEdit() {
     FocusScope.of(context).unfocus();
     setState(() {
-      _nameCtrl.text     = widget.name;
+      _nameCtrl.text = widget.name;
       _usernameCtrl.text = widget.username;
-      _emailCtrl.text    = widget.email;
+      _emailCtrl.text = widget.email;
       _passwordCtrl.clear();
       _selectedPreferences = List<String>.from(widget.preferences);
       _isEditing = false;
     });
   }
 
-  // ── UI ──────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

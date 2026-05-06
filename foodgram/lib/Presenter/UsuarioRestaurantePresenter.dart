@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestauranteUsuarioRepository.dart';
 
@@ -8,14 +7,11 @@ abstract class  RestaurantUsuarioView {
   void mostrarError2(String mensaje);
   void mostrarExito(String mensaje);
 }
-
 class  RestaurantUsuarioPresenter {
   final RestaurantUsuarioRepository repository;
   final  RestaurantUsuarioView view;
 
   RestaurantUsuarioPresenter(this.repository, this.view);
-
-  
 
   Future<void> recomendaciones() async {
     try {

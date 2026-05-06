@@ -3,6 +3,9 @@ import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/preregister_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodgram/Presenter/UserPresenter.dart';
+import 'package:foodgram/Presenter/TrackerPresenter.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -24,12 +27,43 @@ class _LoginScreenState extends State<LoginScreen> implements UserView {
     _passwordController.dispose();
     super.dispose();
   }
+
   Future<void> login() async {
+    // Login sin conexion — Primero cache local y si no encuentro voy a red
+    final connectivity = await Connectivity().checkConnectivity();
+    if (connectivity == ConnectivityResult.none) {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedEmail = prefs.getString('userEmail');
+      final cachedUserId = prefs.getString('userId');
+      if (!mounted) return;
+      if (cachedUserId != null && cachedEmail == _emailController.text.trim()) {
+        TrackerPresenter.setUserEmail(cachedEmail!);
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Pages()));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("No internet connection. Please connect to log in for the first time"),
+          ),
+        );
+      }
+      return;
+    }
+
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+      final user = userCredential.user;
+      if (user != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', user.uid);
+        await prefs.setString('userEmail', user.email ?? '');
+        await prefs.setString('displayName', user.displayName ?? '');
+        TrackerPresenter.setUserEmail(user.email ?? '');
+      }
+      await _userPresenter.cacheProfileSilently();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Login exitoso")),
       );
@@ -55,13 +89,22 @@ class _LoginScreenState extends State<LoginScreen> implements UserView {
   @override
   void initState() {
     super.initState();
-    _userPresenter = UserPresenter(this); 
+    _userPresenter = UserPresenter(this);
   }
 
   @override
   void onLoginSuccess() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      TrackerPresenter.setUserEmail(user.email ?? '');
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.setString('userId', user.uid);
+        prefs.setString('userEmail', user.email ?? '');
+        prefs.setString('displayName', user.displayName ?? '');
+      });
+    }
     Navigator.pushReplacement(
-      context, 
+      context,
       MaterialPageRoute(builder: (context) => Pages())
     );
   }
@@ -291,7 +334,7 @@ class _LoginScreenState extends State<LoginScreen> implements UserView {
                     child: SizedBox(
                       height: 60,
                       child: OutlinedButton.icon(
-                        onPressed: () { /* Lógica Apple */ },
+                        onPressed: () {},
                         icon: const Icon(Icons.apple, color: Colors.black, size: 26),
                         label: const Text(
                           'Apple',

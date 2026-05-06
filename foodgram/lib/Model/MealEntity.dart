@@ -89,6 +89,7 @@ class MealEntity {
         'carbs_g':           c.carbsG,
         'fat_g':             c.fatG,
         'estimated_portion': c.estimatedPortion,
+        'estimated_weight_g': c.estimatedWeightG,
       }).toList(),
     };
   }

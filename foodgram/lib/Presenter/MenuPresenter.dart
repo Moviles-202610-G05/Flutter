@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/MenuRepository.dart';
 import 'package:foodgram/Model/MenuSugestionApiAdapter.dart';
-import 'package:foodgram/Model/MenuSugestionApiService.dart';
-import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/UtilitysFierbase.dart';
 
 abstract class MenuView {
