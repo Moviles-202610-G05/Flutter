@@ -27,9 +27,10 @@ class MealRepository {
         .where('userEmail', isEqualTo: email)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return MealEntity.fromJson(doc.data());
-      }).toList();
+      return snapshot.docs
+          .map((doc) => MealEntity.fromJson(doc.data()))
+          .where((meal) => meal.dishName.isNotEmpty)
+          .toList();
     });
   }
 

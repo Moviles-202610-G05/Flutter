@@ -17,7 +17,6 @@ class TrackerScreen extends StatefulWidget {
 class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProviderStateMixin {
   final _picker = ImagePicker();
   bool _scanning = false;
-  bool _analyzing = false;
   int _displayKcal = 0;
   double _displayProtein = 0;
   double _displayCarbs = 0;
@@ -34,27 +33,16 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
     if (meal == null || !mounted) return;
     TrackerPresenter.analysisResult.value = null;
     setState(() {
-      _analyzing = false;
-      _displayKcal = meal.totalCalories;
+      _displayKcal    = meal.totalCalories;
       _displayProtein = meal.totalProteinG;
-      _displayCarbs = meal.totalCarbsG;
-      _displayFat = meal.totalFatG;
+      _displayCarbs   = meal.totalCarbsG;
+      _displayFat     = meal.totalFatG;
     });
     _ringCtrl.reset();
     _ringCtrl.forward();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _showResultSheet(meal);
     });
-  }
-
-  void _onAnalyzingState() {
-    if (!mounted) return;
-    setState(() => _analyzing = TrackerPresenter.isAnalyzing.value);
-  }
-
-  void _onOfflineProcessing() {
-    if (!mounted) return;
-    setState(() => _analyzing = ConnectivityService.isProcessingOffline.value);
   }
 
   @override
@@ -64,15 +52,9 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
     _ringAnim = CurvedAnimation(parent: _ringCtrl, curve: Curves.easeOutCubic);
     _ringCtrl.forward();
 
-    TrackerPresenter.isAnalyzing.addListener(_onAnalyzingState);
     TrackerPresenter.analysisResult.addListener(_onAnalysisResult);
-    ConnectivityService.isProcessingOffline.addListener(_onOfflineProcessing);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _onAnalyzingState();
-      _onOfflineProcessing();
-      _onAnalysisResult();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onAnalysisResult());
 
     _presenter = TrackerPresenter(
       nutritionService: NutritionApiAdapter(NutritionApiService()),
@@ -80,18 +62,16 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
       onSuccess: (_) {},
       onError: (msg) {
         if (!mounted) return;
-        setState(() => _analyzing = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: Colors.redAccent),
         );
       },
       onOfflineSaved: () {
+        // IA sin conexion — imagen guardada en SQLite como base64 y se procesa con Isolate al reconectar
         if (!mounted) return;
-        setState(() => _analyzing = false);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Your meal will be analyzed when connection is restored'),
-            backgroundColor: Colors.orangeAccent,
             duration: Duration(seconds: 4),
           ),
         );
@@ -101,9 +81,7 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
 
   @override
   void dispose() {
-    TrackerPresenter.isAnalyzing.removeListener(_onAnalyzingState);
     TrackerPresenter.analysisResult.removeListener(_onAnalysisResult);
-    ConnectivityService.isProcessingOffline.removeListener(_onOfflineProcessing);
     _ringCtrl.dispose();
     super.dispose();
   }
@@ -225,43 +203,52 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
   }
 
   Widget _buildScanButton() {
-    final bool blocked = _scanning || _analyzing;
-    return Row(
-      children: [
-        Expanded(
-          flex: 3,
-          child: SizedBox(
-            height: 56,
-            child: ElevatedButton.icon(
-              onPressed: blocked ? null : () => _pickImage(ImageSource.camera),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _orange,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                elevation: 0,
+    return ValueListenableBuilder<bool>(
+      valueListenable: TrackerPresenter.isAnalyzing,
+      builder: (_, isAnalyzing, __) => ValueListenableBuilder<bool>(
+        valueListenable: ConnectivityService.isProcessingOffline,
+        builder: (_, isOfflineProcessing, __) {
+          final bool analyzing = isAnalyzing || isOfflineProcessing;
+          final bool blocked   = _scanning || analyzing;
+          return Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: SizedBox(
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    onPressed: blocked ? null : () => _pickImage(ImageSource.camera),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _orange,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 0,
+                    ),
+                    icon: const Icon(Icons.camera_alt_outlined, size: 22),
+                    label: Text(analyzing ? 'Analyzing...' : 'Scan meal'),
+                  ),
+                ),
               ),
-              icon: const Icon(Icons.camera_alt_outlined, size: 22),
-              label: Text(_analyzing ? 'Analyzing...' : 'Scan meal'),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        SizedBox(
-          height: 56,
-          width: 56,
-          child: ElevatedButton(
-            onPressed: blocked ? null : () => _pickImage(ImageSource.gallery),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _orange.withOpacity(0.12),
-              foregroundColor: _orange,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 0,
-              padding: EdgeInsets.zero,
-            ),
-            child: const Icon(Icons.photo_library_outlined, size: 22),
-          ),
-        ),
-      ],
+              const SizedBox(width: 12),
+              SizedBox(
+                height: 56,
+                width: 56,
+                child: ElevatedButton(
+                  onPressed: blocked ? null : () => _pickImage(ImageSource.gallery),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _orange.withOpacity(0.12),
+                    foregroundColor: _orange,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Icon(Icons.photo_library_outlined, size: 22),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -287,46 +274,52 @@ class _TrackerScreenState extends State<TrackerScreen> with SingleTickerProvider
         ),
       );
 
-  Widget _buildRing(double goal) { 
-    return AnimatedBuilder(
-      animation: _ringAnim,
-      builder: (_, __) {
-        if (_analyzing) {
-          return const SizedBox(
-            height: 180,
-            child: Center(child: CircularProgressIndicator(color: _orange)),
-          );
-        }
+  Widget _buildRing(double goal) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: TrackerPresenter.isAnalyzing,
+      builder: (_, isAnalyzing, __) => ValueListenableBuilder<bool>(
+        valueListenable: ConnectivityService.isProcessingOffline,
+        builder: (_, isOfflineProcessing, __) {
+          if (isAnalyzing || isOfflineProcessing) {
+            return const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator(color: _orange)),
+            );
+          }
 
-        final double safeGoal = goal > 0 ? goal : 2000.0;
-        final double progressValue = (_displayKcal / safeGoal).clamp(0, 1);
+          final double safeGoal = goal > 0 ? goal : 2000.0;
+          final double progressValue = (_displayKcal / safeGoal).clamp(0, 1);
 
-        return SizedBox(
-          width: 180,
-          height: 180,
-          child: CustomPaint(
-            painter: _RingPainter(
-              progress: _ringAnim.value * progressValue,
-              fillColor: _orange,
-            ),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${(_displayKcal * _ringAnim.value).round()}',
-                    style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+          return AnimatedBuilder(
+            animation: _ringAnim,
+            builder: (_, __) => SizedBox(
+              width: 180,
+              height: 180,
+              child: CustomPaint(
+                painter: _RingPainter(
+                  progress: _ringAnim.value * progressValue,
+                  fillColor: _orange,
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${(_displayKcal * _ringAnim.value).round()}',
+                        style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'of ${safeGoal.round()} kcal',
+                        style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                      ),
+                    ],
                   ),
-                  Text(
-                    'of ${safeGoal.round()} kcal',
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -514,6 +507,7 @@ class LoggedMealCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipOval(
+              // IA sin conexion, se guarda la imagen en cache durante la sesion con conexion
               child: meal.imageUrl != null
                   ? CachedNetworkImage(
                       imageUrl: meal.imageUrl!,
