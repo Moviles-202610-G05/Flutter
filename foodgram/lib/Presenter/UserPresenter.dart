@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:foodgram/BaseDeDatos/PendingMealDatabase.dart';
+import 'package:foodgram/BaseDeDatos/PendingUserDataPreferences.dart';
 import 'package:foodgram/Model/MealRepository.dart';
 import 'package:foodgram/Model/UserEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
@@ -33,10 +33,10 @@ class UserPresenter {
         double kcal = 0, protein = 0, carbs = 0, fat = 0;
         for (final meal in meals) {
           if (meal.timestamp.toIso8601String().startsWith(todayPrefix)) {
-            kcal    += meal.totalCalories;
+            kcal += meal.totalCalories;
             protein += meal.totalProteinG;
-            carbs   += meal.totalCarbsG;
-            fat     += meal.totalFatG;
+            carbs += meal.totalCarbsG;
+            fat += meal.totalFatG;
           }
         }
         return {'kcal': kcal, 'protein': protein, 'carbs': carbs, 'fat': fat};
@@ -168,8 +168,7 @@ class UserPresenter {
   }) async {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
-      // Datos sin conexion — serializa el perfil como JSON y lo guarda en pending_profile_updates
-      final db = await PendingMealDatabase.getInstance();
+      // Datos sin conexion — serializa el perfil como JSON y lo guarda en SharedPreferences
       final payload = jsonEncode({
         'currentEmail': currentEmail,
         'name': name,
@@ -178,9 +177,9 @@ class UserPresenter {
         'newEmail': newEmail,
       });
 
-      await db.insertPendingProfile(payload, DateTime.now().toIso8601String());
+      await PendingUserDataPreferences().savePendingProfile(payload);
 
-      // Se actualiza el perfil en SharedPreferences para reflejar los cambios o
+      // Se actualiza el perfil en SharedPreferences para reflejar los cambios inmediatamente en la UI
       final prefs = await SharedPreferences.getInstance();
       final cachedJson = prefs.getString('userProfileJson');
       if (cachedJson != null) {
@@ -224,7 +223,24 @@ class UserPresenter {
     required double protein,
     required double carbs,
     required double fat,
+    void Function()? onGoalsOfflineSaved,
   }) async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // Datos sin conexion — serializa las metas como JSON y las guarda en SharedPreferences
+      final firebaseUser = FirebaseAuth.instance.currentUser;
+      final email = firebaseUser?.email ?? '';
+      final payload = jsonEncode({
+        'email': email,
+        'calories': calories,
+        'proteins': protein,
+        'carbs': carbs,
+        'fats': fat,
+      });
+      await PendingUserDataPreferences().savePendingGoals(payload);
+      onGoalsOfflineSaved?.call();
+      return;
+    }
     try {
       final firebaseUser = FirebaseAuth.instance.currentUser;
       if (firebaseUser == null) return;
@@ -232,9 +248,9 @@ class UserPresenter {
       await repository.updateNutritionGoals(
         firebaseUser.email!,
         calories: calories,
-        protein:  protein,
-        carbs:    carbs,
-        fat:      fat,
+        protein: protein,
+        carbs: carbs,
+        fat: fat,
       );
       view.mostrarExito("Goals guardados.");
     } catch (e) {

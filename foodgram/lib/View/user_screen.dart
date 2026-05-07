@@ -24,11 +24,11 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   bool _isLoading = true;
   double _caloriesGoal = 2000;
   double _proteinGoal  = 150;
-  double _carbsGoal    = 200;
-  double _fatGoal      = 67;
-  String _name     = '';
+  double _carbsGoal = 200;
+  double _fatGoal = 67;
+  String _name = '';
   String _username = '';
-  String _email    = '';
+  String _email = '';
   List<String> _preferences = [];
 
   @override
@@ -230,6 +230,14 @@ Widget build(BuildContext context) {
                               protein:  map['protein']!,
                               carbs:    map['carbs']!,
                               fat:      map['fat']!,
+                              onGoalsOfflineSaved: () {
+                                if (!mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Nutrition goals saved. They will sync when connection is restored'),
+                                  ),
+                                );
+                              },
                             );
                           }
                         },

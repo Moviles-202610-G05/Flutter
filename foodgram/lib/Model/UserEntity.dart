@@ -26,8 +26,8 @@ class Usuario {
     roll = "ESTUDIANTE",
     this.caloriesGoal = 2000,
     this.proteinGoal  = 150,
-    this.carbsGoal    = 200,
-    this.fatGoal      = 67,
+    this.carbsGoal = 200,
+    this.fatGoal = 67,
     this.friends = const [],
   });
 
