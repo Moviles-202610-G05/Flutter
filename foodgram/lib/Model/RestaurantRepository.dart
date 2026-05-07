@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
-import 'package:foodgram/Model/databaseHelper.dart';
+import 'package:foodgram/Model/DatabaseHelper.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:sqflite/sqflite.dart';
 
