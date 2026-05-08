@@ -8,6 +8,7 @@ class MenuSugestionApiAdapter {
 
   @override
   Future<Menu> analyzeImage(File image) async {
+    
     final aiJson = await service.getRawAnalysis(image);
     print(aiJson);
     return _adapt(aiJson);

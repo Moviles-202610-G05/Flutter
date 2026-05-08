@@ -1,10 +1,12 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
-import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Model/UtilitysFierbase.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hive/hive.dart';
 
 abstract class RestaurantView {
   void showLoading();
@@ -13,6 +15,8 @@ abstract class RestaurantView {
   void updateCameraPosition(double lat, double lng);
   void mostrarError(String message);
   void mostrarExito(String message);
+  
+  void mostrarNoInternet(String s);
   
 
 }
@@ -63,6 +67,41 @@ class RestaurantPresenter {
     
   }
 
+   Future<bool> hasInternet() async {
+      final result = await Connectivity().checkConnectivity();
+      return result != ConnectivityResult.none;
+  }
+  Future<void> tryRegister({
+    required Restaurant restaurante, required Usuario usuario
+  }) async {
+    if (await hasInternet()) {
+      agregarRestaurante(restaurante, usuario);
+    } else {
+      await registrarOffline( restaurante, usuario);
+      view.mostrarNoInternet("User saved for later");
+    }
+  }
+
+  Box<Usuario> get _box => Hive.box<Usuario>('usuarios');
+  Box<Restaurant> get _box2 => Hive.box<Restaurant>('restaurant');
+  Future<void> clearPending() async {
+    await _box.delete('usuarios');
+    await _box.delete('restaurant');
+  }
+
+  Future<bool> pending() async {
+    final pendientes = _box.values.where((u) => u.pendingSync).toList();
+    final pendientes2 = _box2.values.where((u) => u.pendingSync).toList();
+    return pendientes.isEmpty && pendientes2.isEmpty;
+  }
+
+  Future<void> registrarOffline(Restaurant restaurant,  Usuario usuario) async {
+    await _box.put(usuario.username, usuario);
+    restaurant.image = restaurant.imagenFiel?.path ?? "";
+    usuario.setRol("RESTAURANTE") ;
+    await _box2.put(restaurant.name , restaurant);
+    print("Usuario guardado offline con pendingSync");
+  }
 Future<void> fetchNearbyRestaurants() async {
   try {
     view.showLoading();
@@ -122,6 +161,25 @@ Future<void> fetchNearbyRestaurants() async {
     return await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high
     );
+  }
+
+  Future<void> registerPending() async {
+    final box = Hive.box<Usuario>('usuarios');
+    final usuarios = _box.values.where((u) => u.pendingSync).toList();
+    final restaurants = _box2.values.where((u) => u.pendingSync).toList();
+
+    int x = 0;
+
+    for (var restaurant in restaurants) {
+      if (usuarios[x].roll == "RESTAURANTE") {
+        agregarRestaurante(restaurant , usuarios[x]);
+        
+        print("Restaurants ${restaurant.name} sincronizado con Firestore.");
+        await box.delete(usuarios[x].username);
+        await box.delete(usuarios[x].name);
+        x = x+1;
+      }
+    }
   }
 
 

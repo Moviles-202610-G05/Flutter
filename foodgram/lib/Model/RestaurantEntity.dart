@@ -1,25 +1,67 @@
 import 'dart:io';
 
-class Restaurant{
+import 'package:hive/hive.dart';
+part 'RestaurantEntity.g.dart';
+
+@HiveType(typeId: 2)
+class Restaurant extends HiveObject {
+  @HiveField(0)
   final String name;
+
+  @HiveField(1)
   String image;
+
+  @HiveField(2)
   final double rating;
+
+  @HiveField(3)
   final String price;
+
+  @HiveField(4)
   final String cuisine;
+
+  @HiveField(5)
   final String time;
+
+  @HiveField(6)
   final String distance;
+
+  @HiveField(7)
   final double long;
+
+  @HiveField(8)
   final double lat;
+
+  @HiveField(9)
   final String badge;
+
+  @HiveField(10)
   final String badge2;
+
+  @HiveField(11)
   final int numberReviews;
+
+  @HiveField(12)
   final String description;
+
+  @HiveField(13)
   final String direction;
+
+  @HiveField(14)
   final int spots;
+
+  @HiveField(15)
   final int spotsA;
-  final List<dynamic> tags;
+
+  @HiveField(16)
+  final List<String> tags;
+
   File? imagenFiel;
+  @HiveField(17)
   final String id;
+
+  @HiveField(14)
+  bool pendingSync;
 
 
   Restaurant({
@@ -41,7 +83,8 @@ class Restaurant{
     required this.spotsA,
     this.imagenFiel,
     required this.tags,
-    required this.id
+    required this.id,
+    this.pendingSync = true,
 
   });
   

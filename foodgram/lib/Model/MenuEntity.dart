@@ -1,13 +1,28 @@
 import 'dart:io';
 
-class Menu {
+import 'package:hive/hive.dart';
+
+part 'MenuEntity.g.dart';
+
+@HiveType(typeId: 2)
+class Menu extends HiveObject{
+  @HiveField(0)
   final String name;
+  @HiveField(1)
   final String price;
+  @HiveField(2)
   final String description;
+  @HiveField(3)
   String image;
+  @HiveField(4)
   String restaurant;
   File? imagenFiel;
+  @HiveField(5)
   final String category;
+
+  @HiveField(6)
+  bool pendingSync;
+  
 
   Menu({
     required this.name,
@@ -17,6 +32,7 @@ class Menu {
     required this.restaurant,
     this.imagenFiel, 
     required this.category,
+    this.pendingSync = true,
   });
 
   Map<String, dynamic> toMap() {

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
@@ -34,7 +35,13 @@ class FeaturedCard extends StatelessWidget {
           SizedBox(
             width: 200,
             height: 156,
-            child: Image.network(image, fit: BoxFit.cover),
+            child: CachedNetworkImage(
+                    imageUrl: image,
+                    placeholder: (context, url) => const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6933)),
+                                      ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                  ),
           ),
           Positioned(
             top: 8,
@@ -97,7 +104,13 @@ class RestaurantCard extends StatelessWidget {
                 SizedBox(
                   height: 160,
                   width: double.infinity,
-                  child: Image.network(data.image, fit: BoxFit.cover),
+                  child: CachedNetworkImage(
+                    imageUrl: data.image,
+                    placeholder: (context, url) => const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6933)),
+                                      ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                  )
                 ),
                 Positioned(
                   top: 10,

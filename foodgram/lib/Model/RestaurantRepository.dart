@@ -108,7 +108,7 @@ Future<List<Restaurant>> _restaurantesLocales() async {
       final db = await DatabaseHelper.getDatabase();
       final batch = db.batch();
 
-      for (final r in restaurantes) {
+      for (final r in restaurantes.take(50)) {
         final data = {
           'id' : r.id,
           'name': r.name,
@@ -130,7 +130,6 @@ Future<List<Restaurant>> _restaurantesLocales() async {
           'tags': jsonEncode(r.tags), // 👈 List a JSON string
         };
         print("----------------------");
-        print("Data completa: $data");
         batch.insert(
           'restaurants',
           data,
