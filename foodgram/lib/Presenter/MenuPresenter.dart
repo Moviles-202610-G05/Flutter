@@ -17,6 +17,7 @@ class MenuPresenter {
   final MenuView view;
   final MenuSugestionApiAdapter menuSugestion;
   UtilitisFirebase utilitisFirebase = UtilitisFirebase();
+  List<Menu> menus = [];
   
 
   MenuPresenter(this.repository, this.view,  this.menuSugestion);
@@ -25,9 +26,11 @@ class MenuPresenter {
     try {
       view.estaCargando(true);
       Menu prediction  = await menuSugestion.analyzeImage(image);
+      
       var imagen = await utilitisFirebase.subirImagen(image);
       prediction.image = imagen; 
 
+      view.estaCargando(false);
       return prediction ;
       
 
@@ -40,15 +43,27 @@ class MenuPresenter {
   String getImage(File imagen) {
     return("");
   }
-  Future<void> crearPlatos(List<Menu> platos) async {
-    print(platos);
+  Future<void> crearPlatos() async {
+    print(menus);
     try {
       
-      await repository.crearPlatos(platos);
+      await repository.crearPlatos(menus);
       view.mostrarExito("Platos creados correctamente.");
     } catch (e) {
       view.mostrarError("Error al crear plato: $e");
     }
   }
+
+  void agregarMenu(Menu menuadd){
+    menus.add(menuadd);
+  }
+
+
+  void darMenu(){
+    print(menus);
+    view.mostrarPlatos(menus);
+  }
+
+
 
 }

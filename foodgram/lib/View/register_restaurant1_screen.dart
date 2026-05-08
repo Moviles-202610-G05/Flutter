@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
-import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:foodgram/View/regiter_restaurant2_screen.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';

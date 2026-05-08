@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:foodgram/Presenter/UserPresenter.dart';
+import 'package:foodgram/View/login_screen.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
 
@@ -94,14 +95,22 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
 
   @override
   void mostrarExito(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Pages()),
-    );
-
-
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Pages()),
+      );
   }
+
+  @override
+  void mostrarNoInternet(String mensaje) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+  }
+
   @override
   void mostrarUsuarios(List<Usuario> usuarios) {
     // implementación
@@ -347,7 +356,7 @@ class _StudentSignUpScreenState extends State<StudentSignUpScreen> implements Us
                         );
 
                         
-                          presenter.crearEstudiante(Usuario(
+                          presenter.tryRegister( data: Usuario(
                           universityId: _universityCodeController.text,
                           name: _fullNameController.text,
                           email: _emailController.text,

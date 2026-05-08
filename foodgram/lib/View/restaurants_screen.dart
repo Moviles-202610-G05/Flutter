@@ -6,11 +6,11 @@ import 'package:foodgram/Model/RestauranteUsuarioRepository.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/Presenter/UsuarioRestaurantePresenter.dart';
-import 'package:foodgram/View/pagesInsideStudent.dart' show Pages, PagesState;
-import 'package:foodgram/View/restaurant_detalle_screen.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart' show PagesState;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:foodgram/View/widgets/restaurants.dart';
 import 'package:foodgram/View/Notificaciones.dart';
+
 
 class RestaurantFeed extends StatefulWidget {
   @override
@@ -211,12 +211,12 @@ class _RestaurantFeed extends State<RestaurantFeed>
                           onTap: () {
                                 if (index == 0) {
                                   RestaurantStatsService.registerFirstPositionClick(
-                                    r.name, r.id ?? "",  // asegúrate de tener el id del restaurante
+                                    r.name, r.id,  // asegúrate de tener el id del restaurante
                                   );
                                 }
                                 else {
                                   RestaurantStatsService.registerClick(
-                                    r.name, r.id ?? "",  // asegúrate de tener el id del restaurante
+                                    r.name, r.id,  // asegúrate de tener el id del restaurante
                                   );
                                 }
 
@@ -286,5 +286,10 @@ class _RestaurantFeed extends State<RestaurantFeed>
        featured =  restaurantes.take(4).toList();
       }
     
+  }
+  
+  @override
+  void mostrarNoInternet(String s) {
+    // TODO: implement mostrarNoInternet
   }
 }

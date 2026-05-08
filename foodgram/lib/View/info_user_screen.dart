@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:foodgram/Presenter/UserPresenter.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
 
@@ -365,5 +365,10 @@ class _InfoUserScreenState extends State<InfoUserScreen> implements UserView {
         ),
       ),
     );
+  }
+  
+  @override
+  void mostrarNoInternet(String mensaje) {
+    // TODO: implement mostrarNoInternet
   }
 }

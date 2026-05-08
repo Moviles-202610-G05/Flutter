@@ -562,4 +562,9 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
       southwest: LatLng(x0!, y0!),
     );
   }
+  
+  @override
+  void mostrarNoInternet(String s) {
+    // TODO: implement mostrarNoInternet
+  }
 }

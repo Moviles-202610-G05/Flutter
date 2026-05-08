@@ -1,18 +1,53 @@
-class Usuario {
-  final String universityId;
-  final String name;
-  final String email;
-  final String carrier;
-  final String location;
-  String roll = "ESTUDIANTE";
-  final String password;
-  final List<String> preferences;
-  final String username;
-  final double caloriesGoal;
-  final double proteinGoal;
-  final double carbsGoal;
-  final double fatGoal;
-  final List<String> friends;
+import 'package:hive/hive.dart';
+
+part 'UsuarioEntity.g.dart';
+
+@HiveType(typeId: 1) // cada entidad necesita un typeId único
+class Usuario extends HiveObject {
+  @HiveField(0)
+  String universityId;
+
+  @HiveField(1)
+  String name;
+
+  @HiveField(2)
+  String email;
+
+  @HiveField(3)
+  String carrier;
+
+  @HiveField(4)
+  String location;
+
+  @HiveField(5)
+  String roll;
+
+  @HiveField(6)
+  String password;
+
+  @HiveField(7)
+  List<String> preferences;
+
+  @HiveField(8)
+  String username;
+
+  @HiveField(9)
+  double caloriesGoal;
+
+  @HiveField(10)
+  double proteinGoal;
+
+  @HiveField(11)
+  double carbsGoal;
+
+  @HiveField(12)
+  double fatGoal;
+
+  @HiveField(13)
+  List<String> friends;
+
+  @HiveField(14)
+  bool pendingSync; // 🔑 para saber si falta sincronizar
 
   Usuario({
     required this.universityId,
@@ -20,16 +55,18 @@ class Usuario {
     required this.email,
     required this.carrier,
     this.location = 'Carrier 1',
+    this.roll = "ESTUDIANTE",
     required this.password,
     required this.preferences,
     required this.username,
-    roll = "ESTUDIANTE",
     this.caloriesGoal = 2000,
-    this.proteinGoal  = 150,
-    this.carbsGoal    = 200,
-    this.fatGoal      = 67,
+    this.proteinGoal = 150,
+    this.carbsGoal = 200,
+    this.fatGoal = 67,
     this.friends = const [],
+    this.pendingSync = true,
   });
+
 
   Map<String, dynamic> toMap() {
     return {
