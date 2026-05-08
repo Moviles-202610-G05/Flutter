@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 
 part 'MenuEntity.g.dart';
 
-@HiveType(typeId: 2)
+@HiveType(typeId: 3)
 class Menu extends HiveObject{
   @HiveField(0)
   final String name;

@@ -59,7 +59,7 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
   @override
   void initState() {
     super.initState();
-    _presenter = RestaurantPresenter(RestaurantRepository(), UserRepository(), this);
+    _presenter = RestaurantPresenter( this);
     _presenter.fetchNearbyRestaurants();
     _prepararIconos();
     _dibujarRadioEnMiUbicacion();

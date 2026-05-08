@@ -8,7 +8,7 @@ part of 'MenuEntity.dart';
 
 class MenuAdapter extends TypeAdapter<Menu> {
   @override
-  final int typeId = 2;
+  final int typeId = 3;
 
   @override
   Menu read(BinaryReader reader) {

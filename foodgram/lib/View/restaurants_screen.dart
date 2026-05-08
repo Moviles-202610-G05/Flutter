@@ -33,7 +33,7 @@ class _RestaurantFeed extends State<RestaurantFeed>
   @override
   void initState() {
     super.initState();
-    presenter = RestaurantPresenter(RestaurantRepository(), UserRepository() ,this);
+    presenter = RestaurantPresenter(this);
     presenter2 = RestaurantUsuarioPresenter(RestaurantUsuarioRepository(), this);
     presenter.cargarRestaurantes();
     presenter2.recomendaciones();
