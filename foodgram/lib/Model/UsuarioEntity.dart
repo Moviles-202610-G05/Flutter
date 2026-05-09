@@ -60,11 +60,11 @@ class Usuario extends HiveObject {
     required this.preferences,
     required this.username,
     this.caloriesGoal = 2000,
-    this.proteinGoal = 150,
-    this.carbsGoal = 200,
-    this.fatGoal = 67,
+    this.proteinGoal  = 150,
+    this.carbsGoal    = 200,
+    this.fatGoal      = 67,
     this.friends = const [],
-    this.pendingSync = true,
+    this.pendingSync = false,
   });
 
 

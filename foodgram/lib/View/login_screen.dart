@@ -251,7 +251,6 @@ class _LoginScreenState extends State<LoginScreen> implements UserView {
                 ),
               ),
               const SizedBox(height: 24),
-              // Login Button
               SizedBox(
                 width: double.infinity,
                 height: 56,

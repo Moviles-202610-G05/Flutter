@@ -2,7 +2,7 @@ import 'dart:isolate';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
-import 'package:foodgram/BaseDeDatos/PendingMealDatabase.dart';
+import 'package:foodgram/BaseDeDatos/PendingDatabase.dart';
 import 'package:foodgram/Model/MealEntity.dart';
 import 'package:foodgram/Model/NutritionApiAdapter.dart';
 import 'package:foodgram/Model/NutritionApiService.dart';
@@ -55,7 +55,7 @@ Future<void> analyzePendingMeal(List<dynamic> args) async {
       }).toList(),
     });
 
-    final db = await PendingMealDatabase.getInstance();
+    final db = await PendingDatabase.getInstance();
     await db.markSynced(id);
 
     sendPort.send({

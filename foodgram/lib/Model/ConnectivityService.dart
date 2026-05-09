@@ -6,7 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:foodgram/BaseDeDatos/PendingMealDatabase.dart';
+import 'package:foodgram/BaseDeDatos/PendingDatabase.dart';
+import 'package:foodgram/BaseDeDatos/PendingUserDataPreferences.dart';
 import 'package:foodgram/Model/MealAnalysisIsolate.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/TrackerPresenter.dart';
@@ -27,13 +28,24 @@ class ConnectivityService {
     if (_initialized) return;
     _initialized = true;
 
-    // Listener de red que procesa la cola de pendientes cuando hay internet 
+    // Datos sin conexion — ajusta el estado inicial y sincroniza pendientes de sesiones anteriores si hay red
+    Connectivity().checkConnectivity().then((result) async {
+      _wasOffline = result == ConnectivityResult.none;
+      if (!_wasOffline) {
+        await _processPending(userEmail);
+        await _processPendingProfiles();
+        await _processPendingGoals();
+      }
+    });
+
+    // Listener de red que procesa la cola de pendientes cuando hay internet
     Connectivity().onConnectivityChanged.listen((result) async {
       final isOffline = result == ConnectivityResult.none;
 
       if (_wasOffline && !isOffline) {
         await _processPending(userEmail);
         await _processPendingProfiles();
+        await _processPendingGoals();
       }
       _wasOffline = isOffline;
     });
@@ -72,7 +84,7 @@ class ConnectivityService {
 
     TrackerPresenter.setUserEmail(effectiveEmail);
 
-    final db = await PendingMealDatabase.getInstance();
+    final db = await PendingDatabase.getInstance();
     final pending = await db.getPending();
     if (pending.isEmpty) return;
     isProcessingOffline.value = true;
@@ -107,27 +119,43 @@ class ConnectivityService {
     }
   }
 
-  // Datos sin conexion — sincroniza cambios de perfil guardados en SQLite con Firebase
+  // Datos sin conexion — sincroniza el perfil guardado en SharedPreferences con Firebase al reconectar
   Future<void> _processPendingProfiles() async {
-    final db = await PendingMealDatabase.getInstance();
-    final pending = await db.getPendingProfiles();
-    if (pending.isEmpty) return;
+    final prefs = PendingUserDataPreferences();
+    final json = await prefs.getPendingProfile();
+    if (json == null) return;
 
-    final repo = UserRepository();
-    for (final row in pending) {
-      try {
-        final data = Map<String, dynamic>.from(
-          jsonDecode(row['user_data_json'] as String) as Map,
-        );
-        await repo.updateProfile(
-          data['currentEmail'] as String,
-          name: data['name'] as String,
-          username: data['username'] as String,
-          preferences: List<String>.from(data['preferences'] as List),
-          newEmail: (data['newEmail'] as String?) ?? '',
-        );
-        await db.markProfileSynced(row['id'] as int);
-      } catch (_) {}
-    }
+    try {
+      final data = Map<String, dynamic>.from(jsonDecode(json) as Map);
+      final repo = UserRepository();
+      await repo.updateProfile(
+        data['currentEmail'] as String,
+        name: data['name'] as String,
+        username: data['username'] as String,
+        preferences: List<String>.from(data['preferences'] as List),
+        newEmail: (data['newEmail'] as String?) ?? '',
+      );
+      await prefs.clearPendingProfile();
+    } catch (_) {}
+  }
+
+  // Datos sin conexion — sincroniza las metas nutricionales guardadas en SharedPreferences con Firebase al reconectar
+  Future<void> _processPendingGoals() async {
+    final prefs = PendingUserDataPreferences();
+    final json = await prefs.getPendingGoals();
+    if (json == null) return;
+
+    try {
+      final data = Map<String, dynamic>.from(jsonDecode(json) as Map);
+      final repo = UserRepository();
+      await repo.updateNutritionGoals(
+        data['email'] as String,
+        calories: (data['calories'] as num).toDouble(),
+        protein:  (data['proteins'] as num).toDouble(),
+        carbs:    (data['carbs'] as num).toDouble(),
+        fat:      (data['fats'] as num).toDouble(),
+      );
+      await prefs.clearPendingGoals();
+    } catch (_) {}
   }
 }

@@ -507,7 +507,7 @@ class LoggedMealCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipOval(
-              // IA sin conexion, se guarda la imagen en cache durante la sesion con conexion
+              // Caching - Se descarga la imagen y se guarda 
               child: meal.imageUrl != null
                   ? CachedNetworkImage(
                       imageUrl: meal.imageUrl!,
@@ -600,6 +600,7 @@ class _MealDetailSheet extends StatelessWidget {
             if (meal.imageUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
+                // Caching - Busca la imagen en cache para mostrar sin necesidad de ir a la red
                 child: CachedNetworkImage(
                   imageUrl: meal.imageUrl!,
                   height: 180, width: double.infinity, fit: BoxFit.cover,

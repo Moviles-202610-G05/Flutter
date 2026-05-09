@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:foodgram/BaseDeDatos/PendingMealDatabase.dart';
+import 'package:foodgram/BaseDeDatos/PendingDatabase.dart';
 import 'package:foodgram/Model/MealRepository.dart';
 import 'package:foodgram/Model/MealEntity.dart';
 import 'package:foodgram/Model/NutritionService.dart';
@@ -15,11 +15,9 @@ class TrackerPresenter {
 
   static final ValueNotifier<bool> isAnalyzing = ValueNotifier(false);
   static final ValueNotifier<MealEntity?> analysisResult = ValueNotifier(null);
-
   static final BehaviorSubject<String> _userEmail = BehaviorSubject.seeded('');
   static bool _authListenerSetUp = false;
 
-  // Actualiza el email desde cualquier flujo de login (online, offline, Google)
   static void setUserEmail(String email) {
     final trimmed = email.trim();
     if (trimmed.isNotEmpty && trimmed != _userEmail.value) {
@@ -99,10 +97,17 @@ class TrackerPresenter {
         // IA sin conexion — guarda como base64 en pending_meals
         final bytes = await image.readAsBytes();
         final base64Image = base64Encode(bytes);
-        final db = await PendingMealDatabase.getInstance();
-        await db.insert(base64Image, DateTime.now().toIso8601String());
-        isAnalyzing.value = false;
-        onOfflineSaved();
+        // Multithreading — encadena la insercion offline sin bloquear el hilo principal con await
+        PendingDatabase.getInstance()
+          .then((db) => db.insert(base64Image, DateTime.now().toIso8601String()))
+          .then((_) {
+            isAnalyzing.value = false;
+            onOfflineSaved();
+          })
+          .catchError((error) {
+            isAnalyzing.value = false;
+            onError('Error: ${error.toString()}');
+          });
         return;
       }
 
