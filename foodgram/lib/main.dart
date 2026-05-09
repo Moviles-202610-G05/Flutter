@@ -1,8 +1,12 @@
+import 'dart:isolate';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/UsuarioEntity.dart';
+import 'package:foodgram/Presenter/MenuPresenter.dart';
+import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/View/Notificaciones.dart';
 import 'package:foodgram/View/login_screen.dart';
 import 'package:foodgram/firebase_options.dart';
@@ -43,31 +47,58 @@ class MyApp extends StatefulWidget {
 
 }
 
-class _MyAppState extends State<MyApp> implements UserView {
+class _MyAppState extends State<MyApp> implements UserView, RestaurantView, MenuView {
   late final StreamSubscription<ConnectivityResult> _connectivitySub;
   late final UserPresenter presenter;
+  late final RestaurantPresenter presenterRestaurant; 
+  late final MenuPresenter presenterMenu;
   
 
   @override
   void initState() {
     super.initState();
     presenter = UserPresenter(this);
+    presenterRestaurant = RestaurantPresenter(this);
+    presenterMenu = MenuPresenter(this);
     // Escucha cambios de red en tiempo real
-    _connectivitySub = Connectivity()
-        .onConnectivityChanged
-        .listen(_onConnectivityChanged);
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((result) {
+      _onConnectivityChanged(result);
+    });
   }
 
   Future<void> _onConnectivityChanged(ConnectivityResult result) async {
-    if (result != ConnectivityResult.none && !(await presenter.pending())) {
-      try {
-        await presenter.registerPending();       // Tu lógica de registro
-        await presenter.clearPending(); // Limpia el box local
-        
-      } catch (e) {
-        debugPrint('Error al sincronizar registro pendiente: $e');
+
+    if (result != ConnectivityResult.none ) {
+      if (!(await presenter.pending())){
+      
+        _cargarUsuarios();
       }
-    }
+      if (!(await presenterRestaurant.pending())) {
+
+        _cargarRestaurantes();
+      }
+      }
+  }
+
+
+  void _cargarUsuarios() async {
+     try {
+          await presenter.registerPending();       // Tu lógica de registro // Limpia el box local
+        } catch (e) {
+          debugPrint('Error al sincronizar registro pendiente: $e');
+        }
+
+  }
+
+  Future<void> _cargarRestaurantes() async {
+     try {
+          if (await presenterRestaurant.registerPending()) {     // Tu lógica de registro
+            await presenterMenu.registerPending(); }// Limpia el box local
+          
+        } catch (e) {
+          debugPrint('Error al sincronizar registro pendiente: $e');
+        }
+
   }
   @override
   void dispose() {
@@ -137,5 +168,35 @@ class _MyAppState extends State<MyApp> implements UserView {
   @override
   void mostrarNoInternet(String mensaje) {
     // TODO: implement mostrarNoInternet
+  }
+  
+  @override
+  void hideLoading() {
+    // TODO: implement hideLoading
+  }
+  
+  @override
+  void mostrarRestaurantes(List<Restaurant> restaurants) {
+    // TODO: implement mostrarRestaurantes
+  }
+  
+  @override
+  void showLoading() {
+    // TODO: implement showLoading
+  }
+  
+  @override
+  void updateCameraPosition(double lat, double lng) {
+    // TODO: implement updateCameraPosition
+  }
+  
+  @override
+  void estaCargando(bool mensaje) {
+    // TODO: implement estaCargando
+  }
+  
+  @override
+  void mostrarPlatos(List<Menu> platos) {
+    // TODO: implement mostrarPlatos
   }
 }

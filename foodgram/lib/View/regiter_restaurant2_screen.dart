@@ -11,6 +11,7 @@ import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/MenuPresenter.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
+import 'package:foodgram/View/login_screen.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/registro_menus.dart';
 
@@ -63,9 +64,9 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> w
   @override
   void initState() {
     super.initState();
-    presenterMenu = MenuPresenter( MenuRepository() ,this, MenuSugestionApiAdapter(MenuSugestionApiService()));
+    presenterMenu = MenuPresenter( this);
     presenterMenu.darMenu();
-    presenterRestaurant = RestaurantPresenter(RestaurantRepository(), UserRepository(), this);
+    presenterRestaurant = RestaurantPresenter( this);
   }
 
   @override
@@ -275,7 +276,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> w
                       const SnackBar(content: Text('Please wait, the AI is loading....')),
                   );
               }
-              else {if (await presenterRestaurant.agregarRestaurante(widget.restaurante, widget.user)){
+              else {if (await presenterRestaurant.tryRegister(restaurante: widget.restaurante, usuario: widget.user, menus: menuItems)){
                 presenterMenu.crearPlatos();
               }}
               
@@ -339,7 +340,11 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> w
   
   @override
   void mostrarNoInternet(String s) {
-    // TODO: implement mostrarNoInternet
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
   }
   
 }

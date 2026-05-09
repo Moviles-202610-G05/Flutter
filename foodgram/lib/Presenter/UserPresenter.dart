@@ -274,7 +274,7 @@ class UserPresenter {
 
   Future<bool> pending() async {
     final box = Hive.box<Usuario>('usuarios');
-    final pendientes = box.values.where((u) => u.pendingSync).toList();
+    final pendientes = box.values.where((u) => u.pendingSync && u.roll == "ESTUDIANTE").toList();
     return pendientes.isEmpty;
   }
 

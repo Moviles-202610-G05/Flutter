@@ -13,17 +13,21 @@ class RestaurantRepository {
     final connectivityResult = await Connectivity().checkConnectivity();
     final bool hayInternet = connectivityResult != ConnectivityResult.none;
 
+
     if (hayInternet) {
       try {
         // Obtiene datos de Firebase
         final snapshot = await FirebaseFirestore.instance
             .collection('restaurants')
             .get();
+        print("---------------------");
+        print(snapshot);
+
 
         final restaurantes = snapshot.docs
             .map((doc) => Restaurant.fromMap(doc.data(), id: doc.id))
             .toList();
-
+        
         // Guarda en SQLite (memoria del celular)
         _guardarSQLite(restaurantes);
         

@@ -60,7 +60,7 @@ class Restaurant extends HiveObject {
   @HiveField(17)
   final String id;
 
-  @HiveField(14)
+  @HiveField(18)
   bool pendingSync;
 
 
@@ -91,7 +91,6 @@ class Restaurant extends HiveObject {
 
   factory Restaurant.fromMap(Map<String, dynamic> map, {required String id}) {
 
-
     return Restaurant(
       name: map['name'] ?? '',
       image: map['image'] ?? '',
@@ -109,7 +108,7 @@ class Restaurant extends HiveObject {
       direction: map['direction']??'',
       spots: map['spots']?? 0,
       spotsA: map['spotsA'] ?? 0,
-      tags: map['tags'] ?? [],
+      tags: (map['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       id: id ,
     
     );

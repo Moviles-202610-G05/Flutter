@@ -35,13 +35,14 @@ class RestaurantAdapter extends TypeAdapter<Restaurant> {
       spotsA: fields[15] as int,
       tags: (fields[16] as List).cast<String>(),
       id: fields[17] as String,
+      pendingSync: fields[18] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Restaurant obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -77,7 +78,9 @@ class RestaurantAdapter extends TypeAdapter<Restaurant> {
       ..writeByte(16)
       ..write(obj.tags)
       ..writeByte(17)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(18)
+      ..write(obj.pendingSync);
   }
 
   @override
