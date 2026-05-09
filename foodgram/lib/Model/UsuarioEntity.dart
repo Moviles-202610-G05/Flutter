@@ -64,6 +64,7 @@ class Usuario extends HiveObject {
     this.carbsGoal    = 200,
     this.fatGoal      = 67,
     this.friends = const [],
+    this.pendingSync = false,
   });
 
 
