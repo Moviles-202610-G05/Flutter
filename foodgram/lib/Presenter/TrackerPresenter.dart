@@ -8,6 +8,7 @@ import 'package:foodgram/Model/MealRepository.dart';
 import 'package:foodgram/Model/MealEntity.dart';
 import 'package:foodgram/Model/NutritionService.dart';
 import 'package:foodgram/Model/UserRepository.dart';
+import 'package:foodgram/Model/UserStatsService.dart';
 import 'package:foodgram/Model/UtilitysFierbase.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -15,6 +16,7 @@ class TrackerPresenter {
 
   static final ValueNotifier<bool> isAnalyzing = ValueNotifier(false);
   static final ValueNotifier<MealEntity?> analysisResult = ValueNotifier(null);
+ 
 
   static final BehaviorSubject<String> _userEmail = BehaviorSubject.seeded('');
   static bool _authListenerSetUp = false;
@@ -127,6 +129,8 @@ class TrackerPresenter {
       isAnalyzing.value = false;
       analysisResult.value = meal;
       onSuccess(meal);
+      UserStatsService.registerIAPhotoTake(email);
+       
 
     } catch (e) {
       isAnalyzing.value = false;
