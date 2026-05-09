@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
-import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/RestaurantStatsService.dart';
 import 'package:foodgram/Model/RestauranteUsuarioRepository.dart';
-import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/Presenter/UsuarioRestaurantePresenter.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart' show PagesState;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:foodgram/View/widgets/restaurants.dart';
 import 'package:foodgram/View/Notificaciones.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 class RestaurantFeed extends StatefulWidget {
@@ -219,6 +218,12 @@ class _RestaurantFeed extends State<RestaurantFeed>
                                     r.name, r.id,  // asegúrate de tener el id del restaurante
                                   );
                                 }
+                                RestaurantStatsService.registerInteraction(
+                                  r.id,
+                                  r.name,
+                                  FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
+                                  index == 0,
+                                );
 
 
                                 final pagesState = context.findAncestorStateOfType<PagesState>();
