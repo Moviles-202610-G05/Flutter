@@ -28,7 +28,7 @@ class Usuario {
     this.proteinGoal  = 150,
     this.carbsGoal = 200,
     this.fatGoal = 67,
-    this.friends = const [],
+    this.friends = const [], 
   });
 
   Map<String, dynamic> toMap() {
