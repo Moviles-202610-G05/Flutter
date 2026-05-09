@@ -1,18 +1,26 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/databaseHelper.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:sqflite/sqflite.dart';
-
+import 'dart:collection';
 
 class RestaurantRepository {
+
+  // Singleton — garantiza una sola instancia del repositorio y su LRU cache en toda la app
+  static final RestaurantRepository _instance = RestaurantRepository._internal();
+  factory RestaurantRepository() => _instance;
+  RestaurantRepository._internal();
+
+  // Caching — LRU: almacena hasta 20 restaurantes en memoria durante la sesion
+  static const int _lruMaxSize = 20;
+  final LinkedHashMap<String, Restaurant> _lruCache = LinkedHashMap();
+
   Future<List<Restaurant>> todosRestaurantes() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     final bool hayInternet = connectivityResult != ConnectivityResult.none;
-
 
     if (hayInternet) {
       try {
@@ -20,28 +28,25 @@ class RestaurantRepository {
         final snapshot = await FirebaseFirestore.instance
             .collection('restaurants')
             .get();
-        print("---------------------");
-        print(snapshot);
-
 
         final restaurantes = snapshot.docs
             .map((doc) => Restaurant.fromMap(doc.data(), id: doc.id))
             .toList();
-        
+
+        // Caching — LRU: puebla el cache en memoria con los restaurantes recien cargados
+        for (final r in restaurantes) {
+          _putInLru(r.id, r);
+        }
+
         // Guarda en SQLite (memoria del celular)
         _guardarSQLite(restaurantes);
-        
-
-        print("✅ Datos desde Firebase y base local actualizada");
         return restaurantes;
 
       } catch (e) {
-        print("❌ Error con Firebase, usando base local: $e");
         return await _restaurantesLocales();
       }
 
     } else {
-      print("📴 Sin internet, usando base de datos local");
       return await _restaurantesLocales();
     }
   }
@@ -53,11 +58,9 @@ Future<List<Restaurant>> _restaurantesLocales() async {
  
   if (datos.isEmpty) return [];
 
-
   return datos.map((map) {
     
     final mutableMap = Map<String, dynamic>.from(map);
-    print( mutableMap);
     final id = mutableMap.remove('id') as String;
     
     // Convierte tags de JSON string a List
@@ -74,25 +77,33 @@ Future<List<Restaurant>> _restaurantesLocales() async {
     await FirebaseFirestore.instance.collection('restaurants').add({...restaurante.toMap(), "position": point.data,});
   }
 
- 
-
   Future<Restaurant> restaurante(String nombre) async {
-    final snapshot = await FirebaseFirestore.instance.collection('restaurants').where('name', isEqualTo: nombre).get();
-    return snapshot.docs.map((doc) => Restaurant.fromMap(doc.data(), id: doc.id)).toList()[0];
+    // Caching — LRU: busca por nombre en memoria antes de ir a Firestore
+    final fromCache = _lruCache.values.where((r) => r.name == nombre).firstOrNull;
+    if (fromCache != null) {
+      _getFromLru(fromCache.id); 
+      return fromCache;
+    }
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .where('name', isEqualTo: nombre)
+        .get();
+    final restaurant = snapshot.docs
+        .map((doc) => Restaurant.fromMap(doc.data(), id: doc.id))
+        .toList()[0];
+
+    // Caching — LRU: guarda en memoria el restaurante recien consultado
+    _putInLru(restaurant.id, restaurant);
+    return restaurant;
   }
 
   final _geo = GeoFlutterFire();
 
-  /// Busca restaurantes en un radio de X kilómetros
   Stream<List<Restaurant>> getRestaurantsByProximity(double lat, double lng, double radius) {
-    // 1. Definimos el centro de la búsqueda
     GeoFirePoint center = _geo.point(latitude: lat, longitude: lng);
-
-    // 2. Referencia a la colección
     var collectionReference =  FirebaseFirestore.instance.collection('restaurants');
 
-    // 3. Realizamos la consulta geoespacial
-    // 'position' es el nombre del campo en Firestore que contiene el geohash
   var datos =  _geo.collection(collectionRef: collectionReference)
     .within(
       center: center, 
@@ -106,6 +117,24 @@ Future<List<Restaurant>> _restaurantesLocales() async {
       ).toList();
     }); 
   return datos;
+  }
+
+  // Caching — LRU: busca el restaurante en memoria y lo mueve al frente si existe
+  Restaurant? _getFromLru(String id) {
+    final item = _lruCache.remove(id);
+    if (item != null) {
+      _lruCache[id] = item;
+    } else {
+    }
+    return item;
+  }
+
+  // Caching — LRU: inserta en memoria y descarta el mas antiguo si se supera el limite
+  void _putInLru(String id, Restaurant restaurant) {
+    if (_lruCache.length >= _lruMaxSize) {
+      _lruCache.remove(_lruCache.keys.first);
+    }
+    _lruCache[id] = restaurant;
   }
   
   Future<void> _guardarSQLite(List<Restaurant> restaurantes) async {
@@ -133,7 +162,6 @@ Future<List<Restaurant>> _restaurantesLocales() async {
           'spotsA': r.spotsA,
           'tags': jsonEncode(r.tags), // 👈 List a JSON string
         };
-        print("----------------------");
         batch.insert(
           'restaurants',
           data,

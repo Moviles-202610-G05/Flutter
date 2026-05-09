@@ -28,9 +28,6 @@ class RestaurantDetalePresenter  {
     final reviws = await reviwsRepository.todosReviwsRestaurante(nombre);
     final menus = await menuRepository.todosMenuRestaurante(nombre);
     final restaurante = await repository.restaurante(nombre);
-    print("-------------------Revisar----------------");
-    print(nombre);
-    print(reviws);
     view.mostrarMenu(menus);
     view.mostrarReviews(reviws);
     view.mostrarRestaurantes(restaurante);
