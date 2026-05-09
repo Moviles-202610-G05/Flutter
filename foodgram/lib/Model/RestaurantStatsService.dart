@@ -24,4 +24,17 @@ class RestaurantStatsService {
       'clicks': FieldValue.increment(1),
     }, SetOptions(merge: true)); // merge:true para no sobreescribir otros campos
   }
+
+  // Analytics — registra cada tap como evento con timestamp para analisis temporal
+  static Future<void> registerInteraction(String restaurantId, String restaurantName,
+      String userId, bool isFirstPosition) async {
+    await _db.collection('restaurant_interactions').add({
+      'restaurantId': restaurantId,
+      'restaurantName': restaurantName,
+      'timestamp': FieldValue.serverTimestamp(),
+      'userId': userId,
+      'isFirstPosition': isFirstPosition,
+    });
+  }
+
 }

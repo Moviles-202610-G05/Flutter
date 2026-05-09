@@ -7,7 +7,7 @@ import 'package:foodgram/View/orders_user_screen.dart';
 import 'package:foodgram/View/reviews_user_screen.dart';
 import 'package:foodgram/View/saved_user_screen.dart';
 import 'package:foodgram/Presenter/UserPresenter.dart';
-import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodgram/View/friends_screen.dart';
 
@@ -554,5 +554,10 @@ Widget build(BuildContext context) {
         ),
       ),
     );
+  }
+  
+  @override
+  void mostrarNoInternet(String mensaje) {
+    // TODO: implement mostrarNoInternet
   }
 }

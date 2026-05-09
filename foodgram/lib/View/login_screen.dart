@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> implements UserView {
       if (!mounted) return;
       if (cachedUserId != null && cachedEmail == _emailController.text.trim()) {
         TrackerPresenter.setUserEmail(cachedEmail!);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Pages()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Pages()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -393,5 +393,10 @@ class _LoginScreenState extends State<LoginScreen> implements UserView {
         ),
       ),
     );
+  }
+  
+  @override
+  void mostrarNoInternet(String mensaje) {
+    // TODO: implement mostrarNoInternet
   }
 }

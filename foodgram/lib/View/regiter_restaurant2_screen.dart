@@ -7,31 +7,29 @@ import 'package:foodgram/Model/MenuSugestionApiAdapter.dart';
 import 'package:foodgram/Model/MenuSugestionApiService.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
-import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/MenuPresenter.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
+import 'package:foodgram/View/login_screen.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
-import 'package:foodgram/View/widgets/widgets.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:foodgram/View/registro_menus.dart';
 
 class RestaurantRegisterScreen2 extends StatefulWidget {
   final Restaurant restaurante;
   final Usuario user; 
-  const RestaurantRegisterScreen2({  required this.restaurante ,super.key, required this.user});
+
+  const RestaurantRegisterScreen2({  required this.restaurante ,super.key, required this.user });
 
   @override
   State<RestaurantRegisterScreen2> createState() => _RestaurantRegisterScreen2State();
 }
 
-class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> implements RestaurantView, MenuView{
-  final _formKey = GlobalKey<FormState>();
-  File? _imagenSeleccionada;
+
+class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> with RouteAware implements RestaurantView, MenuView{
   final _dishNameController = TextEditingController();
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
-  Menu _MenuContorller = Menu(name: '', price: '', description: '', image: '', restaurant: '', category: '');
   late MenuPresenter presenterMenu;
   late RestaurantPresenter presenterRestaurant;
   bool _isLoading = false; 
@@ -53,27 +51,22 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
         MaterialPageRoute(builder: (context) => Pages()),
     );
   }
-  
-  String? _selectedCategory = 'Main Course';
-  bool _isInStock = true;
-  
-  final List<String> _categories = [
-    'Main Course',
-    'Appetizer',
-    'Dessert',
-    'Beverage',
-    'Soup',
-    'Salad',
-  ];
 
-  List<Menu> menuItems = [
-  ];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    presenterMenu.darMenu(); // 👈 se ejecuta también al volver
+  }
+
+  List<Menu> menuItems = [];
 
   @override
   void initState() {
     super.initState();
-    presenterMenu = MenuPresenter( MenuRepository() ,this, MenuSugestionApiAdapter(MenuSugestionApiService()));
-    presenterRestaurant = RestaurantPresenter(RestaurantRepository(), UserRepository(), this);
+    presenterMenu = MenuPresenter( this);
+    presenterMenu.darMenu();
+    presenterRestaurant = RestaurantPresenter( this);
   }
 
   @override
@@ -84,27 +77,6 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
     super.dispose();
   }
 
-  void _addDishToMenu() {
-    if (_formKey.currentState!.validate()) {
-        _MenuContorller.restaurant = widget.restaurante.name;
-      setState(() {
-        
-        menuItems.add(
-          _MenuContorller
-      );
-      });
-      _dishNameController.clear();
-      _priceController.clear();
-      _descriptionController.clear();
-      _MenuContorller = Menu(name: '', price: '', description: '', image: '', restaurant: '', category: '');
-      _selectedCategory = 'Main Course';
-      _isInStock = true;
-      _imagenSeleccionada = null;      
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Dish added to menu!')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,9 +111,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
+                child:  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // --- PROGRESS ---
@@ -191,235 +161,23 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
                       ),
 
                       const SizedBox(height: 32),
-                    Center( child: _isLoading 
-                          ? Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              CircularProgressIndicator(
-                                color: Colors.orange,
-                              ),
-                            ],
-                          )
-                         : Column( children: [
-                              const Text(
-                                'Dish Infromation',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              // --- DISH PHOTO ---
-                              const Text(
-                                'Dish Photo',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            
-                          const SizedBox(height: 16),
-                          InkWell(
-                              onTap: () async {
-                                // Mostrar un diálogo para elegir cámara o galería
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => Wrap(
-                                    children: [
-                                      ListTile(
-                                        leading: const Icon(Icons.camera_alt),
-                                        title: const Text("Abrir cámara"),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          _pickImage(ImageSource.camera);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: const Icon(Icons.photo_library),
-                                        title: const Text("Abrir galería"),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          _pickImage(ImageSource.gallery);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            child: Container(
-
-                            width: double.infinity,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: const Color(0xFFFF6933),
-                                width: 2,
-                                style: BorderStyle.solid,
-
-                              ),
-                              image: _imagenSeleccionada != null
-                                ? DecorationImage(
-                                    image: FileImage(_imagenSeleccionada!),
-                                    fit: BoxFit.cover,
-                                )
-                              : null,
-                              borderRadius: BorderRadius.circular(8),
-                              color: const Color(0xFFFFEAE6),
-                            ),
-                            child: Stack( 
-                                children: [
-                        if (_imagenSeleccionada == null)
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.camera_alt_outlined,
-                                    size: 48, color: Color(0xFFFF6933)),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Upload Photo',
-                                  style: TextStyle(
-                                    color: Color(0xFFFF6933),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        if (_imagenSeleccionada != null)
-                          Positioned(
-                            right: 8,
-                            bottom: 8,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(118, 255, 99, 71),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.all(8),
-                              child: const Icon(Icons.edit, color: Colors.white, size: 20),
-                            ),
-                          ),
-                      ],)),
-                          ),
-                          const SizedBox(height: 32),
-
-                              // --- DISH NAME ---
-                              CustomWidgets.buildTextField(controller: _dishNameController, label: "Dish Name", icon: Icons.local_pizza_outlined),
-                              
-                              const SizedBox(height: 24),
-
-                              // --- PRICE AND CATEGORY ROW ---
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        CustomWidgets.buildTextField(controller: _priceController, label: "Price", icon: Icons.attach_money),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width:2),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        CustomWidgets.buildDropdownField(label: "Category", value: _selectedCategory, items: _categories, icon: Icons.soup_kitchen_outlined, onChanged: (value) {
-                                        setState(() {
-                                          _selectedCategory = value;
-                                        });
-                                      },)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 24),
-
-                              // --- DESCRIPTION ---
-                              const Text(
-                                'Description',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
-                                controller: _descriptionController,
-                                maxLines: 4,
-                                decoration: InputDecoration(
-                                  hintText:
-                                      'Describe the ingredients, taste, and preparation method...',
-                                  filled: true,
-                                  fillColor: Colors.grey[100],
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 14,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-
-                              // --- IN STOCK TOGGLE ---
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.shopping_cart_outlined,
-                                    color: Colors.grey[400],
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: const Text(
-                                      'In Stock',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                  Switch(
-                                    value: _isInStock,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _isInStock = value;
-                                      });
-                                    },
-                                    activeColor: const Color(0xFFFF6933),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 32),
-                                child: Text(
-                                  'Make this dish visible on menu',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
+                   
 
                               // --- ADD TO MENU BUTTON ---
                               SizedBox(
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: _addDishToMenu ,
+                          onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PreregisterMenu(
+                                      restaurante: widget.restaurante.name, menuPres: presenterMenu
+                                    ),
+                                  ),
+                                );
+                              },  
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFF6933),
                             shape: RoundedRectangleBorder(
@@ -437,7 +195,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
                           ),
                         ),
                       ),
-                    ])),
+                    
                       const SizedBox(height: 32),
                   
                       // --- MENU SECTION ---
@@ -496,7 +254,6 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
                       ),
                     ],
                   ),
-                ),
               ),
             ),
           ],
@@ -519,8 +276,8 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
                       const SnackBar(content: Text('Please wait, the AI is loading....')),
                   );
               }
-              else {if (await presenterRestaurant.agregarRestaurante(widget.restaurante, widget.user)){
-                presenterMenu.crearPlatos(menuItems);
+              else {if (await presenterRestaurant.tryRegister(restaurante: widget.restaurante, usuario: widget.user, menus: menuItems)){
+                presenterMenu.crearPlatos();
               }}
               
             },
@@ -550,31 +307,11 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
       )
     );
   }
-  Future<void> _pickImage(ImageSource source) async {
-  final ImagePicker picker = ImagePicker();
-  final XFile? image = await picker.pickImage(source: source);
-
-  if (image != null) {
-    Menu menu= await presenterMenu.onImageCaptured(File(image.path));
-    
-     setState(() {
-        _imagenSeleccionada = File(image.path) ;
-        _MenuContorller = menu;
-        _dishNameController.text = menu.name;
-       _priceController.text = menu.price ;
-       _descriptionController.text = menu.description;
-       _selectedCategory = menu.category;
-       _isLoading = false;
-
-
-      });
-    
-  }
-}
 
   @override
   void mostrarPlatos(List<Menu> platos) {
-    // TODO: implement mostrarPlatos
+    setState(() { menuItems = platos;});
+    
   }
 
   @override
@@ -589,22 +326,25 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2> i
   
   @override
   void showLoading() {
-    // TODO: implement showLoading
   }
   
   @override
   void updateCameraPosition(double lat, double lng) {
-    // TODO: implement updateCameraPosition
   }
 
-  @override
-  void mostrarRuta(List<LatLng> polylineCoordinates) {
-    // TODO: implement mostrarRuta
-  }
   
   @override
   void estaCargando(bool mensaje) {
     setState(() { _isLoading = mensaje;});
+  }
+  
+  @override
+  void mostrarNoInternet(String s) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
   }
   
 }

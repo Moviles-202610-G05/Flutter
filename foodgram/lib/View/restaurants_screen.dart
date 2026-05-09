@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
-import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/RestaurantStatsService.dart';
 import 'package:foodgram/Model/RestauranteUsuarioRepository.dart';
-import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/Presenter/UsuarioRestaurantePresenter.dart';
-import 'package:foodgram/View/pagesInsideStudent.dart' show Pages, PagesState;
-import 'package:foodgram/View/restaurant_detalle_screen.dart';
+import 'package:foodgram/View/pagesInsideStudent.dart' show PagesState;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:foodgram/View/widgets/restaurants.dart';
 import 'package:foodgram/View/Notificaciones.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class RestaurantFeed extends StatefulWidget {
   @override
@@ -33,7 +32,7 @@ class _RestaurantFeed extends State<RestaurantFeed>
   @override
   void initState() {
     super.initState();
-    presenter = RestaurantPresenter(RestaurantRepository(), UserRepository() ,this);
+    presenter = RestaurantPresenter(this);
     presenter2 = RestaurantUsuarioPresenter(RestaurantUsuarioRepository(), this);
     presenter.cargarRestaurantes();
     presenter2.recomendaciones();
@@ -211,14 +210,20 @@ class _RestaurantFeed extends State<RestaurantFeed>
                           onTap: () {
                                 if (index == 0) {
                                   RestaurantStatsService.registerFirstPositionClick(
-                                    r.name, r.id ?? "",  // asegúrate de tener el id del restaurante
+                                    r.name, r.id,  // asegúrate de tener el id del restaurante
                                   );
                                 }
                                 else {
                                   RestaurantStatsService.registerClick(
-                                    r.name, r.id ?? "",  // asegúrate de tener el id del restaurante
+                                    r.name, r.id,  // asegúrate de tener el id del restaurante
                                   );
                                 }
+                                RestaurantStatsService.registerInteraction(
+                                  r.id,
+                                  r.name,
+                                  FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
+                                  index == 0,
+                                );
 
 
                                 final pagesState = context.findAncestorStateOfType<PagesState>();
@@ -286,5 +291,10 @@ class _RestaurantFeed extends State<RestaurantFeed>
        featured =  restaurantes.take(4).toList();
       }
     
+  }
+  
+  @override
+  void mostrarNoInternet(String s) {
+    // TODO: implement mostrarNoInternet
   }
 }

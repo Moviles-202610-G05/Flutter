@@ -12,7 +12,7 @@ class DatabaseHelper {
 
     _db = await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onUpgrade: (db, oldVersion, newVersion) async {
        await db.execute('DROP TABLE IF EXISTS restaurants');
        await db.execute('''

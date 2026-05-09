@@ -59,7 +59,7 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
   @override
   void initState() {
     super.initState();
-    _presenter = RestaurantPresenter(RestaurantRepository(), UserRepository(), this);
+    _presenter = RestaurantPresenter( this);
     _presenter.fetchNearbyRestaurants();
     _prepararIconos();
     _dibujarRadioEnMiUbicacion();
@@ -561,5 +561,10 @@ class _RestaurantMapPageState extends State<RestaurantMapPage>
       northeast: LatLng(x1!, y1!),
       southwest: LatLng(x0!, y0!),
     );
+  }
+  
+  @override
+  void mostrarNoInternet(String s) {
+    // TODO: implement mostrarNoInternet
   }
 }

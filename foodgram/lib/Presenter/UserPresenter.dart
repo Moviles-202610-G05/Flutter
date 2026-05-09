@@ -3,10 +3,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodgram/BaseDeDatos/PendingUserDataPreferences.dart';
 import 'package:foodgram/Model/MealRepository.dart';
-import 'package:foodgram/Model/UserEntity.dart';
+import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/TrackerPresenter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive/hive.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +17,7 @@ abstract class UserView {
   void mostrarError(String mensaje);
   void mostrarExito(String mensaje);
   void mostrarPerfil(Usuario usuario);
+  void mostrarNoInternet(String mensaje);
 }
 
 class UserPresenter {
@@ -43,24 +45,52 @@ class UserPresenter {
       });
     });
   }
+  Future<bool> hasInternet() async {
+    final result = await Connectivity().checkConnectivity();
+    return result != ConnectivityResult.none;
+  }
+  Future<void> tryRegister({
+    required Usuario data,
+  }) async {
+    if (await hasInternet()) {
+      crearEstudiante(data);
+    } else {
+      await registrarOffline(data);
+      view.mostrarNoInternet("User saved for later");
+    }
+  }
+
+  Box<Usuario> get _box => Hive.box<Usuario>('usuarios');
+  Future<void> clearPending() async {
+    await _box.delete('usuarios');
+  }
+
+ 
 
   Future<void> crearEstudiante(Usuario usuario) async {
     try {
       bool disponible = await repository.isUsernameAvailable(usuario.username);
       if (!disponible) {
-        view.mostrarError("El nombre de usuario ya está en uso.");
+        view.mostrarError("Username already exists.");
         return;
       }
       usuario.setRol("ESTUDIANTE");
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: usuario.email, password: usuario.password);
       await repository.crearUser(usuario);
-      view.mostrarExito("Usuario creado correctamente.");
+      view.mostrarExito("User ${usuario.username} created.");
 
     } on FirebaseAuthException catch (e) {
-      view.mostrarError("Error de autenticación: ${e.message}");
+      view.mostrarError("autentication error: ${e.message}");
     } catch (e) {
-      view.mostrarError("Error al crear usuario: $e");
+      view.mostrarError("Error creating the user: $e");
     }
+  }
+
+  Future<void> registrarOffline(Usuario usuario) async {
+    final box = Hive.box<Usuario>('usuarios');
+    usuario.setRol("ESTUDIANTE");
+    await box.put(usuario.username, usuario);
+    print("Usuario guardado offline con pendingSync");
   }
 
   // Login sin conexion — guarda el perfil en SharedPreferences al hacer login online
@@ -258,4 +288,27 @@ class UserPresenter {
     }
   }
 
+  Future<bool> pending() async {
+    final box = Hive.box<Usuario>('usuarios');
+    final pendientes = box.values.where((u) => u.pendingSync && u.roll == "ESTUDIANTE").toList();
+    return pendientes.isEmpty;
+  }
+
+
+  Future<void> registerPending() async {
+    final box = Hive.box<Usuario>('usuarios');
+    final pendientes = box.values.where((u) => u.pendingSync).toList();
+
+    for (var usuario in pendientes) {
+      if (usuario.roll == "ESTUDIANTE") {
+      crearEstudiante(usuario);
+      
+      print("Usuario ${usuario.email} sincronizado con Firestore.");
+      await box.delete(usuario.username);}
+    }
+  }
+
+    
 }
+
+
