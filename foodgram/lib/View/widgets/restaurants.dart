@@ -70,14 +70,10 @@ class FeaturedCard extends StatelessWidget {
 class RestaurantCard extends StatelessWidget {
   final Restaurant data;
   final Color primary;
-  final bool isFavorite;
-  final VoidCallback onFavoriteTap;
 
   const RestaurantCard({
     required this.data,
     required this.primary,
-    required this.isFavorite,
-    required this.onFavoriteTap,
   });
 
   @override
@@ -119,26 +115,6 @@ class RestaurantCard extends StatelessWidget {
                     rating: data.rating,
                     primary: primary,
                     reviews: data.numberReviews,
-                  ),
-                ),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: GestureDetector(
-                    onTap: onFavoriteTap,
-                    child: Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: Colors.black38,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
                   ),
                 ),
                 if ((data.badge).isNotEmpty)

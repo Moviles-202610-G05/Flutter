@@ -22,7 +22,6 @@ class _RestaurantFeed extends State<RestaurantFeed>
   late RestaurantUsuarioPresenter presenter2;
   List<Restaurant> restaurantes = [];
   static const Color primary = Color(0xFFFF6933);
-  final Set<int> favorites = {};
   int selectedCategory = 0;
   final categories = const ['Italian', 'Mexican', 'Fast Food'];
 
@@ -199,56 +198,40 @@ class _RestaurantFeed extends State<RestaurantFeed>
                   const SizedBox(height: 8),
                   Recommended(primary: primary, featured: featured,),
                   const SizedBox(height: 8),
-                  ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: restaurantes.length,
-                  itemBuilder: (context, index) {
-              
-                  final r = restaurantes[index];
-                  return (InkWell(
-                          onTap: () {
-                                if (index == 0) {
-                                  RestaurantStatsService.registerFirstPositionClick(
-                                    r.name, r.id,  // asegúrate de tener el id del restaurante
-                                  );
-                                }
-                                else {
-                                  RestaurantStatsService.registerClick(
-                                    r.name, r.id,  // asegúrate de tener el id del restaurante
-                                  );
-                                }
-                                RestaurantStatsService.registerInteraction(
-                                  r.id,
-                                  r.name,
-                                  FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
-                                  index == 0,
-                                );
-
-
-                                final pagesState = context.findAncestorStateOfType<PagesState>();
-                                pagesState?.setState(() {
-                                print(r.name);
-                                pagesState.setCurrentIndex2(1, r.name); // Cambia al índice de tu vista especial
-                            } );
-                            },
-                          child: (RestaurantCard(
-                                  data: r,
-                                  primary: primary,
-                                  isFavorite: favorites.contains(index),
-                                  onFavoriteTap: () {
-                                    setState(() {
-                                      if (favorites.contains(index)) {
-                                        favorites.remove(index);
-                                      } else {
-                                        favorites.add(index);
-                                      }
-                                    });
-                                  },
-                                ))));
-                              },
-                  )
                 ],
+              ),
+            ),
+
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final r = restaurantes[index];
+                  return InkWell(
+                    onTap: () {
+                      if (index == 0) {
+                        RestaurantStatsService.registerFirstPositionClick(
+                          r.name, r.id,
+                        );
+                      } else {
+                        RestaurantStatsService.registerClick(
+                          r.name, r.id,
+                        );
+                      }
+                      RestaurantStatsService.registerInteraction(
+                        r.id,
+                        r.name,
+                        FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
+                        index == 0,
+                      );
+                      final pagesState = context.findAncestorStateOfType<PagesState>();
+                      pagesState?.setState(() {
+                        pagesState.setCurrentIndex2(1, r.name);
+                      });
+                    },
+                    child: RestaurantCard(data: r, primary: primary),
+                  );
+                },
+                childCount: restaurantes.length,
               ),
             ),
           ],

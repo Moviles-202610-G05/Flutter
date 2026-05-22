@@ -1,4 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodgram/BaseDeDatos/SavedDatabase.dart';
+import 'package:foodgram/Model/MenuEntity.dart';
+import 'package:foodgram/Model/RestaurantEntity.dart';
+import 'package:foodgram/Model/SavedRepository.dart';
+import 'package:foodgram/Presenter/SavedPresenter.dart';
+import 'package:foodgram/View/restaurant_detalle_screen.dart';
 
 class SavedUserScreen extends StatefulWidget {
   const SavedUserScreen({super.key});
@@ -8,87 +16,27 @@ class SavedUserScreen extends StatefulWidget {
 }
 
 class _SavedUserScreenState extends State<SavedUserScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin
+    implements SavedView {
   late TabController _tabController;
+  SavedPresenter? _presenter;
 
-  // ── Datos restaurantes ────────────────────────────────────────────────────
-  static const List<Map<String, dynamic>> _restaurants = [
-    {
-      'name': 'The Green Garden',
-      'rating': 4.8,
-      'reviews': '120+',
-      'category': 'Healthy',
-      'distance': '1.2 mi',
-      'price': r'$$',
-      'color': Color(0xFFB8C4C2),
-    },
-    {
-      'name': 'Urban Crave',
-      'rating': 4.5,
-      'reviews': '85',
-      'category': 'Burgers',
-      'distance': '0.8 mi',
-      'price': r'$$$',
-      'color': Color(0xFFA8B8A0),
-    },
-    {
-      'name': 'Sushi Master',
-      'rating': 4.9,
-      'reviews': '342',
-      'category': 'Japanese',
-      'distance': '2.5 mi',
-      'price': r'$$$$',
-      'color': Color(0xFFD4B896),
-    },
-    {
-      'name': 'Pasta House',
-      'rating': 4.2,
-      'reviews': '56',
-      'category': 'Italian',
-      'distance': '3.0 mi',
-      'price': r'$$',
-      'color': Color(0xFF8A9E8C),
-    },
-  ];
-
-  // ── Datos platos ──────────────────────────────────────────────────────────
-  static const List<Map<String, dynamic>> _meals = [
-    {
-      'name': 'Truffle Mac & Cheese',
-      'restaurant': 'The Golden Whisk',
-      'rating': 4.9,
-      'price': r'$$',
-      'color': Color(0xFFA8B8A0),
-    },
-    {
-      'name': 'Spicy Tuna Roll',
-      'restaurant': 'Sushi Master',
-      'rating': 4.8,
-      'price': r'$$$',
-      'color': Color(0xFFD4B896),
-    },
-    {
-      'name': 'Carbonara Deluxe',
-      'restaurant': 'Pasta House',
-      'rating': 4.7,
-      'price': r'$$',
-      'color': Color(0xFF7A9490),
-    },
-    {
-      'name': 'Double Smash Burger',
-      'restaurant': 'Urban Crave',
-      'rating': 4.6,
-      'price': r'$$',
-      'color': Color(0xFFD0D4DC),
-      'icon': true,
-    },
-  ];
+  List<Restaurant> _restaurants = [];
+  List<Menu> _meals = [];
+  bool _isLoading = true;
+  String _userEmail = '';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() => setState(() {}));
+    _userEmail = FirebaseAuth.instance.currentUser?.email?.trim() ?? '';
+    SavedDatabase.getInstance().then((db) {
+      if (!mounted) return;
+      _presenter = SavedPresenter(this, SavedRepository(), db);
+      _presenter!.cargarGuardados(_userEmail);
+    });
   }
 
   @override
@@ -96,6 +44,45 @@ class _SavedUserScreenState extends State<SavedUserScreen>
     _tabController.dispose();
     super.dispose();
   }
+
+  // ── SavedView ─────────────────────────────────────────────────────────────────
+
+  @override
+  void mostrarRestaurantesSaved(List<Restaurant> restaurantes) {
+    if (!mounted) return;
+    setState(() {
+      _restaurants = restaurantes;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void mostrarPlatosSaved(List<Menu> platos) {
+    if (!mounted) return;
+    setState(() {
+      _meals = platos;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void mostrarConteo(int total) {}
+
+  @override
+  void mostrarError(String mensaje) {
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(mensaje)));
+  }
+
+  @override
+  void actualizarEstadoRestaurante(String restaurantName, bool isSaved) {}
+
+  @override
+  void actualizarEstadoPlato(String dishName, bool isSaved) {}
+
+  // ── Build ─────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -154,237 +141,322 @@ class _SavedUserScreenState extends State<SavedUserScreen>
           ),
         ),
       ),
-      body: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (overScroll) {
-          overScroll.disallowIndicator();
-          return true;
-        },
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildRestaurantsList(),
-            _buildMealsList(),
-          ],
-        ),
-      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFFF6347)))
+          : NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (overScroll) {
+                overScroll.disallowIndicator();
+                return true;
+              },
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildRestaurantsList(),
+                  _buildMealsList(),
+                ],
+              ),
+            ),
     );
   }
 
-  // ── Lista restaurantes ────────────────────────────────────────────────────
+  // ── Listas ────────────────────────────────────────────────────────────────────
+
   Widget _buildRestaurantsList() {
+    if (_restaurants.isEmpty) {
+      return const Center(
+        child: Text(
+          'No saved restaurants yet.',
+          style: TextStyle(color: Colors.grey, fontSize: 15),
+        ),
+      );
+    }
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _restaurants.length,
       itemBuilder: (context, index) {
         final r = _restaurants[index];
-        return _RestaurantCard(data: r);
+        return _RestaurantCard(
+          data: r,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RestaurantDetailScreen(rest: r.name),
+            ),
+          ),
+          onUnsave: () async {
+            await _presenter?.removeSavedRestaurant(_userEmail, r.name);
+            await _presenter?.cargarGuardados(_userEmail);
+          },
+        );
       },
     );
   }
 
-  // ── Lista platos ──────────────────────────────────────────────────────────
   Widget _buildMealsList() {
+    if (_meals.isEmpty) {
+      return const Center(
+        child: Text(
+          'No saved meals yet.',
+          style: TextStyle(color: Colors.grey, fontSize: 15),
+        ),
+      );
+    }
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _meals.length,
       itemBuilder: (context, index) {
-        final m = _meals[index];
-        return _MealCard(data: m);
+        final dish = _meals[index];
+        return _MealCard(
+          data: dish,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  RestaurantDetailScreen(rest: dish.restaurant),
+            ),
+          ),
+          onUnsave: () async {
+            await _presenter?.removeSavedDish(
+                _userEmail, dish.restaurant, dish.name);
+            await _presenter?.cargarGuardados(_userEmail);
+          },
+        );
       },
     );
   }
 }
 
 // ── Tarjeta Restaurante ───────────────────────────────────────────────────────
+
 class _RestaurantCard extends StatelessWidget {
-  const _RestaurantCard({required this.data});
-  final Map<String, dynamic> data;
+  const _RestaurantCard({
+    required this.data,
+    required this.onTap,
+    required this.onUnsave,
+  });
+
+  final Restaurant data;
+  final VoidCallback onTap;
+  final VoidCallback onUnsave;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Imagen
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Container(
-              width: 90,
-              height: 90,
-              color: data['color'] as Color,
-              child: data['icon'] == true
-                  ? const Icon(Icons.restaurant_menu,
-                      color: Colors.white54, size: 32)
-                  : null,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(width: 14),
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      data['name'],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.black87,
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: CachedNetworkImage(
+                imageUrl: data.image,
+                width: 90,
+                height: 90,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  width: 90,
+                  height: 90,
+                  color: const Color(0xFFB8C4C2),
+                  child: const Icon(Icons.restaurant_menu,
+                      color: Colors.white54, size: 32),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  width: 90,
+                  height: 90,
+                  color: const Color(0xFFB8C4C2),
+                  child: const Icon(Icons.restaurant_menu,
+                      color: Colors.white54, size: 32),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          data.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    const Icon(Icons.bookmark_rounded,
-                        color: Color(0xFFFF6347), size: 20),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.star_rounded,
-                        color: Color(0xFFFFB300), size: 15),
-                    const SizedBox(width: 3),
-                    Text(
-                      '${data['rating']} (${data['reviews']})',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    const SizedBox(width: 6),
-                    const Text('•',
-                        style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(width: 6),
-                    Text(
-                      data['category'],
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on_outlined,
-                        size: 13, color: Colors.grey),
-                    const SizedBox(width: 3),
-                    Text(
-                      '${data['distance']}  •  ${data['price']}',
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ],
+                      GestureDetector(
+                        onTap: onUnsave,
+                        child: const Icon(Icons.bookmark_rounded,
+                            color: Color(0xFFFF6347), size: 20),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.star_rounded,
+                          color: Color(0xFFFFB300), size: 15),
+                      const SizedBox(width: 3),
+                      Text(
+                        data.rating.toStringAsFixed(1),
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.grey),
+                      ),
+                      const SizedBox(width: 6),
+                      const Text('•',
+                          style:
+                              TextStyle(color: Colors.grey, fontSize: 12)),
+                      const SizedBox(width: 6),
+                      Text(
+                        data.cuisine,
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on_outlined,
+                          size: 13, color: Colors.grey),
+                      const SizedBox(width: 3),
+                      Text(
+                        '${data.distance}  •  ${data.price}',
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 // ── Tarjeta Plato ─────────────────────────────────────────────────────────────
+
 class _MealCard extends StatelessWidget {
-  const _MealCard({required this.data});
-  final Map<String, dynamic> data;
+  const _MealCard({
+    required this.data,
+    required this.onTap,
+    required this.onUnsave,
+  });
+
+  final Menu data;
+  final VoidCallback onTap;
+  final VoidCallback onUnsave;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Imagen
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Container(
-              width: 90,
-              height: 90,
-              color: data['color'] as Color,
-              child: data['icon'] == true
-                  ? const Icon(Icons.lunch_dining_rounded,
-                      color: Colors.grey, size: 32)
-                  : null,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(width: 14),
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        data['name'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                          color: Colors.black87,
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: CachedNetworkImage(
+                imageUrl: data.image,
+                width: 90,
+                height: 90,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  width: 90,
+                  height: 90,
+                  color: const Color(0xFFA8B8A0),
+                  child: const Icon(Icons.lunch_dining_rounded,
+                      color: Colors.white54, size: 32),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  width: 90,
+                  height: 90,
+                  color: const Color(0xFFA8B8A0),
+                  child: const Icon(Icons.lunch_dining_rounded,
+                      color: Colors.white54, size: 32),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          data.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      GestureDetector(
+                        onTap: onUnsave,
+                        child: const Icon(Icons.bookmark_rounded,
+                            color: Color(0xFFFF6347), size: 20),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    data.restaurant,
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '\$${data.price}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFFFF6347),
+                      fontWeight: FontWeight.w600,
                     ),
-                    const Icon(Icons.bookmark_rounded,
-                        color: Color(0xFFFF6347), size: 20),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  data['restaurant'],
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(Icons.star_rounded,
-                        color: Color(0xFFFFB300), size: 15),
-                    const SizedBox(width: 3),
-                    Text(
-                      '${data['rating']}',
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    const SizedBox(width: 8),
-                    const Text('•',
-                        style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(width: 8),
-                    Text(
-                      data['price'],
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -22,17 +22,16 @@ class NutritionApiAdapter implements NutritionService {
   MealEntity _adapt(Map<String, dynamic> aiJson) {
     final macros = aiJson['macronutrients_totals'] as Map<String, dynamic>?;
     return MealEntity(
-      dishName:      (aiJson['dish_name'] ?? '') as String,
-      components:    (aiJson['components'] as List? ?? [])
+      dishName: (aiJson['dish_name'] ?? '') as String,
+      components: (aiJson['components'] as List? ?? [])
           .map((e) => NutritionComponent.fromJson(e as Map<String, dynamic>))
           .toList(),
-      // .toInt() en lugar de "as int" para manejar tanto int como double del JSON
       totalCalories: (aiJson['total_calories'] ?? 0).toInt(),
       totalProteinG: (macros?['protein_g'] ?? 0).toDouble(),
-      totalCarbsG:   (macros?['carbs_g'] ?? 0).toDouble(),
-      totalFatG:     (macros?['fat_g'] ?? 0).toDouble(),
-      confidence:    _parseConfidence((aiJson['confidence'] ?? 'low') as String),
-      timestamp:     DateTime.now(),
+      totalCarbsG: (macros?['carbs_g'] ?? 0).toDouble(),
+      totalFatG: (macros?['fat_g'] ?? 0).toDouble(),
+      confidence: _parseConfidence((aiJson['confidence'] ?? 'low') as String),
+      timestamp: DateTime.now(),
     );
   }
 

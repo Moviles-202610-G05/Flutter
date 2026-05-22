@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodgram/BaseDeDatos/SavedDatabase.dart';
 import 'package:foodgram/Model/MenuEntity.dart';
 import 'package:foodgram/Model/MenuRepository.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
 import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/ReviewsEntity.dart';
 import 'package:foodgram/Model/ReviwsRepository.dart';
+import 'package:foodgram/Model/SavedRepository.dart';
 import 'package:foodgram/Presenter/RestauranteDetalle.dart';
+import 'package:foodgram/Presenter/SavedPresenter.dart';
 import 'package:foodgram/View/pagesInsideStudent.dart';
 import 'package:foodgram/View/write_review_screen.dart';
 
@@ -25,17 +29,24 @@ class RestaurantDetailScreen extends StatefulWidget {
 }
 
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
-  with SingleTickerProviderStateMixin implements RestaurantDetaleView {
+  with SingleTickerProviderStateMixin implements RestaurantDetaleView, SavedView {
   static const Color primary = Color(0xFFFF6933);
   late TabController _tabController;
   late RestaurantDetalePresenter presenter;
+  SavedPresenter? _savedPresenter;
+
   List<Reviews> reviews = [];
   List<Menu> dishes = [];
   Restaurant restaurants = Restaurant(id: "", name: "", image: "", rating: 0, price: "", cuisine: "", time: "", distance: "", long: 0, lat: 0, badge: "", badge2: "", numberReviews: 0, description: "", direction: "", spots: 0, spotsA: 0, tags:[]);
-  
+
   bool lodedReviews = false;
   bool lodedMenu = false;
   bool lodedRestaurants = false;
+
+  // Saved state
+  bool _isRestaurantSaved = false;
+  final Set<String> _savedDishNames = {};
+  String _userEmail = '';
 
   @override
   void mostrarError(String mensaje) {
@@ -51,11 +62,59 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     );
   }
 
- initState()  {
+  @override
+  void initState() {
     super.initState();
-    presenter =  RestaurantDetalePresenter(RestaurantRepository(), MenuRepository(), ReviwsRepository(), this);
+    _userEmail = FirebaseAuth.instance.currentUser?.email?.trim() ?? '';
+    presenter = RestaurantDetalePresenter(RestaurantRepository(), MenuRepository(), ReviwsRepository(), this);
     presenter.mostrarDetalle(widget.rest);
     _tabController = TabController(length: 3, vsync: this);
+    SavedDatabase.getInstance().then((db) {
+      if (!mounted) return;
+      _savedPresenter = SavedPresenter(this, SavedRepository(), db);
+      // Si los datos del restaurante ya llegaron antes que la DB abriese, cargar ahora
+      _checkAndLoadSavedState();
+    });
+  }
+
+  // Llama a cargarEstadoInicial solo cuando tanto el restaurante como el menú ya cargaron
+  void _checkAndLoadSavedState() {
+    if (lodedMenu && lodedRestaurants && _savedPresenter != null) {
+      _savedPresenter!.cargarEstadoInicial(
+        _userEmail,
+        restaurants.name,
+        dishes.map((d) => d.name).toList(),
+      );
+    }
+  }
+
+  // ── SavedView ─────────────────────────────────────────────────────────────────
+
+  @override
+  void mostrarRestaurantesSaved(List<Restaurant> restaurantes) {}
+
+  @override
+  void mostrarPlatosSaved(List<Menu> platos) {}
+
+  @override
+  void mostrarConteo(int total) {}
+
+  @override
+  void actualizarEstadoRestaurante(String restaurantId, bool isSaved) {
+    if (!mounted) return;
+    setState(() => _isRestaurantSaved = isSaved);
+  }
+
+  @override
+  void actualizarEstadoPlato(String dishName, bool isSaved) {
+    if (!mounted) return;
+    setState(() {
+      if (isSaved) {
+        _savedDishNames.add(dishName);
+      } else {
+        _savedDishNames.remove(dishName);
+      }
+    });
   }
 
   @override
@@ -113,20 +172,36 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 8,
               ),
             ],
           ),
           child: const Icon(Icons.arrow_back, color: primary, size: 20),
         ),
-      onPressed: () {
-
-        final pagesState = context.findAncestorStateOfType<PagesState>();
-          pagesState?.setState(() {
-        pagesState.currentIndex2 = 0; // Cambia al índice de tu vista especial
-      } );}
+        onPressed: () {
+          final pagesState = context.findAncestorStateOfType<PagesState>();
+          if (pagesState != null) {
+            pagesState.setState(() {
+              pagesState.currentIndex2 = 0;
+            });
+          } else {
+            Navigator.pop(context);
+          }
+        },
       ),
+      actions: [
+        IconButton(
+          icon: Icon(
+            _isRestaurantSaved ? Icons.bookmark : Icons.bookmark_border,
+            color: Colors.white,
+            size: 26,
+          ),
+          onPressed: () {
+            _savedPresenter?.toggleSaveRestaurant(_userEmail, restaurants);
+          },
+        ),
+      ],
 
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
@@ -400,7 +475,13 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
             ),
           ),
           const SizedBox(height: 16),
-          ...dishes.map((dish) => _DishCard(dish: dish, primary: primary)),
+          ...dishes.map((dish) => _DishCard(
+                dish: dish,
+                primary: primary,
+                isSaved: _savedDishNames.contains(dish.name),
+                onSaveTap: () =>
+                    _savedPresenter?.toggleSaveDish(_userEmail, dish),
+              )),
         ],
       ),]
 
@@ -551,26 +632,24 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
     setState(() {
       lodedMenu = true;
     });
-
+    _checkAndLoadSavedState();
   }
-  
+
   @override
-  void mostrarReviews(List<Reviews> reviews ) {
+  void mostrarReviews(List<Reviews> reviews) {
     this.reviews = reviews;
-    
     setState(() {
       lodedReviews = true;
     });
-    
   }
-  
+
   @override
   void mostrarRestaurantes(Restaurant restaurants) {
-    this.restaurants = restaurants; 
+    this.restaurants = restaurants;
     setState(() {
       lodedRestaurants = true;
     });
-   
+    _checkAndLoadSavedState();
   }
   }
 
@@ -578,8 +657,15 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
 class _DishCard extends StatelessWidget {
   final Menu dish;
   final Color primary;
+  final bool isSaved;
+  final VoidCallback onSaveTap;
 
-  const _DishCard({required this.dish, required this.primary});
+  const _DishCard({
+    required this.dish,
+    required this.primary,
+    required this.isSaved,
+    required this.onSaveTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -643,7 +729,11 @@ class _DishCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    _IconButton(Icons.bookmark_border, () {}),
+                    _IconButton(
+                      isSaved ? Icons.bookmark : Icons.bookmark_border,
+                      onSaveTap,
+                      color: isSaved ? primary : null,
+                    ),
                     const SizedBox(width: 12),
                     _IconButton(Icons.share_outlined, () {}),
                     const SizedBox(width: 12),
