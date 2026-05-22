@@ -10,6 +10,11 @@ import 'package:foodgram/Presenter/UserPresenter.dart';
 import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodgram/View/friends_screen.dart';
+import 'package:foodgram/BaseDeDatos/SavedDatabase.dart';
+import 'package:foodgram/Model/MenuEntity.dart';
+import 'package:foodgram/Model/RestaurantEntity.dart';
+import 'package:foodgram/Model/SavedRepository.dart';
+import 'package:foodgram/Presenter/SavedPresenter.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -18,9 +23,10 @@ class UserScreen extends StatefulWidget {
   State<UserScreen> createState() => _UserScreenState();
 }
 
-class _UserScreenState extends State<UserScreen> implements UserView {
+class _UserScreenState extends State<UserScreen> implements UserView, SavedView {
 
   late UserPresenter _presenter;
+  SavedPresenter? _savedPresenter;
   bool _isLoading = true;
   double _caloriesGoal = 2000;
   double _proteinGoal  = 150;
@@ -30,12 +36,25 @@ class _UserScreenState extends State<UserScreen> implements UserView {
   String _username = '';
   String _email = '';
   List<String> _preferences = [];
+  int _savedCount = 0;
 
   @override
   void initState() {
     super.initState();
     _presenter = UserPresenter(this);
     _presenter.cargarPerfilActual();
+    SavedDatabase.getInstance().then((db) {
+      if (!mounted) return;
+      _savedPresenter = SavedPresenter(this, SavedRepository(), db);
+      _tryLoadSavedCount();
+    });
+  }
+
+  // Carga el conteo solo cuando tenemos tanto el presenter como el email
+  void _tryLoadSavedCount() {
+    if (_savedPresenter != null && _email.isNotEmpty) {
+      _savedPresenter!.cargarConteo(_email);
+    }
   }
 
   @override
@@ -52,7 +71,28 @@ class _UserScreenState extends State<UserScreen> implements UserView {
       _fatGoal       = usuario.fatGoal;
       _isLoading     = false;
     });
+    _tryLoadSavedCount();
   }
+
+  // ── SavedView ─────────────────────────────────────────────────────────────────
+
+  @override
+  void mostrarConteo(int total) {
+    if (!mounted) return;
+    setState(() => _savedCount = total);
+  }
+
+  @override
+  void mostrarRestaurantesSaved(List<Restaurant> restaurantes) {}
+
+  @override
+  void mostrarPlatosSaved(List<Menu> platos) {}
+
+  @override
+  void actualizarEstadoRestaurante(String restaurantId, bool isSaved) {}
+
+  @override
+  void actualizarEstadoPlato(String dishName, bool isSaved) {}
 
   @override
   void onLoginSuccess() {}
@@ -193,7 +233,7 @@ Widget build(BuildContext context) {
                               child: GestureDetector(
                                 onTap: () => Navigator.push(context,
                                     MaterialPageRoute(builder: (_) => const SavedUserScreen())),
-                                child: _buildStatCard("88", "SAVED"),
+                                child: _buildStatCard(_savedCount.toString(), "SAVED"),
                               ),
                             ),
                           ],

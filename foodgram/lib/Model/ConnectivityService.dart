@@ -8,7 +8,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:foodgram/BaseDeDatos/PendingDatabase.dart';
 import 'package:foodgram/BaseDeDatos/PendingUserDataPreferences.dart';
+import 'package:foodgram/BaseDeDatos/SavedDatabase.dart';
 import 'package:foodgram/Model/MealAnalysisIsolate.dart';
+import 'package:foodgram/Model/SavedRepository.dart';
 import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/TrackerPresenter.dart';
 import 'package:foodgram/View/Notificaciones.dart';
@@ -35,6 +37,7 @@ class ConnectivityService {
         await _processPending(userEmail);
         await _processPendingProfiles();
         await _processPendingGoals();
+        await _processPendingSaved(userEmail);
       }
     });
 
@@ -46,6 +49,7 @@ class ConnectivityService {
         await _processPending(userEmail);
         await _processPendingProfiles();
         await _processPendingGoals();
+        await _processPendingSaved(userEmail);
       }
       _wasOffline = isOffline;
     });
@@ -156,6 +160,31 @@ class ConnectivityService {
         fat:      (data['fats'] as num).toDouble(),
       );
       await prefs.clearPendingGoals();
+    } catch (_) {}
+  }
+
+  // Saved sin conexion — sube a Firestore los ítems guardados offline (pending_sync = 1)
+  Future<void> _processPendingSaved(String userEmail) async {
+    try {
+      final db = await SavedDatabase.getInstance();
+      final repo = SavedRepository();
+
+      for (final row in await db.getPendingRestaurants()) {
+        await repo.saveRestaurant(
+          row['user_email'] as String,
+          row['restaurant_name'] as String,
+        );
+        await db.markRestaurantSynced(row['id'] as int);
+      }
+
+      for (final row in await db.getPendingDishes()) {
+        await repo.saveDish(
+          row['user_email'] as String,
+          row['restaurant_name'] as String,
+          row['dish_name'] as String,
+        );
+        await db.markDishSynced(row['id'] as int);
+      }
     } catch (_) {}
   }
 }
