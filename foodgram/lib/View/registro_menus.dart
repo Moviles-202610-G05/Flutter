@@ -2,15 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/MenuEntity.dart';
-import 'package:foodgram/Model/MenuRepository.dart';
-import 'package:foodgram/Model/MenuSugestionApiAdapter.dart';
-import 'package:foodgram/Model/MenuSugestionApiService.dart';
-import 'package:foodgram/Model/RestaurantEntity.dart';
-import 'package:foodgram/Model/UsuarioEntity.dart';
 import 'package:foodgram/Presenter/MenuPresenter.dart';
-import 'package:foodgram/View/register_restaurant1_screen.dart';
-import 'package:foodgram/View/register_student_screen.dart';
-import 'package:foodgram/View/regiter_restaurant2_screen.dart';
 import 'package:foodgram/View/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -35,7 +27,7 @@ class _PreregisterMenuState extends State<PreregisterMenu> implements MenuView {
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  // Use a single mutable instance instead of recreating on every reset
+  
   Menu _menuController = Menu(
     name: '', price: '', description: '', image: '', restaurant: '', category: '',
   );
@@ -46,7 +38,7 @@ class _PreregisterMenuState extends State<PreregisterMenu> implements MenuView {
   String? _selectedCategory = 'Main Course';
   bool _isInStock = true;
 
-  // Moved to const to avoid rebuilding on every frame
+  
   static const List<String> _categories = [
     'Main Course',
     'Appetizer',
@@ -199,7 +191,7 @@ class _PreregisterMenuState extends State<PreregisterMenu> implements MenuView {
     );
   }
 
-  // --- MenuView callbacks ---
+  
 
   @override
   void estaCargando(bool mensaje) {
@@ -216,9 +208,9 @@ class _PreregisterMenuState extends State<PreregisterMenu> implements MenuView {
   void mostrarPlatos(List<Menu> platos) {}
 }
 
-// ---------------------------------------------------------------------------
-// Extracted stateless form to avoid unnecessary rebuilds of the full tree
-// ---------------------------------------------------------------------------
+
+
+
 class _FormContent extends StatelessWidget {
   const _FormContent({
     required this.imagenSeleccionada,
@@ -263,7 +255,7 @@ class _FormContent extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // --- DISH PHOTO ---
+        
         const Text(
           'Dish Photo',
           style: TextStyle(
@@ -320,7 +312,7 @@ class _FormContent extends StatelessWidget {
         ),
         const SizedBox(height: 32),
 
-        // --- DISH NAME ---
+        
         CustomWidgets.buildTextField(
           controller: dishNameController,
           label: 'Dish Name',
@@ -328,7 +320,7 @@ class _FormContent extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        // --- PRICE AND CATEGORY ---
+        
         Row(
           children: [
             Expanded(
@@ -352,7 +344,7 @@ class _FormContent extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        // --- DESCRIPTION ---
+        
         const Text(
           'Description',
           style: TextStyle(
@@ -383,7 +375,7 @@ class _FormContent extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        // --- IN STOCK TOGGLE ---
+        
         Row(
           children: [
             Icon(Icons.shopping_cart_outlined,
@@ -415,7 +407,7 @@ class _FormContent extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        // --- ADD TO MENU BUTTON ---
+        
         SizedBox(
           width: double.infinity,
           height: 56,

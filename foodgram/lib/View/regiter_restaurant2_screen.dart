@@ -1,14 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:foodgram/Model/MenuEntity.dart';
-import 'package:foodgram/Model/MenuRepository.dart';
-import 'package:foodgram/Model/MenuSugestionApiAdapter.dart';
-import 'package:foodgram/Model/MenuSugestionApiService.dart';
 import 'package:foodgram/Model/RestaurantEntity.dart';
-import 'package:foodgram/Model/RestaurantRepository.dart';
 import 'package:foodgram/Model/UsuarioEntity.dart';
-import 'package:foodgram/Model/UserRepository.dart';
 import 'package:foodgram/Presenter/MenuPresenter.dart';
 import 'package:foodgram/Presenter/RestaurantPresenter.dart';
 import 'package:foodgram/View/login_screen.dart';
@@ -46,14 +39,6 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2>
     presenterRestaurant = RestaurantPresenter(this);
     presenterMenu.darMenu();
   }
-
-  // didChangeDependencies is called on every dependency change (e.g. theme,
-  // locale). Fetching the menu here caused redundant network calls.
-  // initState + Navigator.pop() already re-triggers mostrarPlatos via
-  // presenterMenu.darMenu() called in _addDish, so this override is removed.
-
-  // No TextEditingControllers here — they belong to PreregisterMenu only.
-
   Future<void> _onFinishRegistration() async {
     if (_isLoading) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -106,7 +91,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // --- HEADER ---
+                    
                     const Text(
                       'Create your Menu',
                       style: TextStyle(
@@ -150,7 +135,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2>
                     ),
                     const SizedBox(height: 32),
 
-                    // --- ADD TO MENU BUTTON ---
+                    
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -185,7 +170,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2>
                     ),
                     const SizedBox(height: 32),
 
-                    // --- MENU SECTION ---
+                    
                     const Text(
                       'MENU',
                       style: TextStyle(
@@ -197,12 +182,6 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2>
                     ),
                     const SizedBox(height: 16),
 
-                    // Use ListView.builder inside a SliverToBoxAdapter only
-                    // when the list is small and already wrapped in a
-                    // scrollable (CustomScrollView). shrinkWrap is avoided;
-                    // instead we build items lazily via the spread operator
-                    // replacement below — a plain indexed builder that
-                    // constructs only what is needed.
                     if (menuItems.isEmpty)
                       const Center(
                         child: Padding(
@@ -216,8 +195,8 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2>
                         ),
                       )
                     else
-                      // RepaintBoundary isolates each card's repaint so that
-                      // a change in one item does not repaint siblings.
+                      
+                      
                       ...List.generate(
                         menuItems.length,
                         (index) => RepaintBoundary(
@@ -265,7 +244,7 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2>
     );
   }
 
-  // --- View callbacks ---
+  
 
   @override
   void mostrarPlatos(List<Menu> platos) {
@@ -316,10 +295,10 @@ class _RestaurantRegisterScreen2State extends State<RestaurantRegisterScreen2>
   void updateCameraPosition(double lat, double lng) {}
 }
 
-// ---------------------------------------------------------------------------
-// Extracted const-capable card widget — no rebuild unless item reference
-// changes, thanks to being a separate widget with its own element node.
-// ---------------------------------------------------------------------------
+
+
+
+
 class _MenuItemCard extends StatelessWidget {
   const _MenuItemCard({required this.item});
 
