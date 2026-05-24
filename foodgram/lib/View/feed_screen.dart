@@ -1,4 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodgram/Model/ComentsEntity.dart';
+import 'package:foodgram/Model/PostEntity.dart';
+import 'package:foodgram/Presenter/postPresenter.dart';
 import 'package:foodgram/View/create_post_screen.dart';
 import 'package:foodgram/View/Notificaciones.dart';
 
@@ -9,68 +13,18 @@ class FeedScreen extends StatefulWidget {
   State<FeedScreen> createState() => _FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> {
+class _FeedScreenState extends State<FeedScreen> implements PostView{
 
 
-  final List<Map<String, dynamic>> posts = [
-    {
-      'userName': 'ChefMario',
-      'userInitial': 'CM',
-      'userColor': Colors.teal,
-      'location': 'La Traviata Ristorante',
-      'likes': 1234,
-      'comments': 86,
-      'hashtags': ["#Foodie", "#Truffle"],
-      'description':
-          'The best truffle pasta I\'ve had in the city. The aroma is just incredible.',
-      'postImage':
-          'https://images.unsplash.com/photo-1473093295203-cad00df16e50?w=500',
-      'comments_data': [
-        {
-          'name': 'SushiLover',
-          'comment': 'Fresh catch from this morning. You can easily taste the difference !'
-        },
-        {'name': 'User123', 'comment': '👌❤️ looks amazing'},
-      ],
-    },
-    {
-      'userName': 'SushiLover',
-      'userInitial': 'SL',
-      'userColor': Colors.deepPurple,
-      'location': 'Otaku Sushi Bar',
-      'likes': 856,
-      'comments': 42,
-      'hashtags': ["#Foodie"],
-      'description':
-          'Fresh catch from this morning. You can easily taste the difference!',
-      'postImage':
-          'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500',
-      'comments_data': [
-        {'name': 'ChefMario', 'comment': 'Looking delicious! 🍜'},
-        {'name': 'FoodBlogger', 'comment': 'Where is this from?'},
-      ],
-    },
-    {
-      'userName': 'BurgerKing',
-      'userInitial': 'BK',
-      'userColor': Colors.orange,
-      'location': 'The Burger Joint',
-      'likes': 2145,
-      'comments': 156,
-      'hashtags': ["#Foodie"],
-      'description':
-          'Homemade beef burger with special sauce and fresh ingredients. Worth every bite! #BurgerLife',
-      'postImage':
-          'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500',
-      'comments_data': [
-        {'name': 'SushiLover', 'comment': 'That looks juicy! 🍔'},
-        {
-          'name': 'ChefMario',
-          'comment': 'Mind sharing the recipe for that sauce?'
-        },
-      ],
-    },
-  ];
+  List<Post> posts = [ ];
+  late final PostPresenter presenter;
+
+  @override
+  void initState() {
+    super.initState();
+    presenter = PostPresenter(this);
+    presenter.posts();
+  }
 
   @override
 Widget build(BuildContext context) {
@@ -127,16 +81,16 @@ Widget build(BuildContext context) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: FoodPostCard(
-                    userName: post['userName'],
-                    userInitial: post['userInitial'],
-                    userColor: post['userColor'],
-                    location: post['location'],
-                    likes: post['likes'],
-                    hashtags: post['hashtags'],
-                    comments: post['comments'],
-                    description: post['description'],
-                    postImage: post['postImage'],
-                    commentsData: post['comments_data'],
+                    userName: post.userName,
+                    userInitial: post.userName.substring(0, 2),
+                    userColor: Color(int.parse(post.color.replaceFirst('#', '0xFF'))),
+                    location: post.restaurantName,
+                    likes: post.likes,
+                    hashtags: post.tags,
+                    comments: post.comments,
+                    description: post.description,
+                    postImage: post.image,
+                    commentsData: post.towComents,
                   ),
                 );
               },
@@ -159,7 +113,28 @@ Widget build(BuildContext context) {
       child: const Icon(Icons.add, color: Colors.white, size: 28),
     ),
   );
-}}
+}
+
+  @override
+   void mostrarError2(String mensaje) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(mensaje)));
+  }
+
+  @override
+  void mostrarExito(String mensaje) {
+    // TODO: implement mostrarExito
+  }
+
+  @override
+  void mostrarPosts(List<Post> posts) {
+    setState(() {
+      this.posts = posts;
+      
+    });
+    
+  }}
 
 class FoodPostCard extends StatefulWidget {
   final String userName;
@@ -171,7 +146,7 @@ class FoodPostCard extends StatefulWidget {
   final String description;
   final String postImage;
   final List<String> hashtags;
-  final List<Map<String, String>> commentsData;
+  final List<Coments> commentsData;
 
   const FoodPostCard({
     super.key,
@@ -357,16 +332,14 @@ class FoodImage extends StatelessWidget {
       width: double.infinity,
       height: 320,
       color: Colors.grey[800],
-      child: Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            color: Colors.grey[300],
-            child: const Icon(Icons.image_not_supported, size: 48),
-          );
-        },
-      ),
+      
+      child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    placeholder: (context, url) => const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6933)),
+                                      ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                  ),
     );
   }
 }
@@ -557,7 +530,7 @@ class ViewCommentsButton extends StatelessWidget {
 
 /// Vista previa de comentarios
 class CommentsPreview extends StatelessWidget {
-  final List<Map<String, String>> comments;
+  final List<Coments> comments;
 
   const CommentsPreview({super.key, required this.comments});
 
@@ -577,7 +550,7 @@ class CommentsPreview extends StatelessWidget {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: '${comment['name']} ',
+                        text: '${comment.userName} ',
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
@@ -585,7 +558,7 @@ class CommentsPreview extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: comment['comment'],
+                        text: comment.description,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 12,
