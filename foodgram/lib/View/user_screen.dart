@@ -204,7 +204,7 @@ Widget build(BuildContext context) {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.06),
+                              color: Colors.black.withValues(alpha:0.06),
                               blurRadius: 15,
                               offset: const Offset(0, 4),
                             ),
@@ -231,8 +231,13 @@ Widget build(BuildContext context) {
                             _buildDivider(),
                             Expanded(
                               child: GestureDetector(
-                                onTap: () => Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) => const SavedUserScreen())),
+                                onTap: () async {
+                                  await Navigator.push(context,
+                                      MaterialPageRoute(builder: (_) => const SavedUserScreen()));
+                                  if (mounted && _savedPresenter != null && _email.isNotEmpty) {
+                                    _savedPresenter!.cargarConteo(_email);
+                                  }
+                                },
                                 child: _buildStatCard(_savedCount.toString(), "SAVED"),
                               ),
                             ),
@@ -292,7 +297,7 @@ Widget build(BuildContext context) {
                         Icons.person_outline,
                         "Personal Information",
                         null,
-                        const Color(0xFFFF6347).withOpacity(0.1),
+                        const Color(0xFFFF6347).withValues(alpha:0.1),
                         onTap: () async {
                           final result = await Navigator.push(
                             context,
@@ -320,7 +325,7 @@ Widget build(BuildContext context) {
                         Icons.people_outline,
                         "Friends",
                         "Manage your friend connections",
-                        const Color(0xFFFF6347).withOpacity(0.1),
+                        const Color(0xFFFF6347).withValues(alpha:0.1),
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -332,7 +337,7 @@ Widget build(BuildContext context) {
                         Icons.lock_outline,
                         "Post & Privacy Settings",
                         "Configure social publications",
-                        const Color(0xFFFF6347).withOpacity(0.1),
+                        const Color(0xFFFF6347).withValues(alpha:0.1),
                         onTap: () => Navigator.push(context,
                             MaterialPageRoute(builder: (_) => const PostPrivacityScreen())),
                       ),
@@ -364,7 +369,7 @@ Widget build(BuildContext context) {
                             // Opcional: una sombra muy suave para dar profundidad
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha:0.05),
                                 blurRadius: 5,
                                 offset: const Offset(0, 2),
                               ),
@@ -456,7 +461,7 @@ Widget build(BuildContext context) {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 10)],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

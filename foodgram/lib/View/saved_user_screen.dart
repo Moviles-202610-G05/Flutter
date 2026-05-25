@@ -87,9 +87,9 @@ class _SavedUserScreenState extends State<SavedUserScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F0EB),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F0EB),
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
@@ -178,12 +178,15 @@ class _SavedUserScreenState extends State<SavedUserScreen>
         final r = _restaurants[index];
         return _RestaurantCard(
           data: r,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => RestaurantDetailScreen(rest: r.name),
-            ),
-          ),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => RestaurantDetailScreen(rest: r.name),
+              ),
+            );
+            _presenter?.recargarGuardados(_userEmail);
+          },
           onUnsave: () async {
             await _presenter?.removeSavedRestaurant(_userEmail, r.name);
             await _presenter?.cargarGuardados(_userEmail);
@@ -209,13 +212,16 @@ class _SavedUserScreenState extends State<SavedUserScreen>
         final dish = _meals[index];
         return _MealCard(
           data: dish,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  RestaurantDetailScreen(rest: dish.restaurant),
-            ),
-          ),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    RestaurantDetailScreen(rest: dish.restaurant),
+              ),
+            );
+            _presenter?.recargarGuardados(_userEmail);
+          },
           onUnsave: () async {
             await _presenter?.removeSavedDish(
                 _userEmail, dish.restaurant, dish.name);

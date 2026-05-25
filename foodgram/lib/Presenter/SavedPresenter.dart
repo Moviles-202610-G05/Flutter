@@ -227,6 +227,13 @@ class SavedPresenter {
     }
   }
 
+  // ── Forzar recarga (invalida caché) ──────────────────────────────────────────
+
+  Future<void> recargarGuardados(String userEmail) async {
+    _invalidateCache();
+    await cargarGuardados(userEmail);
+  }
+
   // ── Estado inicial para pantalla de detalle ───────────────────────────────────
 
   Future<void> cargarEstadoInicial(
